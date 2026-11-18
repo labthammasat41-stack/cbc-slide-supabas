@@ -541,7 +541,8 @@ const RPC={apiInit:['api_init','p_token'],apiRegister:['api_register','d'],apiLo
   apiMine:['api_mine','p_token'],apiPrecheck:['api_precheck','p_token','d'],apiCheckIn:['api_check_in','p_token','d'],
   apiFindForReceive:['api_find_for_receive','p_token','d'],apiCheckOut:['api_check_out','p_token','d'],
   apiIncludeCheck:['api_include_check','p_token','d'],apiInclude:['api_include','p_token','d'],apiSearch:['api_search','p_token','q'],
-  apiLabList:['api_lab_list','p_pin'],apiLabStats:['api_lab_stats','p_pin','p_days'],apiSetPhoto:['api_set_photo','p_token','p_id','p_path'],apiUndo:['api_undo','p_token','p_id','p_kind']};
+  apiLabList:['api_lab_list','p_pin'],apiLabStats:['api_lab_stats','p_pin','p_days'],apiSetPhoto:['api_set_photo','p_token','p_id','p_path'],apiUndo:['api_undo','p_token','p_id','p_kind'],
+  apiLabFix:['api_lab_fix','p_pin','p_id','p_action','p_reason'],apiLabStaff:['api_lab_staff','p_pin'],apiLabStaffSet:['api_lab_staff_set','p_pin','p_staff','p_state']};
 /* คีย์แบบใหม่ (sb_publishable_…) ส่งใน apikey อย่างเดียว คีย์ anon แบบเดิม (eyJ…) ส่งใน Authorization ด้วย */
 const supaHead=extra=>Object.assign({apikey:SUPA_KEY},/^eyJ/.test(SUPA_KEY)?{Authorization:'Bearer '+SUPA_KEY}:{},extra||{});
 async function rpc(fn,args){
@@ -1306,6 +1307,7 @@ function vPin(){
 async function reloadLab(){try{labRows=await run('apiLabList',labPin);if(mode==='lab')renderLab()}catch(err){toast(err.message)}}
 function renderLab(){
   if(labTab==='stats')return renderStats();
+  if(labTab==='staff')return renderStaff();
   const c=k=>labRows.filter(r=>r.status===k).length;
   let rows=labRows.filter(r=>r.status===labFilter);
   const q=labQ.trim().toLowerCase();
@@ -1317,25 +1319,89 @@ function renderLab(){
    <div class="toolbar"><input class="input" id="lab-q" placeholder="ค้นหา Sample No., HN, วอร์ด, ชื่อ" value="${esc(labQ)}">
      <button class="btn btn-ghost" id="lab-refresh">รีเฟรช</button>
      <span class="small muted">${labFilter==='in'?`แดง = ส่งใบตามเกิน ${lateTxt()} แล้วยังไม่มารับ · `:''}รีเฟรชเองทุก 1 นาที</span></div>
-   <div class="tbl-wrap"><table><thead><tr><th>HN</th><th>Sample No.</th><th>วอร์ด</th><th>วันเวลาส่งตรวจ</th><th>ส่งใบตาม: ผู้ส่ง / เวลา</th><th>รับสไลด์: ผู้รับ / เวลา</th><th>${labFilter==='in'?'รอมาแล้ว':'ใช้เวลา'}</th></tr></thead><tbody>
+   <div class="tbl-wrap"><table><thead><tr><th>HN</th><th>Sample No.</th><th>วอร์ด</th><th>วันเวลาส่งตรวจ</th><th>ส่งใบตาม: ผู้ส่ง / เวลา</th><th>รับสไลด์: ผู้รับ / เวลา</th><th>${labFilter==='in'?'รอมาแล้ว':'ใช้เวลา'}</th><th>แก้ไข</th></tr></thead><tbody>
    ${rows.length?rows.map(r=>{const m=r.reqTs?Math.round(((r.recvTs||Date.now())-r.reqTs)/60000):null;
      const late=r.status==='in'&&m>LATE_MIN;
      return `<tr><td class="mono">${esc(r.hn)}</td><td class="mono">${r.sample?esc(r.sample):'<span class="muted">–</span>'}</td><td>${esc(r.ward)}</td>
        <td>${esc(r.specAt||'–')}</td>
-       <td>${r.include?'<span class="tag-inc" style="margin:0">Include</span><br><span class="small muted">ไม่ได้ส่งใบตาม</span>':`${esc(r.reqName)}<br><span class="small muted">${esc(r.reqAt)}</span>${r.photo?`<br><a class="small" href="${esc(r.photo)}" target="_blank" rel="noopener">ดูรูปหลักฐาน</a>`:''}`}</td>
+       <td>${r.include?'<span class="tag-inc" style="margin:0">Include</span><br><span class="small muted">ไม่ได้ส่งใบตาม</span>':`${esc(r.reqName)}<br><span class="small muted">${esc(r.reqAt)}</span>${r.photo?'<br><span class="small muted">📷 มีรูปหลักฐาน</span>':''}`}</td>
        <td>${r.status==='out'?`${esc(r.recvName)}<br><span class="small muted">${esc(r.recvAt)}</span>`:'<span class="muted">–</span>'}</td>
-       <td class="${late?'late':''}">${m==null?'–':dur(m)}</td></tr>`}).join(''):'<tr><td colspan="7" class="muted" style="text-align:center;padding:28px">ไม่มีรายการในกลุ่มนี้</td></tr>'}
+       <td class="${late?'late':''}">${m==null?'–':dur(m)}</td>
+       <td><button class="btn btn-ghost" style="min-height:40px;padding:8px 12px;font-size:.88rem" data-fix="${r.row}">แก้ไข</button></td></tr>`}).join(''):'<tr><td colspan="8" class="muted" style="text-align:center;padding:28px">ไม่มีรายการในกลุ่มนี้</td></tr>'}
    </tbody></table></div></div>`;
   app.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{labFilter=b.dataset.f;renderLab()});
   $('#lab-refresh').onclick=reloadLab;bindTabs();
+  app.querySelectorAll('[data-fix]').forEach(b=>b.onclick=()=>fixSheet(labRows.find(r=>String(r.row)===b.dataset.fix)));
   const qi=$('#lab-q');qi.oninput=()=>{labQ=qi.value;const p=qi.selectionStart;renderLab();const n=$('#lab-q');n.focus();n.setSelectionRange(p,p)};
 }
 
 /* ---------- หน้าสถิติและกราฟ (ไม่มีข้อมูลผู้ป่วย: เซิร์ฟเวอร์ส่งมาแค่ตัวเลขสรุป) ---------- */
+
+/* ---------- แก้รายการที่กรอกผิด (หน้าแลป) ---------- */
+const icUsers='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg>';
+function fixSheet(r){
+  if(!r)return;
+  const canReopen=r.status==='out'&&!r.include;
+  const sh=openSheet(`<div class="eyebrow">แก้ไขรายการ</div><h2 class="mono">HN ${esc(r.hn)}</h2>
+    <div class="receipt"><dl class="kv"><dt>Sample No.</dt><dd class="mono">${sampleTxt(r.sample)}</dd><dt>วอร์ด</dt><dd>${esc(r.ward)}</dd>
+      ${r.include?'<dt>ประเภท</dt><dd>Slide include</dd>':`<dt>ส่งใบตาม</dt><dd>${esc(r.reqName)} · ${esc(r.reqAt)}</dd>`}
+      ${r.status==='out'?`<dt>รับสไลด์</dt><dd>${esc(r.recvName)} · ${esc(r.recvAt)}</dd>`:''}</dl></div>
+    <div class="field"><label for="fx-act">ต้องการทำอะไร</label><div class="seg3" style="grid-template-columns:repeat(${canReopen?2:1},1fr)" id="fx-act">
+      ${canReopen?`<button data-a="reopen" aria-pressed="true">ย้อนเป็น "ยังไม่รับ"</button>`:''}
+      <button data-a="cancel" aria-pressed="${!canReopen}">ยกเลิกรายการ</button></div>
+      <div class="hint" id="fx-hint"></div></div>
+    <div class="field"><label for="fx-why">เหตุผล (จำเป็น)</label><input class="input" id="fx-why" placeholder="เช่น กรอก HN ผิด, รับสไลด์ผิดใบ, บันทึกซ้ำ" maxlength="120"></div>
+    <div id="fx-err"></div>
+    <button class="btn btn-teal btn-block" id="fx-ok">ยืนยัน</button><button class="btn btn-soft btn-block" data-close>ปิด</button>`);
+  let act=canReopen?'reopen':'cancel';
+  const hint=()=>{sh.el.querySelector('#fx-hint').textContent=act==='reopen'
+      ?'สถานะกลับเป็น "ส่งใบตามแล้ว รอรับ" ผู้ที่มารับจริงจะบันทึกรับสไลด์ได้'
+      :'รายการจะหายจากแอปทุกหน้า และไม่บล็อกการบันทึกใหม่ (ข้อมูลยังเก็บไว้ใน Supabase พร้อมเหตุผล)';
+    sh.el.querySelectorAll('[data-a]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.a===act))};
+  sh.el.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{act=b.dataset.a;hint()});hint();
+  sh.el.querySelector('#fx-ok').onclick=async()=>{
+    const why=sh.el.querySelector('#fx-why').value.trim(),btn=sh.el.querySelector('#fx-ok');
+    if(!why){sh.el.querySelector('#fx-err').innerHTML=errBox('กรุณาระบุเหตุผลก่อนยืนยันครับ');sh.el.querySelector('#fx-why').focus();return}
+    btn.disabled=true;
+    try{await run('apiLabFix',labPin,r.row,act,why);sh.close();toast(act==='reopen'?'ย้อนเป็น "ยังไม่รับ" แล้วครับ':'ยกเลิกรายการแล้วครับ');statCache={};reloadLab()}
+    catch(err){btn.disabled=false;sh.el.querySelector('#fx-err').innerHTML=errBox(err.message)}};
+}
+/* ---------- ผู้ใช้งาน (ระงับ / เปิดใช้) ---------- */
+let staffRows=null,staffQ='';
+async function loadStaff(){staffRows=null;renderStaff();try{staffRows=await run('apiLabStaff',labPin)}catch(err){staffRows={__err:err.message}}if(mode==='lab'&&labTab==='staff')renderStaff()}
+function renderStaff(){
+  const head=`${labTabs()}<div class="toolbar"><input class="input" id="st-q" placeholder="ค้นหารหัสพนักงาน หรือชื่อ" value="${esc(staffQ)}"><button class="btn btn-ghost" id="st-re">รีเฟรช</button>
+    <span class="small muted">"ระงับ" = ใช้แอปไม่ได้ แต่ประวัติการบันทึกยังอยู่ครบ</span></div>`;
+  if(!staffRows){app.innerHTML=`<div class="wide" aria-busy="true">${head}<div class="sk sk-chart"></div></div>`;return bindStaff()}
+  if(staffRows.__err){app.innerHTML=`<div class="wide">${head}${errBox(staffRows.__err)}</div>`;return bindStaff()}
+  const q=staffQ.trim().toLowerCase();
+  const rows=staffRows.filter(u=>!q||[u.id,u.first,u.last,u.nick].join(' ').toLowerCase().includes(q));
+  app.innerHTML=`<div class="wide">${head}<div class="tbl-wrap"><table style="min-width:720px"><thead><tr><th>รหัส</th><th>ชื่อ-นามสกุล</th><th>ลงทะเบียน</th><th>บันทึก</th><th>ใช้ล่าสุด</th><th>สถานะ</th><th></th></tr></thead><tbody>
+    ${rows.length?rows.map(u=>{const off=u.state==='ระงับ';return `<tr><td class="mono">${esc(u.id)}</td><td>${esc(u.first)} ${esc(u.last)} <span class="muted">(${esc(u.nick)})</span></td>
+      <td class="small">${esc(u.regAt)}</td><td>${nf(u.n)}</td><td class="small">${esc(u.lastAt||'–')}</td>
+      <td><span class="pill ${off?'st-in':'st-out'}">${off?'ระงับ':'ใช้งาน'}</span></td>
+      <td><button class="btn btn-ghost" style="min-height:40px;padding:8px 12px;font-size:.88rem" data-u="${esc(u.id)}" data-s="${off?'ใช้งาน':'ระงับ'}">${off?'เปิดใช้':'ระงับ'}</button></td></tr>`}).join('')
+      :'<tr><td colspan="7" class="muted" style="text-align:center;padding:28px">ไม่พบผู้ใช้</td></tr>'}</tbody></table></div></div>`;
+  bindStaff();
+  app.querySelectorAll('[data-u]').forEach(b=>b.onclick=async()=>{const u=staffRows.find(x=>x.id===b.dataset.u),to=b.dataset.s;
+    if(to==='ระงับ')return askStaff(u,to);
+    await setStaff(u,to)});
+}
+function askStaff(u,to){
+  const sh=openSheet(`<h2>ระงับการใช้งาน?</h2><p style="margin:0">${esc(u.first)} ${esc(u.last)} (${esc(u.nick)}) · รหัส <span class="mono">${esc(u.id)}</span></p>
+    <div class="alert warn">ระงับแล้วจะบันทึกในแอปไม่ได้ทุกเครื่อง แต่ประวัติที่เคยบันทึกยังอยู่ครบ กด "เปิดใช้" เพื่อคืนสิทธิ์ได้ทุกเมื่อ</div>
+    <button class="btn btn-teal btn-block" id="sa-ok">ระงับ</button><button class="btn btn-soft btn-block" data-close>ยกเลิก</button>`);
+  sh.el.querySelector('#sa-ok').onclick=async()=>{sh.close();await setStaff(u,to)};
+}
+async function setStaff(u,to){try{await run('apiLabStaffSet',labPin,u.id,to);u.state=to;toast(to==='ระงับ'?`ระงับ ${u.nick} แล้วครับ`:`เปิดใช้ ${u.nick} แล้วครับ`);renderStaff()}catch(err){toast(err.message)}}
+function bindStaff(){bindTabs();const r=$('#st-re');if(r)r.onclick=loadStaff;
+  const qi=$('#st-q');if(qi)qi.oninput=()=>{staffQ=qi.value;const p=qi.selectionStart;renderStaff();const n=$('#st-q');n.focus();n.setSelectionRange(p,p)}}
+
 const labTabs=()=>`<div class="ltabs" role="tablist" aria-label="มุมมองของห้องปฏิบัติการ">
   <button role="tab" data-tab="list" aria-selected="${labTab==='list'}">${icList}รายการสไลด์</button>
-  <button role="tab" data-tab="stats" aria-selected="${labTab==='stats'}">${icChart}สถิติและกราฟ</button></div>`;
-function bindTabs(){app.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{if(labTab===b.dataset.tab)return;labTab=b.dataset.tab;labTab==='stats'?loadStats():renderLab()})}
+  <button role="tab" data-tab="stats" aria-selected="${labTab==='stats'}">${icChart}สถิติและกราฟ</button>
+  <button role="tab" data-tab="staff" aria-selected="${labTab==='staff'}">${icUsers}ผู้ใช้งาน</button></div>`;
+function bindTabs(){app.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{if(labTab===b.dataset.tab)return;labTab=b.dataset.tab;labTab==='stats'?loadStats():labTab==='staff'?loadStaff():renderLab()})}
 async function loadStats(force){
   if(!force&&statCache[statDays]){statData=statCache[statDays];return renderStats()}
   statData=null;renderStats();
