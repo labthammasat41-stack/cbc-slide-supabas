@@ -367,7 +367,19 @@ th{font-size:.74rem;letter-spacing:.04em;color:var(--muted);font-weight:600;back
 tr:last-child td{border-bottom:0}
 tbody tr:hover{background:var(--surface-2)}
 .late{color:var(--bad);font-weight:700}
-.ltabs{display:flex;gap:4px;background:var(--surface-3);border-radius:14px;padding:4px;align-self:flex-start;max-width:100%}
+.ltabs{display:flex;gap:4px;background:var(--surface-3);border-radius:14px;padding:4px;align-self:flex-start;max-width:100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.ltabs::-webkit-scrollbar{display:none}
+.ltabs button{flex-shrink:0;white-space:nowrap}
+.wd-list{display:flex;flex-direction:column;gap:8px}
+.wd-row{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.wd-row.off{opacity:.75;background:var(--surface-3)}
+.wd-no{width:28px;height:28px;border-radius:50%;background:var(--surface-3);display:grid;place-items:center;font-weight:700;font-size:.85rem;flex-shrink:0;color:var(--muted)}
+.wd-main{flex:1;min-width:0}.wd-main b{display:block;overflow-wrap:anywhere}
+.wd-act{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end}
+.wd-act .btn{min-height:40px;padding:6px 10px;font-size:.86rem}
+.wd-act .ic{width:40px;padding:0}
+.wd-add{display:flex;gap:8px;margin:4px 0 14px}.wd-add .input{flex:1;min-width:0}
+@media (max-width:520px){.wd-row{flex-wrap:wrap}.wd-act{width:100%;justify-content:flex-start;padding-left:38px}}
 .ltabs button{display:inline-flex;align-items:center;gap:8px;border:0;background:none;padding:10px 16px;border-radius:11px;font-weight:600;cursor:pointer;color:var(--muted);font-size:.95rem;transition:background .2s,color .2s}
 .ltabs button svg{width:20px;height:20px}
 .ltabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-1),0 0 0 1px var(--line)}
@@ -544,7 +556,7 @@ const RPC={apiInit:['api_init','p_token'],apiRegister:['api_register','d'],apiLo
   apiIncludeCheck:['api_include_check','p_token','d'],apiInclude:['api_include','p_token','d'],apiSearch:['api_search','p_token','q'],
   apiLabList:['api_lab_list','p_pin'],apiLabStats:['api_lab_stats','p_pin','p_days'],apiSetPhoto:['api_set_photo','p_token','p_id','p_path'],apiUndo:['api_undo','p_token','p_id','p_kind'],
   apiLabFix:['api_lab_fix','p_pin','p_id','p_action','p_reason'],apiLabStaff:['api_lab_staff','p_pin'],apiLabStaffSet:['api_lab_staff_set','p_pin','p_staff','p_state'],
-  apiLabBackups:['api_lab_backups','p_pin'],apiLabPurge:['api_lab_purge','p_pin','p_month','p_confirm']};
+  apiLabBackups:['api_lab_backups','p_pin'],apiAdminWards:['api_admin_wards','p_pin'],apiAdminWardSave:['api_admin_ward_save','p_pin','p_action','p_name','p_new'],apiLabPurge:['api_lab_purge','p_pin','p_month','p_confirm']};
 /* คีย์แบบใหม่ (sb_publishable_…) ส่งใน apikey อย่างเดียว คีย์ anon แบบเดิม (eyJ…) ส่งใน Authorization ด้วย */
 const supaHead=extra=>Object.assign({apikey:SUPA_KEY},/^eyJ/.test(SUPA_KEY)?{Authorization:'Bearer '+SUPA_KEY}:{},extra||{});
 async function rpc(fn,args){
@@ -1311,6 +1323,7 @@ function renderLab(){
   if(labTab==='stats')return renderStats();
   if(labTab==='staff')return renderStaff();
   if(labTab==='backup')return renderBackups();
+  if(labTab==='wards')return renderWards();
   const c=k=>labRows.filter(r=>r.status===k).length;
   let rows=labRows.filter(r=>r.status===labFilter);
   const q=labQ.trim().toLowerCase();
@@ -1405,19 +1418,20 @@ const icArchive='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
 const TH_MONTH_FULL=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 const monthTh=m=>{const [y,mm]=m.split('-').map(Number);return `${TH_MONTH_FULL[mm-1]} ${y+543}`};
 let bkData=null, adminPin='';
+const ADMIN_TABS=['backup','wards'];
 /* PIN ผู้ดูแลจำไว้ในหน่วยความจำเท่านั้น และลืมทันทีเมื่อออกจากแท็บนี้ (เครื่องแลปใช้ร่วมกันหลายคน) */
 async function loadBackups(){if(!adminPin)return adminGate();bkData=null;renderBackups();
-  try{bkData=await run('apiLabBackups',adminPin)}catch(err){if(/PIN ผู้ดูแลไม่ถูกต้อง/.test(err.message)){adminPin='';return adminGate(err.message)}bkData={__err:err.message}}
+  try{bkData=await run('apiLabBackups',adminPin)}catch(err){if(/PIN ผู้ดูแล/.test(err.message)){adminPin='';return adminGate(err.message)}bkData={__err:err.message}}
   if(mode==='lab'&&labTab==='backup')renderBackups()}
 function adminGate(msg){
   app.innerHTML=`<div class="wide">${labTabs()}<div class="card" style="max-width:420px;margin:18px auto">
-    <div class="eyebrow">เฉพาะผู้ดูแลระบบ</div><h2 style="margin:4px 0 6px">สำรองข้อมูล</h2>
+    <div class="eyebrow">เฉพาะผู้ดูแลระบบ</div><h2 style="margin:4px 0 6px">${labTab==='wards'?'จัดการวอร์ด':'สำรองข้อมูล'}</h2>
     <p class="small muted" style="margin:0 0 14px">หน้านี้ใช้ PIN ผู้ดูแล ซึ่งแยกจาก PIN แลป</p>
     <form id="adm-f"><div class="field"><label for="adm-pin">PIN ผู้ดูแล</label>
     <input class="input mono" id="adm-pin" type="password" inputmode="numeric" autocomplete="off"></div>
-    ${msg?errBox(msg):''}<button class="btn btn-block" type="submit">เข้าสู่หน้าสำรองข้อมูล</button></form></div></div>`;
+    ${msg?errBox(msg):''}<button class="btn btn-block" type="submit">เข้าสู่หน้า${labTab==='wards'?'จัดการวอร์ด':'สำรองข้อมูล'}</button></form></div></div>`;
   bindTabs();const i=$('#adm-pin');i.focus();
-  $('#adm-f').onsubmit=e=>{e.preventDefault();if(!i.value.trim())return i.focus();adminPin=i.value.trim();loadBackups()};
+  $('#adm-f').onsubmit=e=>{e.preventDefault();if(!i.value.trim())return i.focus();adminPin=i.value.trim();labTab==='wards'?loadWards():loadBackups()};
 }
 function renderBackups(){
   const head=`${labTabs()}<div class="toolbar"><button class="btn btn-ghost" id="bk-re">รีเฟรช</button>
@@ -1459,12 +1473,79 @@ function purgeSheet(r){
   setTimeout(()=>inp.focus(),50);
 }
 
+/* ---------- จัดการวอร์ด (PIN ผู้ดูแล) ---------- */
+const icBed='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7v12M3 13h18v6M21 13a3 3 0 0 0-3-3h-7v3"/><circle cx="7" cy="10.5" r="1.8"/></svg>';
+const icUp='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>', icDown='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+let wdData=null;
+function setWardsFrom(list){WARDS=list.filter(w=>w.active).map(w=>w.name)}
+async function loadWards(){if(!adminPin)return adminGate();wdData=null;renderWards();
+  try{const d=await run('apiAdminWards',adminPin);wdData=d.wards;setWardsFrom(wdData)}catch(err){if(/PIN ผู้ดูแล/.test(err.message)){adminPin='';return adminGate(err.message)}wdData={__err:err.message}}
+  if(mode==='lab'&&labTab==='wards')renderWards()}
+async function wardDo(act,name,nw,btn){
+  if(btn)btn.disabled=true;
+  try{const d=await run('apiAdminWardSave',adminPin,act,name,nw||'');wdData=d.wards;setWardsFrom(wdData);statCache={};renderWards();return d}
+  catch(err){if(btn)btn.disabled=false;toast(err.message);throw err}}
+function renderWards(){
+  const head=`${labTabs()}<div class="toolbar"><button class="btn btn-ghost" id="wd-re">รีเฟรช</button>
+    <span class="small muted">วอร์ดที่เปิดใช้จะแสดงให้เลือกตอนส่งใบตาม Slide ตามลำดับนี้</span></div>`;
+  if(!wdData){app.innerHTML=`<div class="wide" aria-busy="true">${head}<div class="sk sk-chart"></div></div>`;return bindWd()}
+  if(wdData.__err){app.innerHTML=`<div class="wide">${head}${errBox(wdData.__err)}</div>`;return bindWd()}
+  const on=wdData.filter(w=>w.active),off=wdData.filter(w=>!w.active);
+  const use=w=>`<span class="small muted">30 วันล่าสุด ${nf(w.last30)} · ทั้งหมด ${nf(w.total)} รายการ</span>`;
+  app.innerHTML=`<div class="wide" style="max-width:760px">${head}
+    <form class="wd-add" id="wd-f"><input class="input" id="wd-new" maxlength="60" autocomplete="off" placeholder="ชื่อวอร์ดใหม่ เช่น หอผู้ป่วยพิเศษ 9" aria-label="ชื่อวอร์ดใหม่">
+      <button class="btn btn-teal" type="submit" style="flex-shrink:0">+ เพิ่มวอร์ด</button></form>
+    <div class="section-h"><h3>เปิดใช้ (${on.length})</h3></div>
+    <div class="wd-list">${on.map((w,i)=>`<div class="wd-row"><span class="wd-no">${i+1}</span><div class="wd-main"><b>${esc(w.name)}</b>${use(w)}</div>
+      <div class="wd-act"><button class="btn btn-soft ic" data-wd="up" data-n="${esc(w.name)}" aria-label="เลื่อนขึ้น" ${i?'':'aria-disabled="true"'}>${icUp}</button>
+      <button class="btn btn-soft ic" data-wd="down" data-n="${esc(w.name)}" aria-label="เลื่อนลง" ${i<on.length-1?'':'aria-disabled="true"'}>${icDown}</button>
+      <button class="btn btn-soft" data-wd="rename" data-n="${esc(w.name)}">แก้ชื่อ</button>
+      <button class="btn btn-soft" data-wd="off" data-n="${esc(w.name)}">ปิดใช้</button></div></div>`).join('')}</div>
+    ${off.length?`<div class="section-h"><h3>ปิดใช้ (${off.length})</h3></div><p class="small muted" style="margin:-4px 0 8px">ไม่แสดงให้เลือก แต่รายการเก่ายังอยู่ครบ และยังนับในสถิติ</p>
+      <div class="wd-list">${off.map(w=>`<div class="wd-row off"><span class="wd-no">–</span><div class="wd-main"><b>${esc(w.name)}</b>${use(w)}</div>
+      <div class="wd-act"><button class="btn btn-soft" data-wd="rename" data-n="${esc(w.name)}">แก้ชื่อ</button><button class="btn btn-ghost" data-wd="on" data-n="${esc(w.name)}">เปิดใช้</button></div></div>`).join('')}</div>`:''}
+  </div>`;
+  bindWd();
+  const f=$('#wd-f'),inp=$('#wd-new');
+  f.onsubmit=async e=>{e.preventDefault();const v=inp.value.trim();if(!v)return inp.focus();
+    try{await wardDo('add',v,'',f.querySelector('button'));toast(`เพิ่มวอร์ด "${v}" แล้ว`)}catch(x){}};
+  app.querySelectorAll('[data-wd]').forEach(b=>b.onclick=()=>{if(b.getAttribute('aria-disabled'))return;const a=b.dataset.wd,n=b.dataset.n,w=wdData.find(x=>x.name===n);
+    if(a==='rename')return renameWard(w);
+    if(a==='off')return offWard(w);
+    wardDo(a,n,'',b).then(()=>{if(a==='on')toast(`เปิดใช้ "${n}" แล้ว`);const nb=app.querySelector(`[data-wd="${a}"][data-n="${CSS.escape(n)}"]`);if(nb&&!nb.getAttribute('aria-disabled'))nb.focus()}).catch(()=>{})});
+}
+function bindWd(){bindTabs();const r=$('#wd-re');if(r)r.onclick=loadWards}
+function renameWard(w){
+  const sh=openSheet(`<div class="eyebrow">แก้ชื่อวอร์ด</div><h2>${esc(w.name)}</h2>
+    <div class="field"><label for="wd-rn">ชื่อใหม่</label><input class="input" id="wd-rn" maxlength="60" autocomplete="off" value="${esc(w.name)}"></div>
+    ${w.total?`<div class="alert info">รายการเก่า ${nf(w.total)} รายการจะเปลี่ยนเป็นชื่อใหม่ด้วย สถิติจึงรวมเป็นวอร์ดเดียวกัน (ไฟล์สำรองที่ทำไปแล้วยังเป็นชื่อเดิม)</div>`:''}
+    <div id="wd-rn-err"></div>
+    <button class="btn btn-block" id="wd-rn-ok">บันทึกชื่อใหม่</button><button class="btn btn-soft btn-block" data-close>ยกเลิก</button>`);
+  const i=sh.el.querySelector('#wd-rn'),ok=sh.el.querySelector('#wd-rn-ok');
+  setTimeout(()=>{i.focus();i.select()},50);
+  const go=async()=>{const v=i.value.trim();if(!v||v===w.name)return sh.close();ok.disabled=true;
+    try{const d=await run('apiAdminWardSave',adminPin,'rename',w.name,v);wdData=d.wards;setWardsFrom(wdData);statCache={};sh.close();renderWards();toast(`เปลี่ยนชื่อเป็น "${v}" แล้ว`)}
+    catch(err){ok.disabled=false;sh.el.querySelector('#wd-rn-err').innerHTML=errBox(err.message)}};
+  ok.onclick=go;i.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();go()}};
+}
+function offWard(w){
+  const sh=openSheet(`<div class="eyebrow">ปิดใช้วอร์ด</div><h2>${esc(w.name)}</h2>
+    <p>วอร์ดนี้จะไม่แสดงให้เลือกตอนส่งใบตาม Slide${w.total?` รายการเก่า ${nf(w.total)} รายการยังอยู่ครบ`:''} เปิดใช้กลับได้ทุกเมื่อ</p>
+    <div id="wd-off-err"></div>
+    <button class="btn btn-block" id="wd-off-ok">ปิดใช้วอร์ดนี้</button><button class="btn btn-soft btn-block" data-close>ยกเลิก</button>`);
+  const ok=sh.el.querySelector('#wd-off-ok');
+  ok.onclick=async()=>{ok.disabled=true;
+    try{const d=await run('apiAdminWardSave',adminPin,'off',w.name,'');wdData=d.wards;setWardsFrom(wdData);sh.close();renderWards();toast(`ปิดใช้ "${w.name}" แล้ว`)}
+    catch(err){ok.disabled=false;sh.el.querySelector('#wd-off-err').innerHTML=errBox(err.message)}};
+}
+
 const labTabs=()=>`<div class="ltabs" role="tablist" aria-label="มุมมองของห้องปฏิบัติการ">
   <button role="tab" data-tab="list" aria-selected="${labTab==='list'}">${icList}รายการสไลด์</button>
   <button role="tab" data-tab="stats" aria-selected="${labTab==='stats'}">${icChart}สถิติและกราฟ</button>
   <button role="tab" data-tab="staff" aria-selected="${labTab==='staff'}">${icUsers}ผู้ใช้งาน</button>
+  <button role="tab" data-tab="wards" aria-selected="${labTab==='wards'}">${icBed}วอร์ด</button>
   <button role="tab" data-tab="backup" aria-selected="${labTab==='backup'}">${icArchive}สำรองข้อมูล</button></div>`;
-function bindTabs(){app.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{if(labTab===b.dataset.tab)return;if(labTab==='backup')adminPin='';labTab=b.dataset.tab;labTab==='stats'?loadStats():labTab==='staff'?loadStaff():labTab==='backup'?loadBackups():renderLab()})}
+function bindTabs(){const sel=app.querySelector('.ltabs [aria-selected="true"]');if(sel)try{sel.scrollIntoView({inline:'center',block:'nearest'})}catch(e){}app.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{if(labTab===b.dataset.tab)return;labTab=b.dataset.tab;if(!ADMIN_TABS.includes(labTab))adminPin='';labTab==='stats'?loadStats():labTab==='staff'?loadStaff():labTab==='backup'?loadBackups():labTab==='wards'?loadWards():renderLab()})}
 async function loadStats(force){
   if(!force&&statCache[statDays]){statData=statCache[statDays];return renderStats()}
   statData=null;renderStats();
