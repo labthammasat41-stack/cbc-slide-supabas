@@ -156,8 +156,9 @@ body.noNav main{padding-bottom:60px}
 .me{display:flex;justify-content:space-between;gap:10px;align-items:center}
 .avatar{width:44px;height:44px;border-radius:14px;background:var(--teal-soft);color:var(--teal);display:grid;place-items:center;font-weight:700;flex:none}
 .combo{position:relative}
-.combo-list{position:absolute;left:0;right:0;top:calc(100% + 6px);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);max-height:260px;overflow:auto;z-index:5;box-shadow:var(--shadow-3);padding:6px;margin:0;list-style:none}
+.combo-list{position:absolute;left:0;right:0;top:calc(100% + 6px);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);max-height:min(340px,50vh);overflow:auto;z-index:5;box-shadow:var(--shadow-3);padding:6px;margin:0;list-style:none}
 .combo-list li{padding:12px 14px;border-radius:10px;cursor:pointer}
+.combo-list li.combo-h{padding:8px 14px 4px;font-size:.78rem;font-weight:700;color:var(--muted);cursor:default;background:none!important;letter-spacing:.02em}
 .combo-list li[aria-selected="true"],.combo-list li:hover{background:var(--blue-soft)}
 
 /* ---------- page header (back) ---------- */
@@ -711,16 +712,24 @@ function scanField(id,label){return `<div class="field"><label for="${id}">${L(l
 function bindScan(id){document.getElementById(id+'-cam').onclick=()=>openScanner(document.getElementById(id))}
 
 /* ---------- ward combobox ---------- */
+const wNorm=t=>String(t).toLowerCase().replace(/[()\[\]:,*\-/.]+/g,' ').replace(/\s+/g,' ').trim();
+const wardRecent=()=>{try{return JSON.parse(localStorage.getItem('cbcRecentWards')||'[]')}catch(e){return []}};
+const wardRecentAdd=w=>{try{localStorage.setItem('cbcRecentWards',JSON.stringify([w,...wardRecent().filter(x=>x!==w)].slice(0,5)))}catch(e){}};
 function wardCombo(id,val,l){return `<div class="field"><label for="${id}">${L(l||'วอร์ด')}</label><div class="combo">
-  <input class="input" id="${id}" role="combobox" aria-expanded="false" aria-controls="${id}-list" autocomplete="off" placeholder="พิมพ์ค้นหา เช่น อายุร, ICU" value="${esc(val||'')}">
+  <input class="input" id="${id}" role="combobox" aria-expanded="false" aria-controls="${id}-list" autocomplete="off" placeholder="พิมพ์ค้นหา เช่น อายุร, ICU, 9044" value="${esc(val||'')}">
   <ul class="combo-list" id="${id}-list" role="listbox" hidden></ul></div></div>`}
 function bindCombo(id){
   const inp=document.getElementById(id),list=document.getElementById(id+'-list');let act=-1,items=[];
-  const draw=()=>{const q=inp.value.trim().toLowerCase();items=WARDS.filter(w=>w.toLowerCase().includes(q));
-    list.innerHTML=items.length?items.map((w,i)=>`<li role="option" data-w="${esc(w)}" aria-selected="${i===act}">${esc(w)}</li>`).join(''):'<li class="muted">ไม่พบวอร์ดนี้</li>';
+  const draw=()=>{const q=inp.value.trim();const recent=wardRecent().filter(w=>WARDS.includes(w));
+    if(!q||WARDS.includes(q)){items=[...recent,...WARDS.filter(w=>!recent.includes(w))];}
+    else{const toks=wNorm(q).split(' ').filter(Boolean);items=WARDS.filter(w=>{const n=wNorm(w),c=n.replace(/ /g,'');return toks.every(t=>n.includes(t)||c.includes(t))});
+      const ph=toks.join(' ');items.sort((a,b)=>(wNorm(b).includes(ph)-wNorm(a).includes(ph))||(wNorm(b).startsWith(toks[0])-wNorm(a).startsWith(toks[0]))||(recent.includes(b)-recent.includes(a)))}
+    const nr=(!q||WARDS.includes(q))?recent.length:0;
+    list.innerHTML=items.length?items.map((w,i)=>(i===0&&nr?'<li class="combo-h" aria-hidden="true">ใช้ล่าสุด</li>':'')+(i===nr&&nr?'<li class="combo-h" aria-hidden="true">ทั้งหมด</li>':'')+`<li role="option" data-w="${esc(w)}" aria-selected="${i===act}">${esc(w)}</li>`).join(''):'<li class="muted">ไม่พบวอร์ดนี้ ลองพิมพ์คำอื่น หรือเลขโทรศัพท์วอร์ด</li>';
+    const sel=list.querySelector('[aria-selected="true"]');if(sel)sel.scrollIntoView({block:'nearest'});
     list.hidden=false;inp.setAttribute('aria-expanded','true')};
   const close=()=>{list.hidden=true;inp.setAttribute('aria-expanded','false');act=-1};
-  const pick=w=>{inp.value=w;close();inp.dispatchEvent(new Event('change'))};
+  const pick=w=>{inp.value=w;wardRecentAdd(w);close();inp.dispatchEvent(new Event('change'))};
   inp.addEventListener('focus',()=>{inp.select();draw()});
   inp.addEventListener('input',()=>{act=-1;draw()});
   inp.addEventListener('keydown',e=>{if(e.key==='ArrowDown'){act=Math.min(act+1,items.length-1);draw();e.preventDefault()}
@@ -1493,7 +1502,7 @@ function renderWards(){
   const on=wdData.filter(w=>w.active),off=wdData.filter(w=>!w.active);
   const use=w=>`<span class="small muted">30 วันล่าสุด ${nf(w.last30)} · ทั้งหมด ${nf(w.total)} รายการ</span>`;
   app.innerHTML=`<div class="wide" style="max-width:760px">${head}
-    <form class="wd-add" id="wd-f"><input class="input" id="wd-new" maxlength="60" autocomplete="off" placeholder="ชื่อวอร์ดใหม่ เช่น หอผู้ป่วยพิเศษ 9" aria-label="ชื่อวอร์ดใหม่">
+    <form class="wd-add" id="wd-f"><input class="input" id="wd-new" maxlength="120" autocomplete="off" placeholder="ชื่อวอร์ดใหม่ เช่น หอผู้ป่วยพิเศษ 9" aria-label="ชื่อวอร์ดใหม่">
       <button class="btn btn-teal" type="submit" style="flex-shrink:0">+ เพิ่มวอร์ด</button></form>
     <div class="section-h"><h3>เปิดใช้ (${on.length})</h3></div>
     <div class="wd-list">${on.map((w,i)=>`<div class="wd-row"><span class="wd-no">${i+1}</span><div class="wd-main"><b>${esc(w.name)}</b>${use(w)}</div>
@@ -1517,7 +1526,7 @@ function renderWards(){
 function bindWd(){bindTabs();const r=$('#wd-re');if(r)r.onclick=loadWards}
 function renameWard(w){
   const sh=openSheet(`<div class="eyebrow">แก้ชื่อวอร์ด</div><h2>${esc(w.name)}</h2>
-    <div class="field"><label for="wd-rn">ชื่อใหม่</label><input class="input" id="wd-rn" maxlength="60" autocomplete="off" value="${esc(w.name)}"></div>
+    <div class="field"><label for="wd-rn">ชื่อใหม่</label><input class="input" id="wd-rn" maxlength="120" autocomplete="off" value="${esc(w.name)}"></div>
     ${w.total?`<div class="alert info">รายการเก่า ${nf(w.total)} รายการจะเปลี่ยนเป็นชื่อใหม่ด้วย สถิติจึงรวมเป็นวอร์ดเดียวกัน (ไฟล์สำรองที่ทำไปแล้วยังเป็นชื่อเดิม)</div>`:''}
     <div id="wd-rn-err"></div>
     <button class="btn btn-block" id="wd-rn-ok">บันทึกชื่อใหม่</button><button class="btn btn-soft btn-block" data-close>ยกเลิก</button>`);
