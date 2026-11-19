@@ -141,6 +141,7 @@ body.noNav main{padding-bottom:60px}
 .btn-ghost{background:var(--surface);border:1.5px solid var(--line-2);color:var(--ink)}
 .btn-soft{background:var(--surface-3);color:var(--ink)}
 .btn:disabled{opacity:.6;cursor:wait}
+.btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
 .btn:disabled::before{content:"";width:16px;height:16px;border:2.5px solid currentColor;border-right-color:transparent;border-radius:50%;flex:none}
 .btn-block{width:100%;padding:16px;font-size:1.05rem;min-height:56px}
 .linkbtn{background:none;border:0;color:var(--blue);cursor:pointer;padding:4px 0;font-size:.9rem;font-weight:600;align-self:flex-start}
@@ -542,7 +543,8 @@ const RPC={apiInit:['api_init','p_token'],apiRegister:['api_register','d'],apiLo
   apiFindForReceive:['api_find_for_receive','p_token','d'],apiCheckOut:['api_check_out','p_token','d'],
   apiIncludeCheck:['api_include_check','p_token','d'],apiInclude:['api_include','p_token','d'],apiSearch:['api_search','p_token','q'],
   apiLabList:['api_lab_list','p_pin'],apiLabStats:['api_lab_stats','p_pin','p_days'],apiSetPhoto:['api_set_photo','p_token','p_id','p_path'],apiUndo:['api_undo','p_token','p_id','p_kind'],
-  apiLabFix:['api_lab_fix','p_pin','p_id','p_action','p_reason'],apiLabStaff:['api_lab_staff','p_pin'],apiLabStaffSet:['api_lab_staff_set','p_pin','p_staff','p_state']};
+  apiLabFix:['api_lab_fix','p_pin','p_id','p_action','p_reason'],apiLabStaff:['api_lab_staff','p_pin'],apiLabStaffSet:['api_lab_staff_set','p_pin','p_staff','p_state'],
+  apiLabBackups:['api_lab_backups','p_pin'],apiLabPurge:['api_lab_purge','p_pin','p_month','p_confirm']};
 /* คีย์แบบใหม่ (sb_publishable_…) ส่งใน apikey อย่างเดียว คีย์ anon แบบเดิม (eyJ…) ส่งใน Authorization ด้วย */
 const supaHead=extra=>Object.assign({apikey:SUPA_KEY},/^eyJ/.test(SUPA_KEY)?{Authorization:'Bearer '+SUPA_KEY}:{},extra||{});
 async function rpc(fn,args){
@@ -1308,6 +1310,7 @@ async function reloadLab(){try{labRows=await run('apiLabList',labPin);if(mode===
 function renderLab(){
   if(labTab==='stats')return renderStats();
   if(labTab==='staff')return renderStaff();
+  if(labTab==='backup')return renderBackups();
   const c=k=>labRows.filter(r=>r.status===k).length;
   let rows=labRows.filter(r=>r.status===labFilter);
   const q=labQ.trim().toLowerCase();
@@ -1397,11 +1400,71 @@ async function setStaff(u,to){try{await run('apiLabStaffSet',labPin,u.id,to);u.s
 function bindStaff(){bindTabs();const r=$('#st-re');if(r)r.onclick=loadStaff;
   const qi=$('#st-q');if(qi)qi.oninput=()=>{staffQ=qi.value;const p=qi.selectionStart;renderStaff();const n=$('#st-q');n.focus();n.setSelectionRange(p,p)}}
 
+/* ---------- สำรองข้อมูลรายเดือน + ลบถาวร ---------- */
+const icArchive='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg>';
+const TH_MONTH_FULL=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const monthTh=m=>{const [y,mm]=m.split('-').map(Number);return `${TH_MONTH_FULL[mm-1]} ${y+543}`};
+let bkData=null, adminPin='';
+/* PIN ผู้ดูแลจำไว้ในหน่วยความจำเท่านั้น และลืมทันทีเมื่อออกจากแท็บนี้ (เครื่องแลปใช้ร่วมกันหลายคน) */
+async function loadBackups(){if(!adminPin)return adminGate();bkData=null;renderBackups();
+  try{bkData=await run('apiLabBackups',adminPin)}catch(err){if(/PIN ผู้ดูแลไม่ถูกต้อง/.test(err.message)){adminPin='';return adminGate(err.message)}bkData={__err:err.message}}
+  if(mode==='lab'&&labTab==='backup')renderBackups()}
+function adminGate(msg){
+  app.innerHTML=`<div class="wide">${labTabs()}<div class="card" style="max-width:420px;margin:18px auto">
+    <div class="eyebrow">เฉพาะผู้ดูแลระบบ</div><h2 style="margin:4px 0 6px">สำรองข้อมูล</h2>
+    <p class="small muted" style="margin:0 0 14px">หน้านี้ใช้ PIN ผู้ดูแล ซึ่งแยกจาก PIN แลป</p>
+    <form id="adm-f"><div class="field"><label for="adm-pin">PIN ผู้ดูแล</label>
+    <input class="input mono" id="adm-pin" type="password" inputmode="numeric" autocomplete="off"></div>
+    ${msg?errBox(msg):''}<button class="btn btn-block" type="submit">เข้าสู่หน้าสำรองข้อมูล</button></form></div></div>`;
+  bindTabs();const i=$('#adm-pin');i.focus();
+  $('#adm-f').onsubmit=e=>{e.preventDefault();if(!i.value.trim())return i.focus();adminPin=i.value.trim();loadBackups()};
+}
+function renderBackups(){
+  const head=`${labTabs()}<div class="toolbar"><button class="btn btn-ghost" id="bk-re">รีเฟรช</button>
+    <span class="small muted">ระบบสำรองอัตโนมัติทุกวันที่ 1 ของเดือน ลง Google Drive (โฟลเดอร์ "สำรองข้อมูล ตาม Slide CBC")</span></div>`;
+  if(!bkData){app.innerHTML=`<div class="wide" aria-busy="true">${head}<div class="sk sk-chart"></div></div>`;return bindBk()}
+  if(bkData.__err){app.innerHTML=`<div class="wide">${head}${errBox(bkData.__err)}</div>`;return bindBk()}
+  const rows=bkData.months;
+  app.innerHTML=`<div class="wide">${head}
+    ${bkData.keySet?'':'<div class="alert warn">ยังไม่ได้ตั้งระบบสำรองอัตโนมัติ (รหัสสำรองข้อมูล) ดูวิธีตั้งค่าในคู่มือผู้ดูแลระบบ</div>'}
+    <div class="alert info">ลบถาวรได้เฉพาะเดือนที่จบแล้ว และสำรองครบแล้วเท่านั้น ข้อมูลที่ลบจะหายจากระบบ แต่ยังเปิดดูได้จากไฟล์สำรองใน Google Drive</div>
+    <div class="tbl-wrap"><table style="min-width:760px"><thead><tr><th>เดือน</th><th>รายการในระบบ</th><th>สำรองล่าสุด</th><th>สถานะ</th><th></th></tr></thead><tbody>
+    ${rows.length?rows.map(r=>`<tr><td><b>${monthTh(r.month)}</b><div class="small muted mono">${esc(r.month)}</div></td><td>${nf(r.count)}</td>
+      <td class="small">${r.backupAt?`${esc(r.backupAt)}<br>${nf(r.backupRows)} รายการ`:'–'}</td>
+      <td>${r.canPurge?'<span class="pill st-out">สำรองครบแล้ว</span>':`<span class="pill st-in">${esc(r.why)}</span>`}</td>
+      <td><button class="btn ${r.canPurge?'btn-ghost':'btn-soft'}" style="min-height:40px;padding:8px 12px;font-size:.88rem${r.canPurge?';color:var(--bad);border-color:color-mix(in srgb,var(--bad) 45%,var(--line-2))':''}" data-purge="${esc(r.month)}" ${r.canPurge?'':'aria-disabled="true"'}>ลบถาวร</button></td></tr>`).join('')
+      :'<tr><td colspan="5" class="muted" style="text-align:center;padding:28px">ยังไม่มีข้อมูล</td></tr>'}
+    </tbody></table></div>
+    ${bkData.purged.length?`<div class="section-h"><h3>ประวัติการลบถาวร</h3></div><div class="tbl-wrap"><table style="min-width:560px"><thead><tr><th>เดือน</th><th>ลบไป</th><th>เมื่อ</th><th>ไฟล์สำรอง</th></tr></thead><tbody>
+      ${bkData.purged.map(x=>`<tr><td>${monthTh(x.month)}</td><td>${nf(x.rows)} รายการ</td><td class="small">${esc(x.at)}</td><td class="small">${esc(x.file||'–')}</td></tr>`).join('')}</tbody></table></div>`:''}
+  </div>`;
+  bindBk();
+  app.querySelectorAll('[data-purge]:not([aria-disabled])').forEach(b=>b.onclick=()=>purgeSheet(rows.find(r=>r.month===b.dataset.purge)));
+}
+function bindBk(){bindTabs();const r=$('#bk-re');if(r)r.onclick=loadBackups}
+function purgeSheet(r){
+  const phrase='ลบถาวร '+r.month;
+  const sh=openSheet(`<div class="eyebrow">ลบข้อมูลถาวร</div><h2>${monthTh(r.month)}</h2>
+    <div class="alert bad">จะลบ ${nf(r.count)} รายการของเดือนนี้ออกจากระบบถาวร กู้คืนจากแอปไม่ได้
+ไฟล์สำรองใน Google Drive (สำรองเมื่อ ${esc(r.backupAt)}) ยังอยู่ ตรวจว่าเปิดไฟล์ได้ก่อนลบ</div>
+    <div class="field"><label for="pg-c">พิมพ์ <b class="mono">${esc(phrase)}</b> เพื่อยืนยัน</label><input class="input" id="pg-c" autocomplete="off" placeholder="${esc(phrase)}"></div>
+    <div id="pg-err"></div>
+    <button class="btn btn-block" id="pg-ok" style="background:var(--bad);color:#fff" aria-disabled="true">ลบถาวร</button><button class="btn btn-soft btn-block" data-close>ยกเลิก</button>`);
+  const inp=sh.el.querySelector('#pg-c'),ok=sh.el.querySelector('#pg-ok');
+  const match=()=>inp.value.trim()===phrase;
+  inp.oninput=()=>{if(match())ok.removeAttribute('aria-disabled');else ok.setAttribute('aria-disabled','true')};
+  ok.onclick=async()=>{if(!match()){inp.focus();return}ok.disabled=true;
+    try{const res=await run('apiLabPurge',adminPin,r.month,inp.value.trim());sh.close();toast(`ลบ ${nf(res.deleted)} รายการของ${monthTh(r.month)}แล้ว`);statCache={};loadBackups()}
+    catch(err){ok.disabled=false;sh.el.querySelector('#pg-err').innerHTML=errBox(err.message)}};
+  setTimeout(()=>inp.focus(),50);
+}
+
 const labTabs=()=>`<div class="ltabs" role="tablist" aria-label="มุมมองของห้องปฏิบัติการ">
   <button role="tab" data-tab="list" aria-selected="${labTab==='list'}">${icList}รายการสไลด์</button>
   <button role="tab" data-tab="stats" aria-selected="${labTab==='stats'}">${icChart}สถิติและกราฟ</button>
-  <button role="tab" data-tab="staff" aria-selected="${labTab==='staff'}">${icUsers}ผู้ใช้งาน</button></div>`;
-function bindTabs(){app.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{if(labTab===b.dataset.tab)return;labTab=b.dataset.tab;labTab==='stats'?loadStats():labTab==='staff'?loadStaff():renderLab()})}
+  <button role="tab" data-tab="staff" aria-selected="${labTab==='staff'}">${icUsers}ผู้ใช้งาน</button>
+  <button role="tab" data-tab="backup" aria-selected="${labTab==='backup'}">${icArchive}สำรองข้อมูล</button></div>`;
+function bindTabs(){app.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{if(labTab===b.dataset.tab)return;if(labTab==='backup')adminPin='';labTab=b.dataset.tab;labTab==='stats'?loadStats():labTab==='staff'?loadStaff():labTab==='backup'?loadBackups():renderLab()})}
 async function loadStats(force){
   if(!force&&statCache[statDays]){statData=statCache[statDays];return renderStats()}
   statData=null;renderStats();
@@ -1560,7 +1623,7 @@ function openMenu(){
   const lo=el.querySelector('#m-logout');if(lo)lo.onclick=()=>{sh.close();store.del(TOKEN_KEY);ME=null;mode='ward';view='login';render()};
 }
 /* แถบเมนูล่าง */
-async function navTo(t){
+async function navTo(t){adminPin='';
   if(t==='menu')return openMenu();
   if(t==='scan'){if(!ME){mode='ward';view='register';render();toast('ลงทะเบียนก่อนใช้งานสแกนครับ');return}return quickScan()}
   if(t==='lab'){mode='lab';if(!labPin){try{labPin=sessionStorage.getItem('cbcLabPin')||''}catch(e){}}
