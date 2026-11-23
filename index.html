@@ -115,6 +115,7 @@ body.noNav main{padding-bottom:60px}
 .field{display:flex;flex-direction:column;gap:7px}
 .field label,.field .lab{font-weight:600;font-size:.95rem;color:var(--ink)}
 .step{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:8px;background:var(--surface-3);color:var(--ink-2);font-size:.78rem;font-weight:700;margin-right:8px;vertical-align:1px}
+.hint.warn-t{color:var(--warn,#b45309);font-weight:600}
 .hint{font-size:.8rem;color:var(--muted)}
 .input{width:100%;min-height:54px;padding:13px 16px;border:1.5px solid var(--line-2);border-radius:var(--r-m);background:var(--field);font-size:1.05rem;min-width:0;
   transition:border-color .15s,box-shadow .15s,background .15s}
@@ -370,6 +371,11 @@ tbody tr:hover{background:var(--surface-2)}
 .late{color:var(--bad);font-weight:700}
 .ltabs{display:flex;gap:4px;background:var(--surface-3);border-radius:14px;padding:4px;align-self:flex-start;max-width:100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .ltabs::-webkit-scrollbar{display:none}
+.lab-top{display:flex;align-items:center;gap:10px;max-width:100%}
+.lab-top .ltabs{flex:0 1 auto;min-width:0}
+.lab-lock{flex-shrink:0;min-height:44px;padding:8px 14px;font-size:.9rem;gap:6px}
+.lab-lock svg{width:18px;height:18px}
+@media (max-width:520px){.lab-lock span{display:none}.lab-lock{padding:8px 11px}}
 .ltabs button{flex-shrink:0;white-space:nowrap}
 .wd-list{display:flex;flex-direction:column;gap:8px}
 .wd-row{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
@@ -569,9 +575,16 @@ async function rpc(fn,args){
   let j=null;try{j=await res.json()}catch(e){}
   if(!res.ok){
     const m=(j&&(j.message||j.msg||j.error))||'';
+    /* บัญชีถูกระงับ / ไม่พบบัญชี ระหว่างเปิดแอปอยู่ → ออกจากเครื่องนี้ แล้วกลับหน้าเข้าใช้งาน */
+    if(ME&&/^(บัญชีนี้ถูกระงับ|ไม่พบบัญชีบนเครื่องนี้)/.test(m)){store.del(TOKEN_KEY);ME=null;if(mode!=='lab'){view='login';setTimeout(()=>{render();toast(m)},0)}}
     if(res.status===404||/Could not find the function|PGRST202/.test(m))throw new Error('ยังไม่ได้ติดตั้งฐานข้อมูล ให้รันไฟล์ schema.sql ใน Supabase ก่อน');
     if(res.status===401||/Invalid API key|apikey/i.test(m))throw new Error('คีย์ Supabase ไม่ถูกต้อง ตรวจ SUPA_KEY ใน index.html');
     throw new Error(m||'เกิดข้อผิดพลาด ลองใหม่อีกครั้ง');
+  }
+  if(j&&typeof j==='object'&&!Array.isArray(j)&&j.__err){
+    /* PIN แลปที่จำไว้ใช้ไม่ได้แล้ว (เปลี่ยน PIN / ถูกพัก) → ล็อกหน้าแลปแล้วให้ใส่ใหม่ */
+    if(labPin&&args[0]===labPin&&/^(PIN ไม่ถูกต้อง|ใส่ PIN ผิด)/.test(j.__err))setTimeout(()=>lockLab(j.__err),0);
+    throw new Error(j.__err);
   }
   return j;
 }
@@ -600,7 +613,7 @@ const $=s=>document.querySelector(s);
 const app=$('#app');
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pill=st=>`<span class="pill st-${st}">${STATUS[st]||st}</span>`;
-const dur=m=>m<60?`${m} นาที`:`${Math.floor(m/60)} ชม. ${m%60} นาที`;
+const dur=m=>m<60?`${m} นาที`:`${Math.floor(m/60)} ชม.${m%60?` ${m%60} นาที`:''}`;
 const ago=ts=>dur(Math.max(0,Math.round((Date.now()-ts)/60000)));
 function toast(msg){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
 function busy(btn,on,label){if(!btn)return;btn.disabled=on;if(on){btn.dataset.l=btn.textContent;btn.textContent=label||'กำลังบันทึก…'}else if(btn.dataset.l)btn.textContent=btn.dataset.l}
@@ -743,7 +756,7 @@ function bindCombo(id){
 /* ---------- date + time of specimen ---------- */
 const p2=n=>String(n).padStart(2,'0');
 const isoDate=d=>`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;
-// Sample No. 10 หลัก: หลัก 1–2 = วันที่, 3–4 = เดือน (ไม่มีปี ใช้ปีปัจจุบัน ถ้าเกินวันนี้ถือเป็นปีก่อน)
+// Sample No. 10 หลัก: หลัก 1–2 = วันที่ทำสไลด์, 3–4 = เดือน (ไม่มีปี ใช้ปีปัจจุบัน ถ้าเกินวันนี้ถือเป็นปีก่อน)
 function dateFromSample(s){
   if(!/^\d{10}$/.test(s))return '';
   const dd=+s.slice(0,2),mm=+s.slice(2,4);if(mm<1||mm>12||dd<1)return '';
@@ -762,6 +775,7 @@ function dtField(id,label){return `<div class="field"><span class="lab">${L(labe
   </div>
   <input class="input" id="${id}-date" type="date" max="${isoDate(new Date())}" aria-label="เลือกวันที่ส่งตรวจ" hidden>
   <div class="small muted" id="${id}-dlabel"></div>
+  <div class="hint" id="${id}-shint" hidden></div>
   <label class="lab" for="${id}-time" style="margin-top:4px">เวลาส่งตรวจ</label>
   <input class="input mono timein" id="${id}-time" type="text" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="เช่น 0830">
   <div class="hint" id="${id}-hint">พิมพ์เวลาเป็นตัวเลข 4 ตัว เช่น 0830 = 08:30 น. · 2015 = 20:15 น.</div></div>`}
@@ -788,11 +802,21 @@ function bindDT(id){
   tIn.addEventListener('blur',()=>{const d=tIn.value.replace(/\D/g,'');if(d.length===3){tIn.value='0'+d;fmtT();tIn.dispatchEvent(new Event('change'))}});
   if(tIn.value)fmtT();
 }
+/* หลัก 1–4 ของ Sample No. = วันที่ทำสไลด์ (ไม่ใช่วันส่งตรวจ) วันส่งตรวจจึงเป็นวันเดียวกัน หรือวันก่อนหน้าถ้าส่งตรวจตอนดึก */
+const isoPrev=iso=>{const [y,m,d]=iso.split('-').map(Number);return isoDate(new Date(y,m-1,d-1))};
 function bindSampleDate(sampleId,id){
-  const s=document.getElementById(sampleId),dIn=document.getElementById(id+'-date');
+  const s=document.getElementById(sampleId),dIn=document.getElementById(id+'-date'),sh=document.getElementById(id+'-shint');
+  const note=()=>{const iso=dateFromSample(s.value.trim());if(!sh)return;
+    if(!iso){sh.hidden=true;return}
+    const ok=!dIn.value||dIn.value===iso||dIn.value===isoPrev(iso);
+    sh.hidden=false;sh.className=ok?'hint':'hint warn-t';
+    sh.textContent=ok?`Sample No. นี้ทำสไลด์วันที่ ${thDate(iso)} · ถ้าส่งตรวจตอนดึก วันส่งตรวจอาจเป็น ${thDate(isoPrev(iso))} ดูวันที่จริงจากใบตามอีกครั้ง`
+      :`วันส่งตรวจไม่ตรงกับวันที่ทำสไลด์ (${thDate(iso)}) ปกติวันส่งตรวจเป็นวันเดียวกันหรือวันก่อนหน้า ตรวจอีกครั้ง`};
   dIn.addEventListener('input',()=>{dIn.dataset.auto='0'});
+  dIn.addEventListener('change',note);
   s.addEventListener('input',()=>{const iso=dateFromSample(s.value.trim());
-    if(iso&&(dIn.dataset.auto!=='0')){if(iso!==dayShift(0)&&iso!==dayShift(-1))dIn.hidden=false;dIn.value=iso;dIn.dataset.auto='1';dIn.dispatchEvent(new Event('change'))}});
+    if(iso&&(dIn.dataset.auto!=='0')){if(iso!==dayShift(0)&&iso!==dayShift(-1))dIn.hidden=false;dIn.value=iso;dIn.dataset.auto='1';dIn.dispatchEvent(new Event('change'))}
+    note()});
 }
 /* กติกาช่วงเวลาตาม Slide — ต้องตรงกับ RULE ใน Code.gs (ตามบันทึกข้อความ ทน.68/0909002 ทุกวอร์ด ไม่มีข้อยกเว้น) */
 const RULE={dayFrom:'08:00',dayTo:'22:00',lateCut:'20:00',nextFrom:'08:00',nextTo:'14:00'};
@@ -856,7 +880,7 @@ function showHelp(){
       <ol><li>หาสไลด์ในตะกร้าก่อน ถ้าไม่เจอให้วางใบตาม Slide ในตะกร้ารับสิ่งส่งตรวจ</li>
       <li>กดปุ่มสีเขียว <b>บันทึกส่งใบตามสไลด์</b></li>
       <li>กรอก <b>HN</b> และ<b>วันที่ เวลาส่งตรวจ</b> (บังคับ)</li>
-      <li><b>Sample No.</b> ถ้ามี กดปุ่มกล้องสแกนบาร์โค้ด ระบบจะเติมวันที่ส่งตรวจให้</li>
+      <li><b>Sample No.</b> ถ้ามี กดปุ่มกล้องสแกนบาร์โค้ด ระบบจะเติมวันที่ให้ (เป็นวันที่ทำสไลด์ ถ้าส่งตรวจตอนดึกอาจต้องเลือกเป็นเมื่อวาน)</li>
       <li>เลือก<b>วอร์ด</b> ระบบจะบอกว่าตามได้ถึงเมื่อไหร่</li>
       <li>ถ้าต้องการ กด<b>ถ่ายภาพหลักฐาน</b> ใบตามที่วางในตะกร้ารับสิ่งส่งตรวจ (ไม่บังคับ)</li>
       <li>กด <b>ยืนยันบันทึกส่งใบตาม</b> แล้วกลับมาอีกประมาณ 1 ชั่วโมง</li></ol>
@@ -1151,7 +1175,7 @@ function vOut(){
       <dt>ส่งใบตามโดย</dt><dd>${esc(r.reqName)}</dd><dt>เวลาส่งใบตาม</dt><dd>${esc(r.reqAt)}</dd></dl>
       <div class="flags">
         ${r.sampleFill?`<div class="flag ok">ระบบจะบันทึก Sample No. ${esc(d.sample)} ลงใบตามนี้ให้</div>`:r.sampleOk?'<div class="flag ok">Sample No. ตรงกับใบตาม</div>':`<div class="flag bad">Sample No. ไม่ตรงกับใบตาม ห้ามหยิบ</div>`}
-        ${r.dateOk===false?'<div class="flag warn">วันที่ใน Sample No. ไม่ตรงกับวันส่งตรวจของใบตามนี้ ตรวจให้แน่ใจก่อนหยิบ</div>':r.dateOk&&r.sampleFill?'<div class="flag ok">วันที่ใน Sample No. ตรงกับวันส่งตรวจ</div>':''}
+        ${r.dateOk===false?'<div class="flag warn">วันที่ทำสไลด์ (จาก Sample No.) ไม่ตรงกับวันส่งตรวจของใบตามนี้ ตรวจให้แน่ใจก่อนหยิบ</div>':r.dateOk&&r.sampleFill?'<div class="flag ok">วันที่ใน Sample No. ตรงกับวันส่งตรวจ</div>':''}
       </div>
       <div id="err-${i}"></div>
       ${r.sampleOk?`<button class="btn btn-blue btn-block" data-i="${i}">ยืนยันรับสไลด์ HN ${esc(r.hn)}</button>`:''}
@@ -1426,11 +1450,12 @@ function bindStaff(){bindTabs();const r=$('#st-re');if(r)r.onclick=loadStaff;
 const icArchive='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg>';
 const TH_MONTH_FULL=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 const monthTh=m=>{const [y,mm]=m.split('-').map(Number);return `${TH_MONTH_FULL[mm-1]} ${y+543}`};
+const icLock='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
 let bkData=null, adminPin='';
 const ADMIN_TABS=['backup','wards'];
 /* PIN ผู้ดูแลจำไว้ในหน่วยความจำเท่านั้น และลืมทันทีเมื่อออกจากแท็บนี้ (เครื่องแลปใช้ร่วมกันหลายคน) */
 async function loadBackups(){if(!adminPin)return adminGate();bkData=null;renderBackups();
-  try{bkData=await run('apiLabBackups',adminPin)}catch(err){if(/PIN ผู้ดูแล/.test(err.message)){adminPin='';return adminGate(err.message)}bkData={__err:err.message}}
+  try{bkData=await run('apiLabBackups',adminPin)}catch(err){if(/PIN ผู้ดูแล|ใส่ PIN ผิด/.test(err.message)){adminPin='';return adminGate(err.message)}bkData={__err:err.message}}
   if(mode==='lab'&&labTab==='backup')renderBackups()}
 function adminGate(msg){
   app.innerHTML=`<div class="wide">${labTabs()}<div class="card" style="max-width:420px;margin:18px auto">
@@ -1488,7 +1513,7 @@ const icUp='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
 let wdData=null;
 function setWardsFrom(list){WARDS=list.filter(w=>w.active).map(w=>w.name)}
 async function loadWards(){if(!adminPin)return adminGate();wdData=null;renderWards();
-  try{const d=await run('apiAdminWards',adminPin);wdData=d.wards;setWardsFrom(wdData)}catch(err){if(/PIN ผู้ดูแล/.test(err.message)){adminPin='';return adminGate(err.message)}wdData={__err:err.message}}
+  try{const d=await run('apiAdminWards',adminPin);wdData=d.wards;setWardsFrom(wdData)}catch(err){if(/PIN ผู้ดูแล|ใส่ PIN ผิด/.test(err.message)){adminPin='';return adminGate(err.message)}wdData={__err:err.message}}
   if(mode==='lab'&&labTab==='wards')renderWards()}
 async function wardDo(act,name,nw,btn){
   if(btn)btn.disabled=true;
@@ -1548,13 +1573,16 @@ function offWard(w){
     catch(err){ok.disabled=false;sh.el.querySelector('#wd-off-err').innerHTML=errBox(err.message)}};
 }
 
-const labTabs=()=>`<div class="ltabs" role="tablist" aria-label="มุมมองของห้องปฏิบัติการ">
+function lockLab(msg){labPin='';adminPin='';labRows=[];statData=null;statCache={};try{sessionStorage.removeItem('cbcLabPin')}catch(e){}
+  labTab='list';if(mode==='lab')render();toast(msg||'ล็อกหน้าแลปแล้ว')}
+const labTabs=()=>`<div class="lab-top"><div class="ltabs" role="tablist" aria-label="มุมมองของห้องปฏิบัติการ">
   <button role="tab" data-tab="list" aria-selected="${labTab==='list'}">${icList}รายการสไลด์</button>
   <button role="tab" data-tab="stats" aria-selected="${labTab==='stats'}">${icChart}สถิติและกราฟ</button>
   <button role="tab" data-tab="staff" aria-selected="${labTab==='staff'}">${icUsers}ผู้ใช้งาน</button>
   <button role="tab" data-tab="wards" aria-selected="${labTab==='wards'}">${icBed}วอร์ด</button>
-  <button role="tab" data-tab="backup" aria-selected="${labTab==='backup'}">${icArchive}สำรองข้อมูล</button></div>`;
-function bindTabs(){const sel=app.querySelector('.ltabs [aria-selected="true"]');if(sel)try{sel.scrollIntoView({inline:'center',block:'nearest'})}catch(e){}app.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{if(labTab===b.dataset.tab)return;labTab=b.dataset.tab;if(!ADMIN_TABS.includes(labTab))adminPin='';labTab==='stats'?loadStats():labTab==='staff'?loadStaff():labTab==='backup'?loadBackups():labTab==='wards'?loadWards():renderLab()})}
+  <button role="tab" data-tab="backup" aria-selected="${labTab==='backup'}">${icArchive}สำรองข้อมูล</button></div>
+  <button class="btn btn-soft lab-lock" id="lab-lock" type="button" aria-label="ล็อกหน้าแลป (ต้องใส่ PIN ใหม่)">${icLock}<span>ล็อก</span></button></div>`;
+function bindTabs(){const lk=$('#lab-lock');if(lk)lk.onclick=()=>lockLab();const sel=app.querySelector('.ltabs [aria-selected="true"]');if(sel)try{sel.scrollIntoView({inline:'center',block:'nearest'})}catch(e){}app.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{if(labTab===b.dataset.tab)return;labTab=b.dataset.tab;if(!ADMIN_TABS.includes(labTab))adminPin='';labTab==='stats'?loadStats():labTab==='staff'?loadStaff():labTab==='backup'?loadBackups():labTab==='wards'?loadWards():renderLab()})}
 async function loadStats(force){
   if(!force&&statCache[statDays]){statData=statCache[statDays];return renderStats()}
   statData=null;renderStats();
@@ -1605,7 +1633,7 @@ function renderStats(){
     <div class="kpi"><span class="l"><i class="sw" style="background:${C1}"></i>ส่งใบตามสไลด์</span><span class="n">${nf(k.req)}<small>ใบ</small></span><span class="s">รับไปแล้ว ${nf(k.reqDone)} ใบ</span></div>
     <div class="kpi"><span class="l"><i class="sw" style="background:${C2}"></i>รับ Slide include</span><span class="n">${nf(k.inc)}<small>สไลด์</small></span><span class="s">ไม่ต้องส่งใบตาม</span></div>
     <div class="kpi"><span class="l">เวลารอ (ค่ากลาง)</span><span class="n">${k.waitMed==null?'–':dur(k.waitMed)}</span><span class="s">${pct==null?'ยังไม่มีรายการที่รับแล้ว':`รับภายใน ${d.lateMin%60===0?d.lateMin/60+' ชั่วโมง':d.lateMin+' นาที'} ${pct}%`}</span></div>
-    <div class="kpi ${k.pendingOld?'warn':''}"><span class="l">ค้างอยู่ตอนนี้</span><span class="n">${nf(k.pendingNow)}<small>ใบ</small></span><span class="s">${k.pendingOld?`ค้างเกิน 2 ชม. ${nf(k.pendingOld)} ใบ`:'ไม่มีรายการค้างเกิน 2 ชม.'}</span></div>
+    <div class="kpi ${k.pendingOld?'warn':''}"><span class="l">ค้างอยู่ตอนนี้</span><span class="n">${nf(k.pendingNow)}<small>ใบ</small></span><span class="s">${k.pendingOld?`รอเกิน ${dur(d.lateMin||60)} ${nf(k.pendingOld)} ใบ`:`ไม่มีรายการรอเกิน ${dur(d.lateMin||60)}`}</span></div>
    </div>
    ${empty?`<div class="ccard"><div class="empty"><div class="art">${artSearch}</div><b>ยังไม่มีข้อมูลในช่วง ${d.days} วันนี้</b><span class="small muted">เมื่อมีการบันทึก กราฟจะแสดงที่นี่</span></div></div>`:`
    <div class="ccard full"><h3>จำนวนต่อวัน</h3><div class="sub">ใบตามนับตามเวลาที่ส่งใบตาม · Include นับตามเวลาที่รับ</div>
