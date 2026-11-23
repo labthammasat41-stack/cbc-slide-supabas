@@ -890,9 +890,9 @@ function showHelp(){
       <li>สแกน <b>Sample No.</b> จากสไลด์ และกรอก <b>HN</b></li>
       <li>กด <b>ค้นหาใบตาม</b> ตรวจวอร์ด HN และ Sample No. ให้ตรงกับสไลด์</li>
       <li>กด <b>ยืนยันรับสไลด์</b> ก่อนนำสไลด์ไปทุกครั้ง</li></ol>
-      <div class="small muted">ถ้าไม่พบใบตาม และเป็นสไลด์ที่แพทย์ขอ include ให้ใช้ปุ่มสีม่วง</div></section>
+      <div class="small muted">ถ้าไม่พบใบตาม และเป็นสไลด์ผู้ป่วยเด็กหรือสไลด์ที่แพทย์ขอ include ให้ใช้ปุ่มสีม่วง</div></section>
     <section class="help-sec"><h3><span class="dot" style="background:var(--violet)"></span>3. บันทึกรับ Slide include</h3>
-      <ol><li>ใช้กับสไลด์ที่แพทย์ขอ include ซึ่งห้องปฏิบัติการวางไว้ในตะกร้าแล้ว ไม่ต้องส่งใบตาม</li>
+      <ol><li>ใช้กับสไลด์ผู้ป่วยเด็ก และสไลด์ที่แพทย์ขอ include ซึ่งห้องปฏิบัติการวางไว้ในตะกร้าให้ ไม่ต้องส่งใบตาม</li>
       <li><b>ถ้าได้ส่งใบตามสไลด์นี้ไว้แล้ว</b> ให้บันทึกที่ปุ่มสีฟ้า <b>บันทึกรับสไลด์</b> แทน แอปจะแจ้งเตือนให้</li>
       <li>กดปุ่มสีม่วง <b>บันทึกรับ Slide include</b></li>
       <li>สแกน <b>Sample No.</b> กรอก <b>HN</b> และเลือก<b>วอร์ด</b></li>
@@ -921,7 +921,7 @@ const FAQ=[
  {g:'แจ้งเตือนและปัญหา',q:'ขึ้น "เกินกำหนดการตาม Slide"',a:'ขออภัยครับ สไลด์นี้เกินกำหนดเวลาการตามแล้ว จึงไม่สามารถตามได้\nหากมีข้อสงสัย สอบถามได้ที่ '+CALL+' ครับ',n:[4]},
  {g:'แจ้งเตือนและปัญหา',q:'ขึ้น "ยังไม่ถึงเวลาตาม Slide"',a:'ตอนนี้อยู่นอกช่วงเวลาที่ตามได้ครับ เช่น\n• ส่งตรวจช่วงกลางคืน/เช้ามืด ตามได้ตั้งแต่ 08:00 น.\n• ส่งตรวจหลัง 20:00 น. และเลย 22:00 น. ไปแล้ว ตามได้อีกครั้ง 08:00–14:00 น. ของวันถัดไป\nแอปจะบอกช่วงเวลาที่ตามได้ไว้ในข้อความครับ หากมีข้อสงสัย สอบถามได้ที่ '+CALL+' ครับ'+CALL+' ครับ',n:[4]},
  {g:'แจ้งเตือนและปัญหา',q:'ขึ้นว่า "ถูกส่งใบตามมาแล้ว"',a:'แปลว่าสไลด์นี้มีผู้ส่งใบตามไว้แล้วครับ ไม่ต้องบันทึกซ้ำ\nกรุณาดูรายละเอียดในกล่องสีส้ม แล้วไปหาสไลด์ในตะกร้าได้เลยครับ\nหากแอปแจ้งว่า "อาจซ้ำ" และตรวจแล้วเป็นการส่งตรวจคนละครั้งจริง กด "เป็นคนละรายการ บันทึกต่อ" ได้ครับ',n:[3]},
- {g:'แจ้งเตือนและปัญหา',q:'รับสไลด์แล้วขึ้น "ไม่พบใบตาม"',a:'กรุณาตรวจ HN และ Sample No. บนสไลด์อีกครั้งครับ\n• หากเป็นสไลด์ที่แพทย์ขอ include ให้ใช้ปุ่มสีม่วง "บันทึกรับ Slide include"\n• หากยังไม่แน่ใจ สอบถามได้ที่ '+CALL+' ครับ',n:[5,14]},
+ {g:'แจ้งเตือนและปัญหา',q:'รับสไลด์แล้วขึ้น "ไม่พบใบตาม"',a:'กรุณาตรวจ HN และ Sample No. บนสไลด์อีกครั้งครับ\n• หากเป็นสไลด์ผู้ป่วยเด็กหรือสไลด์ที่แพทย์ขอ include ให้ใช้ปุ่มสีม่วง "บันทึกรับ Slide include"\n• หากยังไม่แน่ใจ สอบถามได้ที่ '+CALL+' ครับ',n:[5,14]},
  {g:'แจ้งเตือนและปัญหา',q:'Sample No. ไม่ตรงกับใบตาม',a:'กรุณาอย่าเพิ่งนำสไลด์ไปครับ อาจหยิบสไลด์ผิดใบ\nตรวจ Sample No. และ HN บนสไลด์อีกครั้ง หากยังไม่ตรง สอบถามได้ที่ '+CALL+' ครับ',n:[13]},
  {g:'แจ้งเตือนและปัญหา',q:'เปลี่ยนมือถือ หรือแอปจำชื่อไม่ได้',a:'ไม่ต้องลงทะเบียนใหม่ครับ กด "เคยลงทะเบียนแล้ว แต่เปลี่ยนเครื่อง" แล้วกรอกรหัสพนักงานกับชื่อจริงที่ลงทะเบียนไว้ได้เลยครับ',n:[1]},
  {g:'แจ้งเตือนและปัญหา',q:'ไม่ทำตามขั้นตอน จะเป็นอย่างไร',a:'หากไม่ปฏิบัติตามขั้นตอนการตาม Slide เช่น นำสไลด์ไปโดยไม่ได้บันทึกรับในแอป จะมีการเขียนรายงาน Incident Report ไปยังต้นสังกัดครับ\nรบกวนบันทึกในแอปทุกครั้งนะครับ ขอบคุณครับ 🙏',n:[1]},
@@ -1070,7 +1070,7 @@ function vHome(){
    <div class="big-actions">
      <button class="big send" id="go-in">${icSend}<b>บันทึกส่งใบตามสไลด์</b><span>หาสไลด์ไม่เจอ วางใบตามแล้วบันทึก</span></button>
      <button class="big recv" id="go-out">${icRecv}<b>บันทึกรับสไลด์</b><span>เจอสไลด์ที่ส่งใบตามไว้แล้ว</span></button>
-     <button class="big inc" id="go-inc">${icInc}<span class="t"><b>บันทึกรับ Slide include</b><span>สไลด์ที่หมอขอ include วางในตะกร้า ไม่ต้องส่งใบตาม</span></span></button>
+     <button class="big inc" id="go-inc">${icInc}<span class="t"><b>บันทึกรับ Slide include</b><span>สไลด์ผู้ป่วยเด็ก / สไลด์ที่แพทย์ขอ include อยู่ในตะกร้า ไม่ต้องส่งใบตาม</span></span></button>
    </div>
    <div class="tools"><button class="help-btn" id="go-search">${icSearch}ค้นหาสถานะสไลด์</button>
    <button class="help-btn" id="go-help">${icHelp}วิธีใช้งานแอป</button></div>
@@ -1187,7 +1187,7 @@ function vOut(){
     let res;try{res=await run('apiFindForReceive',store.get(TOKEN_KEY),d)}catch(err){$('#err').innerHTML=errBox(err.message);busy(b,false);return}
     busy(b,false);
     if(res.received){const r=res.received;box.innerHTML=`<div class="alert bad">สไลด์นี้ถูกรับไปแล้วครับ\nHN ${esc(r.hn)} · Sample No. ${esc(r.sample)}${r.specAt?' · ส่งตรวจ '+esc(r.specAt):''}\nรับโดย ${esc(r.recvName)} เมื่อ ${esc(r.recvAt)}</div>`;return}
-    if(!res.open.length){box.innerHTML=`<div class="alert warn">ไม่พบใบตามที่ยังรอรับของ HN นี้ครับ\nถ้าเป็นสไลด์ที่แพทย์ขอ include ให้ใช้ปุ่มสีม่วง "บันทึกรับ Slide include"</div>
+    if(!res.open.length){box.innerHTML=`<div class="alert warn">ไม่พบใบตามที่ยังรอรับของ HN นี้ครับ\nถ้าเป็นสไลด์ผู้ป่วยเด็กหรือสไลด์ที่แพทย์ขอ include ให้ใช้ปุ่มสีม่วง "บันทึกรับ Slide include"</div>
       <button class="btn btn-violet btn-block" id="to-inc">ไปบันทึกรับ Slide include</button>
       <button class="btn btn-ghost btn-block" id="to-search">ค้นหาว่ามีคนรับไปแล้วหรือยัง</button>`;
       $('#to-search').onclick=()=>{searchQ=d.hn;view='search';render()};
@@ -1205,7 +1205,7 @@ function vOut(){
 let carry=null,carryOut=null,carryIn=null;
 function vInc(){
   app.innerHTML=`<div class="col"><section class="panel accent-violet">${backHead('บันทึกรับ Slide include')}
-    <div class="alert info">สำหรับสไลด์ที่แพทย์ขอ include ห้องปฏิบัติการวางไว้ในตะกร้าแล้ว หยิบได้เลยโดยไม่ต้องส่งใบตาม</div>
+    <div class="alert info">สไลด์ผู้ป่วยเด็ก และสไลด์ที่แพทย์ขอ include ห้องปฏิบัติการจะวางไว้ในตะกร้าให้ หยิบแล้วบันทึกรับได้เลย ไม่ต้องส่งใบตาม</div>
     <button class="linkbtn" id="inc-search">หาในตะกร้าไม่เจอ? ค้นหาว่ามีคนรับไปแล้วหรือยัง</button>
     <form id="f" class="form" novalidate>
       ${scanField('i-sample','Sample No.')}
