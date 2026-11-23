@@ -250,6 +250,16 @@ body.noNav main{padding-bottom:60px}
 .res{border:1px solid var(--line);border-left:5px solid var(--warn);border-radius:var(--r-m);padding:14px 16px;display:flex;flex-direction:column;gap:8px;background:var(--surface)}
 .res.out{border-left-color:var(--ok)}
 .res .big-st{font-weight:700;font-size:1.05rem;color:var(--warn)}.res.out .big-st{color:var(--ok)}
+.alert.paper{display:flex;gap:12px;align-items:flex-start;background:var(--warn-soft);color:var(--ink,inherit);border:1.5px solid color-mix(in srgb,var(--warn) 45%,transparent);margin-bottom:6px}
+.alert.paper b{color:var(--warn);display:block;margin-bottom:2px}
+.alert.paper svg{width:26px;height:26px;flex-shrink:0;color:var(--warn);margin-top:2px}
+.confirm-paper{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:var(--r-m);border:2px solid var(--line-2);background:var(--surface);cursor:pointer;font-size:1rem;line-height:1.5}
+.confirm-paper input{width:26px;height:26px;flex-shrink:0;margin:0;accent-color:var(--teal)}
+.confirm-paper:has(input:checked){border-color:var(--teal);background:color-mix(in srgb,var(--teal) 8%,var(--surface))}
+.confirm-paper.need{border-color:var(--bad);animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@media (prefers-reduced-motion:reduce){.confirm-paper.need{animation:none}}
+.btn[aria-disabled="true"].btn-teal{opacity:.55}
 .alert{padding:13px 15px;border-radius:var(--r-m);font-size:.93rem;white-space:pre-line;font-weight:500}
 .alert.bad{background:var(--bad-soft);color:var(--bad)}.alert.warn{background:var(--warn-soft);color:var(--warn)}.alert.ok{background:var(--ok-soft);color:var(--ok)}.alert.info{background:var(--blue-soft);color:var(--blue)}
 
@@ -864,7 +874,7 @@ function showGuide(){
   <div class="modal-body">
     <ol class="steps">
       <li><div><b>กรุณาหาสไลด์ในตะกร้าก่อนครับ</b><span class="small">ตรวจดู HN และ Sample No. ให้ตรงกับใบตาม</span></div></li>
-      <li><div><b>หากหาไม่พบ กรุณาวางใบตาม Slide ไว้ในตะกร้ารับสิ่งส่งตรวจ</b><span class="small">แล้วกด "บันทึกส่งใบตามสไลด์" ในแอปครับ</span></div></li>
+      <li><div><b>หากหาไม่พบ กรุณาวางใบตาม Slide ไว้ในตะกร้ารับสิ่งส่งตรวจ</b><span class="small">แล้วกด "ส่งใบตาม Slide ที่ห้องแลป" ในแอปครับ</span></div></li>
       <li><div><b>รอประมาณ 1 ชั่วโมง</b><span class="small">แล้วกลับมาหาสไลด์ในตะกร้าอีกครั้งครับ</span></div></li>
       <li><div><b>เมื่อพบสไลด์แล้ว กรุณากด "บันทึกรับสไลด์" ในแอป</b><span class="small">ทุกครั้งก่อนนำสไลด์ออกไปครับ</span></div></li>
     </ol>
@@ -878,7 +888,8 @@ function showHelp(){
   <div class="modal-body">
     <section class="help-sec"><h3><span class="dot" style="background:var(--teal)"></span>1. บันทึกส่งใบตามสไลด์</h3>
       <ol><li>หาสไลด์ในตะกร้าก่อน ถ้าไม่เจอให้วางใบตาม Slide ในตะกร้ารับสิ่งส่งตรวจ</li>
-      <li>กดปุ่มสีเขียว <b>บันทึกส่งใบตามสไลด์</b></li>
+      <li><b>ต้องนำใบตามสไลด์ตัวจริงมาส่งที่ห้องปฏิบัติการทุกครั้ง</b> บันทึกจากวอร์ดไม่ได้</li>
+      <li>กดปุ่มสีเขียว <b>ส่งใบตาม Slide ที่ห้องแลป</b></li>
       <li>กรอก <b>HN</b> และ<b>วันที่ เวลาส่งตรวจ</b> (บังคับ)</li>
       <li><b>Sample No.</b> ถ้ามี กดปุ่มกล้องสแกนบาร์โค้ด ระบบจะเติมวันที่ให้ (เป็นวันที่ทำสไลด์ ถ้าส่งตรวจตอนดึกอาจต้องเลือกเป็นเมื่อวาน)</li>
       <li>เลือก<b>วอร์ด</b> ระบบจะบอกว่าตามได้ถึงเมื่อไหร่</li>
@@ -909,8 +920,8 @@ function showHelp(){
 /* ---------- ผู้ช่วยน้องสไลด์ (กดเลือกคำถาม ไม่ใช้ AI) ---------- */
 const CALL='<span class="call">8133</span>';
 const FAQ=[
- {g:'การตาม Slide',q:'ตาม Slide ต้องทำอะไรบ้าง',a:'ขั้นตอนการตาม Slide มีดังนี้ครับ\n1. หาสไลด์ในตะกร้าก่อน\n2. หากหาไม่พบ วางใบตาม Slide ไว้ในตะกร้ารับสิ่งส่งตรวจ แล้วกด "บันทึกส่งใบตามสไลด์" ในแอป\n3. รอประมาณ 1 ชั่วโมง แล้วกลับมาหาอีกครั้ง\n4. เมื่อพบสไลด์แล้ว กด "บันทึกรับสไลด์" ในแอปทุกครั้งก่อนนำออกไปครับ',n:[2,3,4]},
- {g:'การตาม Slide',q:'หาสไลด์ในตะกร้าไม่เจอ ทำอย่างไร',a:'กรุณาวางใบตาม Slide ไว้ในตะกร้ารับสิ่งส่งตรวจ แล้วกดปุ่มสีเขียว "บันทึกส่งใบตามสไลด์" ในแอปครับ\nจากนั้นรอประมาณ 1 ชั่วโมง แล้วกลับมาหาในตะกร้าอีกครั้งนะครับ',n:[3,6,7]},
+ {g:'การตาม Slide',q:'ตาม Slide ต้องทำอะไรบ้าง',a:'ขั้นตอนการตาม Slide มีดังนี้ครับ\n1. หาสไลด์ในตะกร้าก่อน\n2. หากหาไม่พบ นำใบตาม Slide ตัวจริงมาวางในตะกร้ารับสิ่งส่งตรวจที่แลป แล้วกด "ส่งใบตาม Slide ที่ห้องแลป" ในแอป\n3. รอประมาณ 1 ชั่วโมง แล้วกลับมาหาอีกครั้ง\n4. เมื่อพบสไลด์แล้ว กด "บันทึกรับสไลด์" ในแอปทุกครั้งก่อนนำออกไปครับ',n:[18,2,3]},
+ {g:'การตาม Slide',q:'หาสไลด์ในตะกร้าไม่เจอ ทำอย่างไร',a:'กรุณาวางใบตาม Slide ไว้ในตะกร้ารับสิ่งส่งตรวจ แล้วกดปุ่มสีเขียว "ส่งใบตาม Slide ที่ห้องแลป" ในแอปครับ\nจากนั้นรอประมาณ 1 ชั่วโมง แล้วกลับมาหาในตะกร้าอีกครั้งนะครับ',n:[3,6,7]},
  {g:'การตาม Slide',q:'ส่งใบตามแล้ว ต้องรอนานเท่าไร',a:'รอประมาณ 1 ชั่วโมงครับ แล้วกลับมาหาสไลด์ในตะกร้าอีกครั้ง\nหากรอนานแล้วยังไม่พบ สอบถามได้ที่ '+CALL+' ครับ',n:[4,13]},
  {g:'การตาม Slide',q:'ตามได้ถึงกี่โมง',a:'ใช้กติกาเดียวกันทุกวอร์ด ทั้งผู้ป่วยในและผู้ป่วยนอก นับจากวันเวลาส่งตรวจ CBC ครับ\n\n• ส่งตรวจถึง 20:00 น.\n  ตามได้ 08:00–22:00 น. ของวันที่ส่งตรวจ\n\n• ส่งตรวจหลัง 20:00 น.\n  ตามได้ 20:00–22:00 น. ของวันที่ส่งตรวจ\n  และ 08:00–14:00 น. ของวันถัดไป\n\n• Slide include ตามได้ภายใน 5 วันหลังส่งตรวจ\n\nหากพ้นกำหนดจะไม่สามารถติดตาม Slide ได้ เมื่อกรอกวันเวลาส่งตรวจแล้ว แอปจะบอกให้ทันทีครับ',n:[10,11]},
  {g:'การตาม Slide',q:'Slide include คืออะไร',a:'Slide include คือสไลด์ผู้ป่วยเด็ก และสไลด์ที่แพทย์ขอไว้ ห้องปฏิบัติการจะวางไว้ในตะกร้าให้เลยครับ ไม่ต้องส่งใบตาม\nเมื่อพบแล้ว กดปุ่มสีม่วง "บันทึกรับ Slide include" กรอก Sample No., HN และวอร์ด แล้วกดยืนยันก่อนนำออกไปนะครับ\n\nสำคัญ: หากได้ส่งใบตามสไลด์นี้ไว้แล้ว กรุณาบันทึกที่ปุ่มสีฟ้า "บันทึกรับสไลด์" แทนนะครับ แอปจะแจ้งเตือนให้ครับ\nหากแน่ใจว่าเป็นสไลด์ของการส่งตรวจคนละครั้ง สอบถามได้ที่ '+CALL+' ครับ',n:[17,1,13]},
@@ -926,7 +937,8 @@ const FAQ=[
  {g:'แจ้งเตือนและปัญหา',q:'เปลี่ยนมือถือ หรือแอปจำชื่อไม่ได้',a:'ไม่ต้องลงทะเบียนใหม่ครับ กด "เคยลงทะเบียนแล้ว แต่เปลี่ยนเครื่อง" แล้วกรอกรหัสพนักงานกับชื่อจริงที่ลงทะเบียนไว้ได้เลยครับ',n:[1]},
  {g:'แจ้งเตือนและปัญหา',q:'ไม่ทำตามขั้นตอน จะเป็นอย่างไร',a:'หากไม่ปฏิบัติตามขั้นตอนการตาม Slide เช่น นำสไลด์ไปโดยไม่ได้บันทึกรับในแอป จะมีการเขียนรายงาน Incident Report ไปยังต้นสังกัดครับ\nรบกวนบันทึกในแอปทุกครั้งนะครับ ขอบคุณครับ 🙏',n:[1]},
  {g:'ค้นหาสไลด์',q:'หาสไลด์ include ในตะกร้าไม่เจอ',a:'ไม่ต้องกังวลครับ ลองทำตามนี้นะครับ\n1. ตรวจในตะกร้าอีกครั้ง ดู HN และ Sample No. ให้ตรง\n2. กด "ค้นหาสถานะสไลด์" แล้วใส่ HN หรือ Sample No. ระบบจะบอกว่ามีคนบันทึกรับไปแล้วหรือยัง ถ้ารับไปแล้วจะเห็นชื่อผู้รับและเวลาครับ\n3. หากไม่พบข้อมูล และหาในตะกร้าไม่เจอ สอบถามได้ที่ '+CALL+' ครับ',n:[18,5],go:'search'},
- {g:'ค้นหาสไลด์',q:'ตรวจสอบว่าใครรับสไลด์ไปแล้ว',a:'กดปุ่ม "ค้นหาสถานะสไลด์" ที่หน้าแรก แล้วพิมพ์หรือสแกน HN หรือ Sample No. ได้เลยครับ\nระบบจะแสดงรายการย้อนหลัง 7 วัน ว่ารับสไลด์ไปแล้วหรือยัง ใครเป็นผู้รับ และรับเมื่อไรครับ',n:[17],go:'search'}
+ {g:'ค้นหาสไลด์',q:'ตรวจสอบว่าใครรับสไลด์ไปแล้ว',a:'กดปุ่ม "ค้นหาสถานะสไลด์" ที่หน้าแรก แล้วพิมพ์หรือสแกน HN หรือ Sample No. ได้เลยครับ\nระบบจะแสดงรายการย้อนหลัง 7 วัน ว่ารับสไลด์ไปแล้วหรือยัง ใครเป็นผู้รับ และรับเมื่อไรครับ',n:[17],go:'search'},
+ {g:'การตาม Slide',q:'ส่งใบตามจากวอร์ดได้ไหม',a:'ไม่ได้ครับ ต้องนำใบตามสไลด์ตัวจริง (กระดาษ) มาส่งที่ห้องปฏิบัติการทุกครั้ง\nแอปใช้บันทึกตอนส่งใบที่แลปเท่านั้น ไม่ได้ใช้ส่งแทนใบ เพราะเจ้าหน้าที่แลปต้องใช้ใบตามตัวจริงในการหาสไลด์ครับ\nก่อนกดบันทึก แอปจะให้ติ๊กยืนยันว่านำใบมาส่งแล้วทุกครั้ง',n:[0,1]}
 ];
 function chipsHtml(list){return `<div class="chips">${list.map(i=>`<button class="chip" data-q="${i}">${esc(FAQ[i].q)}</button>`).join('')}</div>`}
 function allChips(){let g='',h='';FAQ.forEach((f,i)=>{if(f.g!==g){g=f.g;h+=`<h4>${esc(g)}</h4>`}h+=`<button class="chip" data-q="${i}">${esc(f.q)}</button>`});return `<div class="chips">${h}</div>`}
@@ -1068,7 +1080,7 @@ function vHome(){
      <span class="small muted">${thToday()}</span></div></section>
    <section class="panel live" id="live" hidden></section>
    <div class="big-actions">
-     <button class="big send" id="go-in">${icSend}<b>บันทึกส่งใบตามสไลด์</b><span>หาสไลด์ไม่เจอ วางใบตามแล้วบันทึก</span></button>
+     <button class="big send" id="go-in">${icSend}<b>ส่งใบตาม Slide ที่ห้องแลป</b><span>นำใบตามสไลด์ (กระดาษ) มาส่งที่แลป แล้วบันทึกตอนส่ง</span></button>
      <button class="big recv" id="go-out">${icRecv}<b>บันทึกรับสไลด์</b><span>เจอสไลด์ที่ส่งใบตามไว้แล้ว</span></button>
      <button class="big inc" id="go-inc">${icInc}<span class="t"><b>บันทึกรับ Slide include</b><span>สไลด์ผู้ป่วยเด็ก / สไลด์ที่แพทย์ขอ include อยู่ในตะกร้า ไม่ต้องส่งใบตาม</span></span></button>
    </div>
@@ -1107,8 +1119,10 @@ function softCard(recs,withBtn){
       <dt>วอร์ด</dt><dd>${esc(r.ward)}</dd><dt>ส่งใบตามโดย</dt><dd>${esc(r.reqName)} · ${esc(r.reqAt)}</dd><dt>สถานะ</dt><dd>${STATUS[r.status]}</dd></dl>`).join('<hr style="border:0;border-top:1px solid rgba(0,0,0,.08);width:100%;margin:2px 0">')}
     ${withBtn?'<button type="button" class="btn btn-ghost" id="force">เป็นคนละรายการ บันทึกต่อ</button>':''}</div>`;
 }
+const icPaper='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>';
 function vIn(){
   app.innerHTML=`<div class="col"><section class="panel accent-teal">${backHead('บันทึกส่งใบตามสไลด์')}
+    <div class="alert paper">${icPaper}<div><b>ต้องนำใบตามสไลด์ตัวจริงมาส่งที่ห้องปฏิบัติการทุกครั้ง</b>แอปนี้ใช้บันทึกตอนส่งใบที่แลป ไม่ได้ใช้ส่งแทนใบ บันทึกจากวอร์ดไม่ได้</div></div>
     <form id="f" class="form" novalidate>
       ${hnField('q-hn','1. HN')}
       ${dtField('q','2. วันที่ส่งตรวจ')}
@@ -1119,8 +1133,9 @@ function vIn(){
       ${photoField('q-photo','5. ')}
       ${meBox('ผู้ส่งใบตาม')}
       <div class="hint">เวลาส่งใบตามจะบันทึกให้อัตโนมัติเมื่อกดยืนยัน</div>
+      <label class="confirm-paper" id="q-paper-box"><input type="checkbox" id="q-paper"><span>ฉันนำ<b>ใบตามสไลด์ตัวจริง</b>มาส่งที่ห้องปฏิบัติการแล้ว</span></label>
       <div id="err"></div>
-      <button class="btn btn-teal btn-block" type="submit">ยืนยันบันทึกส่งใบตาม</button>
+      <button class="btn btn-teal btn-block" type="submit" id="q-submit" aria-disabled="true">ยืนยันบันทึกส่งใบตาม</button>
     </form></section></div>`;
   bindScan('q-sample');bindCombo('q-ward');bindDT('q');bindSampleDate('q-sample','q');
   let photo='';bindPhoto('q-photo',d=>{photo=d;if(d)$('#err').innerHTML=''});
@@ -1139,7 +1154,10 @@ function vIn(){
   ['q-hn','q-sample','q-date','q-time'].forEach(id=>{const el=document.getElementById(id);el.addEventListener('input',later);el.addEventListener('change',later)});
   ['q-date','q-time','q-ward','q-sample'].forEach(id=>{const el=document.getElementById(id);el.addEventListener('input',showRule);el.addEventListener('change',showRule)});
   sIn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#q-ward').focus()}});
+  const paper=$('#q-paper'),qs=$('#q-submit');
+  paper.onchange=()=>{if(paper.checked){qs.removeAttribute('aria-disabled');$('#q-paper-box').classList.remove('need');$('#err').innerHTML=''}else qs.setAttribute('aria-disabled','true')};
   const submit=async(force,b)=>{$('#err').innerHTML='';
+    if(!paper.checked){$('#q-paper-box').classList.add('need');$('#err').innerHTML=errBox('ติ๊กยืนยันว่านำใบตามสไลด์ตัวจริงมาส่งที่ห้องปฏิบัติการแล้ว ก่อนบันทึก');$('#q-paper-box').scrollIntoView({behavior:'smooth',block:'center'});return}
     if(REQUIRE_PHOTO&&!photo){$('#err').innerHTML=errBox('ถ่ายภาพหลักฐานการส่งใบตามก่อนบันทึก');$('#q-photo-box').scrollIntoView({behavior:'smooth',block:'center'});return}
     busy(b,true);
     try{const r=await run('apiCheckIn',store.get(TOKEN_KEY),data(force));
