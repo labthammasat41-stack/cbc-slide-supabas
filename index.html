@@ -326,6 +326,9 @@ body.noNav .toast{bottom:calc(20px + env(safe-area-inset-bottom,0px))}
 .scan-ov{position:fixed;inset:0;background:#05090e;z-index:70;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:16px;color:#fff}
 .scan-ov .scan-top{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;font-weight:600}
 .scan-ov .scan-top .ttl{font-size:1.05rem}
+@keyframes pulse-b{0%,100%{box-shadow:0 0 0 0 rgba(76,201,138,.7)}50%{box-shadow:0 0 0 10px rgba(76,201,138,0)}}
+.photo-btn.pulse{animation:pulse-b 1.4s infinite;background:#22a06b;color:#fff;border-color:#22a06b}
+@media (prefers-reduced-motion:reduce){.photo-btn.pulse{animation:none}}
 #reader{width:min(100%,480px);border-radius:20px;overflow:hidden;background:#000;box-shadow:0 0 0 1px rgba(255,255,255,.08)}
 .scan-ov .msg{text-align:center;font-size:.95rem;max-width:420px;opacity:.9}
 .scan-ov .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
@@ -549,7 +552,7 @@ details.tbl th,details.tbl td{padding:6px 10px}
   <div class="zoom" id="zoom-box" hidden><span>ซูม</span><input type="range" id="zoom" aria-label="ซูมกล้อง"><span id="zoom-v">1x</span></div>
   <div class="row">
     <button class="btn btn-ghost" id="torch" hidden>🔦 เปิดไฟฉาย</button>
-    <label class="btn photo-btn" for="photo-in">ถ่ายรูปบาร์โค้ดแทน</label>
+    <label class="btn photo-btn" id="photo-lbl" for="photo-in">📷 ถ่ายรูปบาร์โค้ด</label>
     <button class="btn btn-ghost" id="scan-close">ปิด</button>
   </div>
   <input type="file" id="photo-in" accept="image/*" capture="environment" style="position:absolute;opacity:0;width:1px;height:1px">
@@ -663,10 +666,15 @@ const icRecv='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
 let qr=null, scanTarget=null;
 const FORMATS=()=>window.Html5QrcodeSupportedFormats?[Html5QrcodeSupportedFormats.CODE_128,Html5QrcodeSupportedFormats.CODE_39,Html5QrcodeSupportedFormats.CODABAR,Html5QrcodeSupportedFormats.ITF,Html5QrcodeSupportedFormats.EAN_13,Html5QrcodeSupportedFormats.QR_CODE]:undefined;
 // อ่านค่าเดียวกันได้ 2 ครั้งติดกันจึงยอมรับ กันอ่านเลขเพี้ยนจากภาพเบลอ
-let lastCode='',lastHits=0,lastAt=0;
-function onDecode(text){
+// Code 128 / EAN-13 / QR มีตัวตรวจสอบในตัว อ่านครั้งเดียวก็เชื่อได้ (ช่วย iPhone ที่อ่านติดไม่ต่อเนื่อง)
+let lastCode='',lastHits=0,lastAt=0,scanT0=0,iosHintT=null;
+const IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const SAFE_FMT=/CODE_128|EAN_13|QR_CODE/;
+function onDecode(text,res){
   text=String(text).trim();const now=Date.now();
-  if(text===lastCode&&now-lastAt<2000)lastHits++;else{lastCode=text;lastHits=1}
+  let fmt='';try{fmt=res&&res.result&&res.result.format&&res.result.format.formatName||''}catch(e){}
+  if(SAFE_FMT.test(fmt))return gotCode(text);
+  if(text===lastCode&&now-lastAt<3000)lastHits++;else{lastCode=text;lastHits=1}
   lastAt=now;
   if(lastHits>=2)gotCode(text);else $('#scan-msg').textContent='เจอบาร์โค้ดแล้ว ถือนิ่งอีกนิดครับ…';
 }
@@ -690,17 +698,22 @@ async function openScanner(target,title){
   $('#scan-ov').hidden=false;$('#zoom-box').hidden=true;$('#torch').hidden=true;
   $('#scan-msg').textContent='กำลังเปิดกล้อง…';
   if(!window.Html5Qrcode){$('#scan-msg').textContent='โหลดตัวอ่านบาร์โค้ดไม่สำเร็จ ตรวจอินเทอร์เน็ตแล้วลองใหม่ หรือพิมพ์เลขเอง';return}
-  const cfg={fps:15,aspectRatio:1.333,
-    qrbox:(w,h)=>({width:Math.floor(w*0.92),height:Math.max(80,Math.floor(h*0.38))}),
-    videoConstraints:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080},advanced:[{focusMode:'continuous'}]}};
+  // กรอบสแกนกว้างเกือบเต็มภาพ: บาร์โค้ดบนสไลด์ยาวและเล็ก วางไม่ต้องเป๊ะ
+  // iPhone ไม่มีตัวอ่านบาร์โค้ดในเบราว์เซอร์ ใช้ตัวอ่านสำรองซึ่งช้ากว่า จึงลดความละเอียดลง (ได้จำนวนภาพต่อวินาทีมากขึ้น)
+  const cfg={fps:IOS?12:15,aspectRatio:1,
+    qrbox:(w,h)=>({width:Math.floor(w*0.94),height:Math.max(120,Math.floor(h*0.6))}),
+    videoConstraints:IOS?{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}
+      :{facingMode:'environment',width:{ideal:1920},height:{ideal:1080},advanced:[{focusMode:'continuous'}]}};
   try{
     qr=newReader();
     try{await qr.start({facingMode:'environment'},cfg,onDecode,()=>{})}
     catch(e1){delete cfg.videoConstraints;qr=newReader();await qr.start({facingMode:'environment'},cfg,onDecode,()=>{})}
-    $('#scan-msg').textContent='วางบาร์โค้ดแนวนอนให้เต็มกรอบ ห่างประมาณ 10–15 ซม. ถ้าบาร์โค้ดเล็ก ให้ใช้แถบซูม';
+    $('#scan-msg').textContent=IOS?'วางบาร์โค้ดแนวนอนกลางกรอบ ถือห่างประมาณ 15–20 ซม. ให้ภาพชัดก่อน (iPhone โฟกัสใกล้มากไม่ได้)'
+      :'วางบาร์โค้ดแนวนอนให้เต็มกรอบ ห่างประมาณ 10–15 ซม. ถ้าบาร์โค้ดเล็ก ให้ใช้แถบซูม';
     setupCamExtras();
+    clearTimeout(iosHintT);if(IOS)iosHintT=setTimeout(()=>{if(!$('#scan-ov').hidden&&scanTarget){$('#scan-msg').textContent='ยังอ่านไม่ติด? กดปุ่ม "📷 ถ่ายรูปบาร์โค้ด" ด้านล่าง กล้อง iPhone จะโฟกัสให้เองและอ่านง่ายกว่าครับ';$('#photo-lbl').classList.add('pulse')}},7000);
   }catch(e){
-    $('#scan-msg').textContent='เปิดกล้องสดไม่ได้ ('+(e&&e.name||'ไม่ได้รับอนุญาต')+') กด "ถ่ายรูปบาร์โค้ดแทน" หรือปิดแล้วพิมพ์เลขเอง';
+    $('#scan-msg').textContent='เปิดกล้องสดไม่ได้ ('+(e&&e.name||'ไม่ได้รับอนุญาต')+') กด "📷 ถ่ายรูปบาร์โค้ด" หรือปิดแล้วพิมพ์เลขเอง';
   }
 }
 // ซูมและไฟฉาย (ถ้ามือถือรองรับ)
@@ -715,18 +728,36 @@ function setupCamExtras(){
       b.onclick=()=>{on=!on;t.apply(on).catch(()=>{});b.textContent=on?'🔦 ปิดไฟฉาย':'🔦 เปิดไฟฉาย'}}}catch(e){}
 }
 async function closeScanner(){
+  clearTimeout(iosHintT);$('#photo-lbl').classList.remove('pulse');
   $('#scan-ov').hidden=true;scanTarget=null;
   if(qr){try{if(qr.isScanning)await qr.stop();qr.clear()}catch(e){}qr=null}
 }
 $('#scan-close').onclick=closeScanner;
+// ภาพจากกล้อง iPhone ใหญ่มาก บาร์โค้ดเล็ก: ลองตัดเฉพาะแถบกลางภาพแล้วขยาย ให้ตัวอ่านเห็นแท่งชัดขึ้น
+async function photoCrops(file){
+  try{
+    const img=await new Promise((ok,no)=>{const u=URL.createObjectURL(file),i=new Image();i.onload=()=>{URL.revokeObjectURL(u);ok(i)};i.onerror=no;i.src=u});
+    const W=img.naturalWidth,H=img.naturalHeight,out=[];
+    for(const [fw,fh] of [[0.8,0.35],[0.6,0.25],[0.95,0.6]]){
+      const cw=Math.round(W*fw),ch=Math.round(H*fh),sc=Math.min(2,1600/cw);
+      const c=document.createElement('canvas');c.width=Math.round(cw*sc);c.height=Math.round(ch*sc);
+      const g=c.getContext('2d');g.imageSmoothingEnabled=true;g.drawImage(img,(W-cw)/2,(H-ch)/2,cw,ch,0,0,c.width,c.height);
+      const b=await new Promise(r=>c.toBlob(r,'image/jpeg',0.92));if(b)out.push(new File([b],'crop.jpg',{type:'image/jpeg'}));
+    }
+    return out;
+  }catch(e){return []}
+}
 $('#photo-in').addEventListener('change',async e=>{
   const f=e.target.files[0];e.target.value='';if(!f)return;
   $('#scan-msg').textContent='กำลังอ่านจากรูป…';
   try{
     if(qr&&qr.isScanning){await qr.stop()}
     const r=qr||newReader();
-    gotCode(await r.scanFile(f,false));
-  }catch(err){$('#scan-msg').textContent='อ่านบาร์โค้ดจากรูปไม่ได้ ถ่ายใหม่ให้ใกล้และชัดขึ้น หรือปิดแล้วพิมพ์เลขเอง'}
+    const tries=[f,...await photoCrops(f)];let code=null;
+    for(const x of tries){try{code=await r.scanFile(x,false);break}catch(e){}}
+    if(code==null)throw new Error('no code');
+    gotCode(code);
+  }catch(err){$('#scan-msg').textContent='อ่านบาร์โค้ดจากรูปไม่ได้ ถ่ายใหม่ให้บาร์โค้ดอยู่กลางภาพ ชัด ไม่สะท้อนแสง หรือปิดแล้วพิมพ์เลขเอง'}
 });
 const L=t=>String(t||'').replace(/^(\d)\.\s*/,'<span class="step">$1</span>');
 function scanField(id,label){return `<div class="field"><label for="${id}">${L(label)}</label>
@@ -928,7 +959,7 @@ const FAQ=[
  {g:'การตาม Slide',q:'Slide include คืออะไร',a:'Slide include คือสไลด์ผู้ป่วยเด็ก และสไลด์ที่แพทย์ขอไว้ ห้องปฏิบัติการจะวางไว้ในตะกร้าให้เลยครับ ไม่ต้องส่งใบตาม\nเมื่อพบแล้ว กดปุ่มสีม่วง "บันทึกรับ Slide include" กรอก Sample No., HN และวอร์ด แล้วกดยืนยันก่อนนำออกไปนะครับ\n\nสำคัญ: หากได้ส่งใบตามสไลด์นี้ไว้แล้ว กรุณาบันทึกที่ปุ่มสีฟ้า "บันทึกรับสไลด์" แทนนะครับ แอปจะแจ้งเตือนให้ครับ\nหากแน่ใจว่าเป็นสไลด์ของการส่งตรวจคนละครั้ง สอบถามได้ที่ '+CALL+' ครับ',n:[17,1,13]},
  {g:'การใช้งานแอป',q:'ไม่มี Sample No. ส่งใบตามได้ไหม',a:'ได้ครับ ตอนส่งใบตาม กรอกเพียง HN และวันเวลาส่งตรวจก็บันทึกได้\nแต่ตอนรับสไลด์ ต้องสแกน Sample No. จากสไลด์ และกรอก HN ทุกครั้งนะครับ',n:[7,8]},
  {g:'การใช้งานแอป',q:'ดูวันเวลาส่งตรวจจากไหน',a:'ดูวันเวลาส่งตรวจได้จากใบตาม Slide ครับ\nหากในใบตามไม่มี กรุณาสอบถามพยาบาล และกรอกข้อมูลให้ครบทุกช่องก่อนบันทึกนะครับ',n:[6,4]},
- {g:'การใช้งานแอป',q:'สแกนบาร์โค้ดไม่ติด ทำอย่างไร',a:'ลองวิธีนี้ครับ\n• วางบาร์โค้ดแนวนอนให้เต็มกรอบ ห่างประมาณ 10–15 ซม. แล้วถือนิ่งๆ\n• ถ้าบาร์โค้ดบนสไลด์เล็ก ให้เลื่อนแถบซูมแล้วถอยมือถือออกมาเล็กน้อย กล้องจะโฟกัสชัดขึ้น\n• ถ้ามืด กดปุ่มไฟฉาย\n• เช็ดเลนส์กล้องให้สะอาด และระวังแสงสะท้อนบนสติกเกอร์\n• ถ้ายังไม่ได้ กด "ถ่ายรูปบาร์โค้ดแทน" หรือปิดกล้องแล้วพิมพ์เลขเองได้ครับ\nหากกล้องไม่เปิดเลย กรุณาเปิดแอปด้วย Chrome และกดอนุญาตให้ใช้กล้องนะครับ',n:[6]},
+ {g:'การใช้งานแอป',q:'สแกนบาร์โค้ดไม่ติด ทำอย่างไร',a:'ลองวิธีนี้ครับ\n• วางบาร์โค้ดแนวนอนให้เต็มกรอบ ห่างประมาณ 10–15 ซม. แล้วถือนิ่งๆ\n• ถ้าบาร์โค้ดบนสไลด์เล็ก ให้เลื่อนแถบซูมแล้วถอยมือถือออกมาเล็กน้อย กล้องจะโฟกัสชัดขึ้น\n• ถ้ามืด กดปุ่มไฟฉาย\n• เช็ดเลนส์กล้องให้สะอาด และระวังแสงสะท้อนบนสติกเกอร์\n• ถ้ายังไม่ได้ กด "📷 ถ่ายรูปบาร์โค้ด" หรือปิดกล้องแล้วพิมพ์เลขเองได้ครับ\n\niPhone: ถือห่างประมาณ 15–20 ซม. เพราะกล้อง iPhone โฟกัสใกล้มากไม่ได้ ถ้าอ่านไม่ติดใน 5–10 วินาที กด "📷 ถ่ายรูปบาร์โค้ด" จะอ่านได้ง่ายกว่า (ให้บาร์โค้ดอยู่กลางภาพ)\n\nหากกล้องไม่เปิดเลย Android ให้เปิดด้วย Chrome, iPhone ให้เปิดด้วย Safari แล้วกดอนุญาตให้ใช้กล้องนะครับ',n:[6]},
  {g:'การใช้งานแอป',q:'ต้องถ่ายภาพหลักฐานไหม',a:'ไม่บังคับครับ แต่แนะนำให้ถ่ายภาพใบตามที่วางในตะกร้ารับสิ่งส่งตรวจไว้เป็นหลักฐาน จะช่วยยืนยันได้ว่าได้ส่งใบตามแล้วครับ',n:[2]},
  {g:'แจ้งเตือนและปัญหา',q:'ขึ้น "เกินกำหนดการตาม Slide"',a:'ขออภัยครับ สไลด์นี้เกินกำหนดเวลาการตามแล้ว จึงไม่สามารถตามได้\nหากมีข้อสงสัย สอบถามได้ที่ '+CALL+' ครับ',n:[4]},
  {g:'แจ้งเตือนและปัญหา',q:'ขึ้น "ยังไม่ถึงเวลาตาม Slide"',a:'ตอนนี้อยู่นอกช่วงเวลาที่ตามได้ครับ เช่น\n• ส่งตรวจช่วงกลางคืน/เช้ามืด ตามได้ตั้งแต่ 08:00 น.\n• ส่งตรวจหลัง 20:00 น. และเลย 22:00 น. ไปแล้ว ตามได้อีกครั้ง 08:00–14:00 น. ของวันถัดไป\nแอปจะบอกช่วงเวลาที่ตามได้ไว้ในข้อความครับ หากมีข้อสงสัย สอบถามได้ที่ '+CALL+' ครับ'+CALL+' ครับ',n:[4]},
