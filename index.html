@@ -238,6 +238,13 @@ body.noNav main{padding-bottom:60px}
 .sh-pre{font-size:1.25rem;font-weight:700;letter-spacing:.04em;padding:10px 12px;border-radius:10px;background:var(--surface);border:1.5px solid var(--line);white-space:nowrap}
 .sh-pre i{font-style:normal;color:var(--teal)}
 .sh-last{flex:1;min-width:0;font-size:1.25rem;letter-spacing:.12em}
+.ins-card{background:color-mix(in srgb,var(--blue,#1f5fae) 8%,var(--surface));border-color:color-mix(in srgb,var(--blue,#1f5fae) 35%,var(--line))}
+.kbtn{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 6px;border-radius:8px;border:1.5px solid var(--line-2);background:var(--surface);vertical-align:middle;margin:0 2px;font-weight:700;color:var(--blue,#1f5fae)}
+.ins-prev{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:var(--r-m);background:var(--surface-2);margin:4px 0 10px}
+.ins-prev img{border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.ins-arrow{position:fixed;left:50%;bottom:calc(6px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:200;font-size:2.4rem;color:#0b7a75;text-shadow:0 0 0 #fff,0 2px 8px rgba(0,0,0,.25);animation:ins-b 1s ease-in-out infinite;pointer-events:none}
+@keyframes ins-b{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,8px)}}
+@media (prefers-reduced-motion:reduce){.ins-arrow{animation:none}}
 .fest-chip{display:inline-flex;white-space:nowrap;align-items:center;gap:6px;margin-top:8px;align-self:flex-start;background:rgba(255,224,138,.16);border:1px solid rgba(255,224,138,.55);color:#ffe08a;border-radius:999px;padding:3px 10px;font-size:.78rem;font-weight:600}
 
 .hero-t{flex:1;min-width:0;max-width:42%;text-shadow:0 0 8px var(--hero-fade),0 0 2px var(--hero-fade);display:flex;flex-direction:column;gap:2px;position:relative}
@@ -1375,6 +1382,9 @@ function vHome(){
    <section class="panel hero">${festScene()}<div class="hero-t"><span class="hi">${FEST?FEST.greet:greet()}</span><span class="nm">คุณ${esc(ME.nick)}</span>
      <span class="small muted">${thToday()}</span>${FEST&&FEST.chip?`<span class="fest-chip">${FEST.chip}</span>`:''}</div></section>
    <section class="panel live" id="live" hidden></section>
+   <div class="cam-card ins-card" id="ins-card" hidden><div class="cam-i">📲</div><div class="cam-b"><b>ติดตั้งแอปไว้บนหน้าจอ</b><span class="small">ครั้งต่อไปกดไอคอนเปิดได้เลย ไม่ต้องหาลิงก์</span>
+     <button type="button" class="linkbtn" data-ins-skip style="align-self:flex-start;font-size:.82rem;margin-top:2px">ไว้ทีหลัง</button></div>
+     <button class="btn btn-teal" type="button" data-ins>ติดตั้งแอป</button></div>
    <div class="cam-card" id="cam-card" hidden><div class="cam-i">📷</div><div class="cam-b"><b>เปิดใช้กล้องสำหรับสแกน</b><span class="cam-t small"></span></div>
      <button class="btn btn-teal" type="button">อนุญาตกล้อง</button></div>
    <div class="big-actions">
@@ -1397,7 +1407,7 @@ function vHome(){
       <div class="small muted">${r.sample?'Sample '+esc(r.sample)+' · ':''}${esc(r.ward)}</div>
       <div class="small muted">${r.status==='out'?'รับสไลด์ '+esc(r.recvAt):'ส่งใบตาม '+esc(r.reqAt)}</div>${photoBtn(r,'user')}</div>${pill(r.status)}</div>`).join(''):'<div class="empty"><div class="art sm">'+artSearch+'</div><div class="muted small">ยังไม่มีรายการ เมื่อบันทึกส่งใบตามหรือรับสไลด์ รายการจะขึ้นที่นี่</div></div>'}
     catch(err){if($('#mylist'))$('#mylist').innerHTML=errBox(err.message)}};
-  $('#refresh').onclick=load;load();camCard();
+  $('#refresh').onclick=load;load();camCard().then(installCard);
   timers.push(setInterval(drawLive,15000),setInterval(load,60000));
 }
 
@@ -2069,16 +2079,33 @@ window.addEventListener('appinstalled',()=>{deferredInstall=null;toast('ติ�
 if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 const isStandalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
 const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const IC_SHARE='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
+const IC_ADDSQ='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/></svg>';
 function installHelp(){
-  const sh=openSheet(`<h2>ติดตั้งแอปลงหน้าจอมือถือ</h2>
-    ${isIOS?`<ol class="ios-steps"><li><span class="n">1</span><span>เปิดลิงก์นี้ด้วย <b>Safari</b></span></li>
-      <li><span class="n">2</span><span>กดปุ่ม <b>แชร์</b> (สี่เหลี่ยมมีลูกศรชี้ขึ้น) ที่แถบด้านล่าง</span></li>
-      <li><span class="n">3</span><span>เลื่อนหา <b>เพิ่มไปยังหน้าจอโฮม</b> แล้วกด <b>เพิ่ม</b></span></li></ol>`
-    :`<ol class="ios-steps"><li><span class="n">1</span><span>เปิดลิงก์นี้ด้วย <b>Chrome</b></span></li>
-      <li><span class="n">2</span><span>กดเมนู <b>⋮</b> มุมขวาบน</span></li>
-      <li><span class="n">3</span><span>เลือก <b>ติดตั้งแอป</b> หรือ <b>เพิ่มลงในหน้าจอหลัก</b></span></li></ol>`}
-    <div class="small muted">หลังติดตั้ง จะมีไอคอน "ตาม Slide" บนหน้าจอ เปิดแล้วเต็มจอเหมือนแอปทั่วไป</div>
-    <button class="btn btn-teal btn-block" data-close>เข้าใจแล้ว</button>`)}
+  const env=camEnv();
+  const k=(t)=>`<span class="kbtn">${t}</span>`;
+  const steps={
+    'inapp':['ตอนนี้เปิดผ่าน LINE / Facebook ติดตั้งจากตรงนี้ไม่ได้',`กดปุ่ม ${k('⋮')} หรือ ${k('แชร์')} มุมขวาบน แล้วเลือก <b>เปิดในเบราว์เซอร์</b>`,'iPhone เปิดด้วย Safari · Android เปิดด้วย Chrome แล้วกดปุ่ม "ติดตั้งแอป" ในหน้าแรกอีกครั้ง'],
+    'ios-safari':[`กดปุ่ม <b>แชร์</b> ${k(IC_SHARE)} ที่แถบด้านล่างของจอ (บางรุ่นต้องกดปุ่ม ${k('•••')} ก่อน แล้วเลือก <b>แชร์</b>)`,`เลื่อนรายการลงมา แล้วกด <b>เพิ่มไปยังหน้าจอโฮม</b> ${k(IC_ADDSQ)}`,`กด <b>เพิ่ม</b> มุมขวาบน`,'กลับไปที่หน้าจอโฮม จะเห็นไอคอน "ตาม Slide" กดเปิดจากไอคอนได้เลย'],
+    'ios-chrome':[`กดปุ่ม <b>แชร์</b> ${k(IC_SHARE)} ที่ช่องลิงก์ด้านบน (มุมขวา)`,`เลือก <b>เพิ่มไปยังหน้าจอโฮม</b> ${k(IC_ADDSQ)}`,`กด <b>เพิ่ม</b>`,'ถ้าไม่มีให้เลือก ให้เปิดลิงก์นี้ด้วย <b>Safari</b> แทน'],
+    'ios-other':['เปิดลิงก์นี้ด้วย <b>Safari</b>',`กดปุ่ม <b>แชร์</b> ${k(IC_SHARE)} แล้วเลือก <b>เพิ่มไปยังหน้าจอโฮม</b>`,`กด <b>เพิ่ม</b>`],
+    'samsung':[`กดปุ่ม ${k('☰')} มุมขวาล่าง`,`เลือก <b>เพิ่มหน้าลงใน</b> แล้วเลือก <b>หน้าจอหลัก</b>`,`กด <b>เพิ่ม</b>`],
+    'android':[`กดปุ่ม ${k('⋮')} มุมขวาบนของ Chrome`,`เลือก <b>ติดตั้งแอป</b> หรือ <b>เพิ่มลงในหน้าจอหลัก</b>`,`กด <b>ติดตั้ง</b>`],
+    'desktop':[`กดไอคอน <b>ติดตั้ง</b> ${k(IC_ADDSQ)} ท้ายช่องลิงก์ หรือเมนู ${k('⋮')} → <b>ติดตั้งแอป</b>`]}[env]||[];
+  const sh=openSheet(`<div class="eyebrow">ทำครั้งเดียว ครั้งต่อไปกดไอคอนเปิดได้เลย</div><h2>ติดตั้งแอปบนหน้าจอมือถือ</h2>
+    <ol class="ios-steps">${steps.map((t,i)=>`<li><span class="n">${i+1}</span><span>${t}</span></li>`).join('')}</ol>
+    <div class="ins-prev"><img src="${document.querySelector('link[rel=apple-touch-icon]')?.href||'apple-touch-icon.png'}" alt="" width="56" height="56"><div><b>ตาม Slide</b><div class="small muted">หน้าตาไอคอนที่จะอยู่บนหน้าจอ</div></div></div>
+    <button class="btn btn-teal btn-block" data-close>เข้าใจแล้ว</button>`);
+}
+async function installCard(){const c=$('#ins-card');if(!c)return;
+  const until=+(store.get('cbcInsSkip')||0);
+  // แสดงทีละการ์ด: ถ้ายังต้องขออนุญาตกล้อง ให้การ์ดกล้องขึ้นก่อน
+  const cam=$('#cam-card');if(isStandalone()||Date.now()<until||(cam&&!cam.hidden)){c.hidden=true;return}
+  c.hidden=false;
+  c.querySelector('[data-ins]').onclick=doInstall;
+  c.querySelector('[data-ins-skip]').onclick=()=>{store.set('cbcInsSkip',String(Date.now()+14*864e5));c.hidden=true;toast('ซ่อนไว้ 14 วัน ติดตั้งได้ที่เมนู ☰ เสมอครับ')};
+}
+window.addEventListener('appinstalled',()=>{const c=$('#ins-card');if(c)c.hidden=true;toast('ติดตั้งแอปแล้วครับ 🎉')});
 async function doInstall(){if(deferredInstall){deferredInstall.prompt();try{await deferredInstall.userChoice}catch(e){}deferredInstall=null}else installHelp()}
 /* เมนู */
 function openMenu(){
@@ -2127,7 +2154,7 @@ async function askCamera(){
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return camHelp('unsupported');
   try{const st=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
     st.getTracks().forEach(t=>t.stop());store.set('cbcCamOk','1');toast('เปิดใช้กล้องได้แล้วครับ สแกนบาร์โค้ดได้เลย 📷');
-    const c=$('#cam-card');if(c)c.hidden=true;return true}
+    const c=$('#cam-card');if(c)c.hidden=true;installCard();return true}
   catch(e){store.del('cbcCamOk');camHelp(e&&e.name==='NotAllowedError'?'denied':e&&e.name==='NotFoundError'?'nocam':'error');return false}}
 const CAM_STEPS={
   'ios-safari':['กดปุ่ม <b>"AA"</b> หรือ <b>"ぁあ"</b> ที่ช่องลิงก์ (บนหรือล่างจอ)','เลือก <b>การตั้งค่าเว็บไซต์</b>','กด <b>กล้อง</b> แล้วเลือก <b>อนุญาต</b>','กลับมาที่แอป แล้วกดปุ่ม <b>ลองอีกครั้ง</b> ด้านล่าง'],
