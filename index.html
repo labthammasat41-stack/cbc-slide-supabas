@@ -218,6 +218,12 @@ body.noNav main{padding-bottom:60px}
 .fest-opt span{font-size:.85rem;color:var(--muted)}
 .fest-opt[aria-pressed="true"]{border-color:var(--teal);background:color-mix(in srgb,var(--teal) 10%,var(--surface))}
 .fest-opt[aria-pressed="true"] b::after{content:"  ✓ ใช้อยู่";color:var(--teal);font-size:.85rem}
+.cam-card{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r-l);background:color-mix(in srgb,var(--teal) 9%,var(--surface));border:1.5px solid color-mix(in srgb,var(--teal) 40%,var(--line))}
+.cam-card[hidden]{display:none}
+.cam-i{font-size:1.6rem;flex-shrink:0}.cam-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.cam-b span{color:var(--muted)}
+.cam-card .btn{flex-shrink:0;min-height:44px;padding:8px 14px}
+.cam-steps{margin:6px 0 4px 1.2em;display:grid;gap:8px;line-height:1.5}
+@media (max-width:380px){.cam-card{flex-wrap:wrap}.cam-card .btn{width:100%}}
 .fest-chip{display:inline-flex;white-space:nowrap;align-items:center;gap:6px;margin-top:8px;align-self:flex-start;background:rgba(255,224,138,.16);border:1px solid rgba(255,224,138,.55);color:#ffe08a;border-radius:999px;padding:3px 10px;font-size:.78rem;font-weight:600}
 
 .hero-t{flex:1;min-width:0;max-width:42%;text-shadow:0 0 8px var(--hero-fade),0 0 2px var(--hero-fade);display:flex;flex-direction:column;gap:2px;position:relative}
@@ -765,7 +771,7 @@ async function openScanner(target,title){
     setupCamExtras();
     clearTimeout(iosHintT);if(IOS)iosHintT=setTimeout(()=>{if(!$('#scan-ov').hidden&&scanTarget){$('#scan-msg').textContent='ยังอ่านไม่ติด? กดปุ่ม "📷 ถ่ายรูปบาร์โค้ด" ด้านล่าง กล้อง iPhone จะโฟกัสให้เองและอ่านง่ายกว่าครับ';$('#photo-lbl').classList.add('pulse')}},7000);
   }catch(e){
-    $('#scan-msg').textContent='เปิดกล้องสดไม่ได้ ('+(e&&e.name||'ไม่ได้รับอนุญาต')+') กด "📷 ถ่ายรูปบาร์โค้ด" หรือปิดแล้วพิมพ์เลขเอง';
+    $('#scan-msg').textContent='เปิดกล้องสดไม่ได้ ('+(e&&e.name||'ไม่ได้รับอนุญาต')+') กด "📷 ถ่ายรูปบาร์โค้ด" หรือปิดแล้วพิมพ์เลขเอง';if(e&&(e.name==='NotAllowedError'||e.name==='NotFoundError'||camEnv()==='inapp')){closeScanner();camHelp(camEnv()==='inapp'?'inapp':e.name==='NotFoundError'?'nocam':'denied')}
   }
 }
 // ซูมและไฟฉาย (ถ้ามือถือรองรับ)
@@ -1290,6 +1296,8 @@ function vHome(){
    <section class="panel hero">${festScene()}<div class="hero-t"><span class="hi">${FEST?FEST.greet:greet()}</span><span class="nm">คุณ${esc(ME.nick)}</span>
      <span class="small muted">${thToday()}</span>${FEST&&FEST.chip?`<span class="fest-chip">${FEST.chip}</span>`:''}</div></section>
    <section class="panel live" id="live" hidden></section>
+   <div class="cam-card" id="cam-card" hidden><div class="cam-i">📷</div><div class="cam-b"><b>เปิดใช้กล้องสำหรับสแกน</b><span class="cam-t small"></span></div>
+     <button class="btn btn-teal" type="button">อนุญาตกล้อง</button></div>
    <div class="big-actions">
      <button class="big send" id="go-in">${icSend}<b>ส่งใบตาม Slide ที่ห้องแลป</b><span>นำใบตามสไลด์ (กระดาษ) มาส่งที่แลป แล้วบันทึกตอนส่ง</span></button>
      <button class="big recv" id="go-out">${icRecv}<b>บันทึกรับสไลด์</b><span>เจอสไลด์ที่ส่งใบตามไว้แล้ว</span></button>
@@ -1310,7 +1318,7 @@ function vHome(){
       <div class="small muted">${r.sample?'Sample '+esc(r.sample)+' · ':''}${esc(r.ward)}</div>
       <div class="small muted">${r.status==='out'?'รับสไลด์ '+esc(r.recvAt):'ส่งใบตาม '+esc(r.reqAt)}</div>${photoBtn(r,'user')}</div>${pill(r.status)}</div>`).join(''):'<div class="empty"><div class="art sm">'+artSearch+'</div><div class="muted small">ยังไม่มีรายการ เมื่อบันทึกส่งใบตามหรือรับสไลด์ รายการจะขึ้นที่นี่</div></div>'}
     catch(err){if($('#mylist'))$('#mylist').innerHTML=errBox(err.message)}};
-  $('#refresh').onclick=load;load();
+  $('#refresh').onclick=load;load();camCard();
   timers.push(setInterval(drawLive,15000),setInterval(load,60000));
 }
 
@@ -2003,6 +2011,7 @@ function openMenu(){
     <div class="menu-list">
       <button class="menu-it" id="m-snd">${icSound}เสียงเมื่อสแกนติด<span class="r"><span class="switch" aria-hidden="true" aria-checked="${snd}"></span></span></button>
       ${isStandalone()?'':`<button class="menu-it" id="m-install">${icInstall}ติดตั้งแอปลงหน้าจอมือถือ</button>`}
+      <button class="menu-it" id="m-cam">📷&nbsp; อนุญาตกล้อง / แก้กล้องไม่ทำงาน</button>
       <button class="menu-it" id="m-guide">${icBook}วิธีการตาม Slide</button>
       <button class="menu-it" id="m-help">${icHelp}วิธีใช้งานแอป</button>
       <button class="menu-it" id="m-bot">${icChat}ถามน้องสไลด์</button>
@@ -2015,10 +2024,56 @@ function openMenu(){
   el.querySelector('#m-snd').onclick=()=>{const on=store.get(SND_KEY)==='0';store.set(SND_KEY,on?'1':'0');el.querySelector('#m-snd .switch').setAttribute('aria-checked',on);if(on)beep()};
   const mi=el.querySelector('#m-install');if(mi)mi.onclick=()=>{sh.close();doInstall()};
   el.querySelector('#m-guide').onclick=()=>{sh.close();showGuide()};
+  el.querySelector('#m-cam').onclick=async()=>{sh.close();const st=await camState();st==='denied'?camHelp('denied'):askCamera()};
   el.querySelector('#m-help').onclick=()=>{sh.close();showHelp()};
   el.querySelector('#m-bot').onclick=()=>{sh.close();openAssistant()};
   const lo=el.querySelector('#m-logout');if(lo)lo.onclick=()=>{sh.close();store.del(TOKEN_KEY);ME=null;mode='ward';view='login';render()};
 }
+
+/* ---------- ขออนุญาตใช้กล้อง (ให้ผู้ใช้กดยืนยันในแอป ไม่ต้องไปหาเมนูตั้งค่าเอง) ---------- */
+const UA=navigator.userAgent;
+const camEnv=()=>{
+  if(/Line\/|FBAN|FBAV|FB_IAB|Instagram|Messenger|MicroMessenger/i.test(UA))return 'inapp';
+  const ios=/iPad|iPhone|iPod/.test(UA)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  if(ios)return /CriOS/.test(UA)?'ios-chrome':/FxiOS|EdgiOS/.test(UA)?'ios-other':'ios-safari';
+  if(/SamsungBrowser/.test(UA))return 'samsung';
+  if(/Android/.test(UA))return 'android';
+  return 'desktop'};
+async function camState(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return 'unsupported';
+  try{if(navigator.permissions&&navigator.permissions.query){const p=await navigator.permissions.query({name:'camera'});return p.state}}catch(e){}
+  return store.get('cbcCamOk')==='1'?'granted':'prompt'}
+async function askCamera(){
+  if(camEnv()==='inapp')return camHelp('inapp');
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return camHelp('unsupported');
+  try{const st=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
+    st.getTracks().forEach(t=>t.stop());store.set('cbcCamOk','1');toast('เปิดใช้กล้องได้แล้วครับ สแกนบาร์โค้ดได้เลย 📷');
+    const c=$('#cam-card');if(c)c.hidden=true;return true}
+  catch(e){store.del('cbcCamOk');camHelp(e&&e.name==='NotAllowedError'?'denied':e&&e.name==='NotFoundError'?'nocam':'error');return false}}
+const CAM_STEPS={
+  'ios-safari':['กดปุ่ม <b>"AA"</b> หรือ <b>"ぁあ"</b> ที่ช่องลิงก์ (บนหรือล่างจอ)','เลือก <b>การตั้งค่าเว็บไซต์</b>','กด <b>กล้อง</b> แล้วเลือก <b>อนุญาต</b>','กลับมาที่แอป แล้วกดปุ่ม <b>ลองอีกครั้ง</b> ด้านล่าง'],
+  'ios-chrome':['ออกจาก Chrome ไปที่ <b>การตั้งค่า</b> ของ iPhone','เลื่อนหา <b>Chrome</b> แล้วกดเข้าไป','เปิดสวิตช์ <b>กล้อง</b>','กลับมาที่แอป แล้วกดปุ่ม <b>ลองอีกครั้ง</b> ด้านล่าง'],
+  'ios-other':['ไปที่ <b>การตั้งค่า</b> ของ iPhone','เลื่อนหาชื่อเบราว์เซอร์ที่ใช้อยู่ แล้วเปิดสวิตช์ <b>กล้อง</b>','หรือเปิดลิงก์แอปด้วย <b>Safari</b> แทน (แนะนำ)'],
+  'android':['กด <b>ไอคอนหน้าลิงก์</b> (แม่กุญแจ / แถบปรับค่า) ซ้ายช่องลิงก์ด้านบน','กด <b>สิทธิ์</b> หรือ <b>การตั้งค่าเว็บไซต์</b>','กด <b>กล้อง</b> แล้วเลือก <b>อนุญาต</b>','ถ้าไม่มีให้เลือก: ตั้งค่าเครื่อง → แอป → Chrome → สิทธิ์ → กล้อง → อนุญาต','กลับมาที่แอป แล้วกดปุ่ม <b>ลองอีกครั้ง</b>'],
+  'samsung':['กด <b>☰</b> มุมขวาล่าง → <b>การตั้งค่า</b>','<b>เว็บไซต์และการดาวน์โหลด</b> หรือ <b>ความเป็นส่วนตัว</b> → <b>สิทธิ์เว็บไซต์</b> → <b>กล้อง</b>','เลือกเว็บไซต์ของแอปนี้ แล้วกด <b>อนุญาต</b>','กลับมาที่แอป แล้วกดปุ่ม <b>ลองอีกครั้ง</b>'],
+  'desktop':['กด <b>แม่กุญแจ</b> หรือ <b>ไอคอนปรับค่า</b> ซ้ายช่องลิงก์','ตั้ง <b>กล้อง</b> เป็น <b>อนุญาต</b> แล้วโหลดหน้าใหม่','ถ้าเครื่องไม่มีกล้อง ใช้เครื่องยิงบาร์โค้ดยิงลงช่องได้เลย']};
+function camHelp(why){
+  const env=camEnv();
+  const top={inapp:'ตอนนี้เปิดแอปผ่าน LINE / Facebook ซึ่งใช้กล้องไม่ได้',denied:'เครื่องนี้ยังไม่อนุญาตให้แอปใช้กล้อง',nocam:'ไม่พบกล้องในเครื่องนี้',unsupported:'เบราว์เซอร์นี้ใช้กล้องไม่ได้',error:'เปิดกล้องไม่สำเร็จ'}[why]||'วิธีอนุญาตให้แอปใช้กล้อง';
+  const steps=why==='inapp'?['กดปุ่ม <b>⋮</b> หรือ <b>แชร์</b> มุมขวาบน','เลือก <b>เปิดในเบราว์เซอร์</b> (iPhone: Safari · Android: Chrome)','ในเบราว์เซอร์ กดปุ่ม <b>อนุญาตกล้อง</b> อีกครั้ง']
+    :why==='unsupported'?['iPhone ให้เปิดลิงก์แอปด้วย <b>Safari</b>','Android ให้เปิดด้วย <b>Chrome</b>']:(CAM_STEPS[env]||CAM_STEPS.android);
+  const sh=openSheet(`<div class="eyebrow">กล้องสำหรับสแกนบาร์โค้ด</div><h2>${top}</h2>
+    <ol class="cam-steps">${steps.map(t=>`<li>${t}</li>`).join('')}</ol>
+    <div class="small muted" style="margin:6px 0 10px">ระหว่างนี้ยังพิมพ์เลขเองได้ หรือใช้ปุ่ม "📷 ถ่ายรูปบาร์โค้ด" ในหน้าสแกนได้ครับ</div>
+    ${why==='inapp'?'':'<button class="btn btn-teal btn-block" id="cam-retry">ลองอีกครั้ง</button>'}
+    <button class="btn btn-soft btn-block" data-close>ปิด</button>`);
+  const r=sh.el.querySelector('#cam-retry');if(r)r.onclick=async()=>{sh.close();await askCamera()};
+}
+async function camCard(){const c=$('#cam-card');if(!c)return;const st=await camState();
+  // iPhone ที่ตั้งกล้องเป็น "ถาม" จะกลับเป็น prompt ทุกครั้งที่เปิดแอป: ถ้าเครื่องนี้เคยอนุญาตสำเร็จแล้ว ไม่ต้องแสดงการ์ดซ้ำ
+  if(st==='granted'||(st==='prompt'&&store.get('cbcCamOk')==='1')||!$('#cam-card'))return;
+  c.hidden=false;c.querySelector('.cam-t').textContent=st==='denied'?'เครื่องนี้ยังไม่อนุญาตกล้อง กดเพื่อดูวิธีเปิด':'อนุญาตให้แอปใช้กล้องครั้งเดียว แล้วสแกนบาร์โค้ดได้ทันที';
+  c.querySelector('button').onclick=()=>st==='denied'?camHelp('denied'):askCamera()}
 /* แถบเมนูล่าง */
 async function navTo(t){adminPin='';
   if(t==='menu')return openMenu();
