@@ -226,6 +226,18 @@ body.noNav main{padding-bottom:60px}
 .cam-card .btn{flex-shrink:0;min-height:44px;padding:8px 14px}
 .cam-steps{margin:6px 0 4px 1.2em;display:grid;gap:8px;line-height:1.5}
 @media (max-width:380px){.cam-card{flex-wrap:wrap}.cam-card .btn{width:100%}}
+.sh-open{margin-top:6px;font-size:.88rem}
+.sh-box{margin-top:8px;padding:12px;border-radius:var(--r-m);border:1.5px dashed var(--line-2);background:var(--surface-2);display:grid;gap:10px}
+.sh-warn{background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:8px 10px;font-size:.9rem}
+.sh-days{display:flex;flex-wrap:wrap;gap:6px}
+.sh-day{border:1.5px solid var(--line-2);background:var(--surface);color:var(--ink);border-radius:12px;padding:8px 10px;font:inherit;font-size:.9rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2;min-width:62px}
+.sh-day small{font-size:.7rem;color:var(--muted)}
+.sh-day[aria-pressed="true"]{border-color:var(--teal);background:color-mix(in srgb,var(--teal) 14%,var(--surface));font-weight:700}
+.sh-other{position:relative;overflow:hidden}.sh-other input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.sh-row{display:flex;gap:8px;align-items:center}
+.sh-pre{font-size:1.25rem;font-weight:700;letter-spacing:.04em;padding:10px 12px;border-radius:10px;background:var(--surface);border:1.5px solid var(--line);white-space:nowrap}
+.sh-pre i{font-style:normal;color:var(--teal)}
+.sh-last{flex:1;min-width:0;font-size:1.25rem;letter-spacing:.12em}
 .fest-chip{display:inline-flex;white-space:nowrap;align-items:center;gap:6px;margin-top:8px;align-self:flex-start;background:rgba(255,224,138,.16);border:1px solid rgba(255,224,138,.55);color:#ffe08a;border-radius:999px;padding:3px 10px;font-size:.78rem;font-weight:600}
 
 .hero-t{flex:1;min-width:0;max-width:42%;text-shadow:0 0 8px var(--hero-fade),0 0 2px var(--hero-fade);display:flex;flex-direction:column;gap:2px;position:relative}
@@ -830,8 +842,32 @@ const L=t=>String(t||'').replace(/^(\d)\.\s*/,'<span class="step">$1</span>');
 function scanField(id,label){return `<div class="field"><label for="${id}">${L(label)}</label>
   <div class="scanrow"><input class="input mono" id="${id}" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="สแกน หรือพิมพ์เลข">
   <button type="button" class="cam" id="${id}-cam" aria-label="สแกนด้วยกล้อง">${camIcon}</button></div>
-  <div class="hint">กดปุ่มกล้องเพื่อสแกน หรือยิงด้วยเครื่องสแกน</div></div>`}
-function bindScan(id){document.getElementById(id+'-cam').onclick=()=>openScanner(document.getElementById(id))}
+  <div class="hint">กดปุ่มกล้องเพื่อสแกน หรือยิงด้วยเครื่องสแกน</div>
+  ${/-sample$/.test(id)?`<button type="button" class="linkbtn sh-open" id="${id}-help">สแกนไม่ได้? กรอกเลขแบบช่วย</button><div class="sh-box" id="${id}-sh" hidden></div>`:''}</div>`}
+const TH_MON=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+/* กรอก Sample No. แบบช่วย: เลือกวันที่บนสติกเกอร์ → ได้ 4 หลักแรก (วัน+เดือน) + 02 (Hemato) อัตโนมัติ แล้วพิมพ์อีก 4 หลักท้าย */
+function bindSampleHelp(id){
+  const btn=document.getElementById(id+'-help'),box=document.getElementById(id+'-sh'),main=document.getElementById(id);if(!btn)return;
+  let day=null;
+  const days=Array.from({length:7},(_,i)=>{const d=new Date();d.setDate(d.getDate()-i);return d});
+  const draw=()=>{
+    const pre=day?`${p2(day.getDate())}${p2(day.getMonth()+1)}02`:'';
+    box.innerHTML=`<div class="sh-warn">⚠️ เลือก<b>วันที่ที่พิมพ์อยู่บนสติกเกอร์สไลด์</b> ไม่ใช่วันนี้เสมอไป</div>
+      <div class="sh-days">${days.map((d,i)=>`<button type="button" class="sh-day" data-i="${i}" aria-pressed="${!!day&&isoDate(day)===isoDate(d)}">${d.getDate()} ${TH_MON[d.getMonth()]}${i===0?'<small>วันนี้</small>':i===1?'<small>เมื่อวาน</small>':''}</button>`).join('')}
+        <label class="sh-day sh-other">วันอื่น<input type="date" max="${isoDate(new Date())}" aria-label="เลือกวันที่บนสติกเกอร์"></label></div>
+      <div class="sh-row"><span class="sh-pre mono" aria-label="เลข 6 หลักแรก">${pre?pre.replace(/(\d{2})(\d{2})(\d{2})/,'$1<i>$2</i>$3'):'วว ดด 02'}</span>
+        <input class="input mono sh-last" inputmode="numeric" maxlength="4" placeholder="4 หลักท้าย" aria-label="เลข 4 หลักท้ายของ Sample No." ${day?'':'disabled'}></div>
+      <div class="small muted">${day?`วันที่ ${day.getDate()} ${TH_MON[day.getMonth()]} → ขึ้นต้นด้วย ${pre} · พิมพ์ 4 หลักท้ายจากสติกเกอร์`:'เลือกวันที่ก่อน แล้วพิมพ์ 4 หลักท้าย'}</div>`;
+    box.querySelectorAll('.sh-day[data-i]').forEach(b=>b.onclick=()=>{day=days[+b.dataset.i];draw();box.querySelector('.sh-last').focus()});
+    const di=box.querySelector('.sh-other input');di.onchange=()=>{if(!di.value)return;const [y,m,d]=di.value.split('-').map(Number);day=new Date(y,m-1,d);draw();box.querySelector('.sh-last').focus()};
+    const last=box.querySelector('.sh-last');
+    last.oninput=()=>{last.value=last.value.replace(/\D/g,'').slice(0,4);
+      if(day&&last.value.length===4){main.value=pre+last.value;main.dispatchEvent(new Event('input',{bubbles:true}));main.dispatchEvent(new Event('change',{bubbles:true}));
+        box.hidden=true;btn.hidden=false;toast('ได้ Sample No. '+main.value+' แล้วครับ')}};
+  };
+  btn.onclick=()=>{box.hidden=false;btn.hidden=true;day=null;draw()};
+}
+function bindScan(id){document.getElementById(id+'-cam').onclick=()=>openScanner(document.getElementById(id));bindSampleHelp(id)}
 
 /* ---------- ward combobox ---------- */
 const wNorm=t=>String(t).toLowerCase().replace(/[()\[\]:,*\-/.]+/g,' ').replace(/\s+/g,' ').trim();
