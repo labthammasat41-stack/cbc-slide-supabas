@@ -162,6 +162,8 @@ body.noNav main{padding-bottom:60px}
 .combo-list li{padding:12px 14px;border-radius:10px;cursor:pointer}
 .combo-list li.combo-h{padding:8px 14px 4px;font-size:.78rem;font-weight:700;color:var(--muted);cursor:default;background:none!important;letter-spacing:.02em}
 .combo-list li[aria-selected="true"],.combo-list li:hover{background:var(--blue-soft)}
+.combo-list li.armed{background:color-mix(in srgb,var(--teal) 16%,var(--surface));box-shadow:inset 0 0 0 2px var(--teal);font-weight:600}
+.combo-list li.armed::after{content:"✓ " attr(data-hint);display:block;font-size:.78rem;font-weight:700;color:var(--teal);margin-top:3px}
 
 /* ---------- page header (back) ---------- */
 .page-head{display:flex;flex-direction:column;align-items:flex-start;gap:14px}
@@ -388,6 +390,13 @@ body.noNav .toast{bottom:calc(20px + env(safe-area-inset-bottom,0px))}
 .zoom input{flex:1;accent-color:#5ff0de;height:28px}
 .photo-btn{background:#fff;color:#0e1b2a}
 .scan-ov.hit #reader{box-shadow:0 0 0 4px #4cc98a}
+.shot-wrap{position:relative;width:min(100%,480px);border-radius:20px;overflow:hidden;background:#000;aspect-ratio:3/4;max-height:62vh}
+.shot-wrap video{width:100%;height:100%;object-fit:cover;display:block}
+.shot-frame{position:absolute;inset:8%;border:2px dashed rgba(255,255,255,.7);border-radius:14px;pointer-events:none}
+.shot-btn{width:74px;height:74px;border-radius:50%;border:5px solid #fff;background:#fff;box-shadow:inset 0 0 0 4px #05090e;cursor:pointer;flex-shrink:0}
+.shot-btn:active{transform:scale(.92)}.shot-btn:disabled{opacity:.4}
+#shot-ov.hit .shot-wrap{box-shadow:0 0 0 4px #4cc98a}
+button.photo-take{width:100%;font:inherit;cursor:pointer}
 
 /* ---------- น้องสไลด์ ---------- */
 .guide-top{display:flex;gap:12px;align-items:flex-end;padding:22px 58px 0 18px;background:linear-gradient(180deg,var(--teal-soft),var(--surface));border-radius:var(--r-xl) var(--r-xl) 0 0}
@@ -841,16 +850,23 @@ function bindCombo(id){
     list.innerHTML=items.length?items.map((w,i)=>(i===0&&nr?'<li class="combo-h" aria-hidden="true">ใช้ล่าสุด</li>':'')+(i===nr&&nr?'<li class="combo-h" aria-hidden="true">ทั้งหมด</li>':'')+`<li role="option" data-w="${esc(w)}" aria-selected="${i===act}">${esc(w)}</li>`).join(''):'<li class="muted">ไม่พบวอร์ดนี้ ลองพิมพ์คำอื่น หรือเลขโทรศัพท์วอร์ด</li>';
     const sel=list.querySelector('[aria-selected="true"]');if(sel)sel.scrollIntoView({block:'nearest'});
     list.hidden=false;inp.setAttribute('aria-expanded','true')};
-  const close=()=>{list.hidden=true;inp.setAttribute('aria-expanded','false');act=-1};
+  let armed=null,keep=false;
+  const close=()=>{list.hidden=true;inp.setAttribute('aria-expanded','false');act=-1;armed=null};
   const pick=w=>{inp.value=w;wardRecentAdd(w);close();inp.dispatchEvent(new Event('change'))};
+  // แตะครั้งแรก = เลือก (แถบสีเขียว) แตะซ้ำที่เดิม = ยืนยัน · เลื่อนรายการได้โดยไม่เลือกผิด
+  const arm=li=>{list.querySelectorAll('li.armed').forEach(x=>{x.classList.remove('armed');x.removeAttribute('data-hint')});
+    armed=li.dataset.w;li.classList.add('armed');li.setAttribute('data-hint','แตะอีกครั้งเพื่อยืนยัน')};
   inp.addEventListener('focus',()=>{inp.select();draw()});
   inp.addEventListener('input',()=>{act=-1;draw()});
   inp.addEventListener('keydown',e=>{if(e.key==='ArrowDown'){act=Math.min(act+1,items.length-1);draw();e.preventDefault()}
     else if(e.key==='ArrowUp'){act=Math.max(act-1,0);draw();e.preventDefault()}
     else if(e.key==='Enter'&&act>=0){pick(items[act]);e.preventDefault()}else if(e.key==='Escape')close()});
-  list.addEventListener('mousedown',e=>{const li=e.target.closest('li[data-w]');if(li){pick(li.dataset.w);e.preventDefault()}});
-  list.addEventListener('touchstart',e=>{const li=e.target.closest('li[data-w]');if(li){pick(li.dataset.w);e.preventDefault()}},{passive:false});
-  inp.addEventListener('blur',()=>setTimeout(close,150));
+  list.addEventListener('mousedown',e=>e.preventDefault());           // ไม่ให้ช่องพิมพ์หลุดโฟกัสบนคอมพิวเตอร์
+  list.addEventListener('pointerdown',()=>{keep=true});
+  list.addEventListener('click',e=>{const li=e.target.closest('li[data-w]');if(!li)return;
+    if(armed===li.dataset.w)pick(li.dataset.w);else arm(li)});
+  inp.addEventListener('blur',()=>setTimeout(()=>{if(keep){keep=false;return}close()},200));
+  document.addEventListener('pointerdown',e=>{if(!list.hidden&&!e.target.closest('.combo'))close()});
 }
 
 /* ---------- date + time of specimen ---------- */
@@ -1200,15 +1216,42 @@ function shrinkPhoto(file){return new Promise((res,rej)=>{
   img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('อ่านรูปไม่ได้ ถ่ายใหม่อีกครั้ง'))};
   img.src=url;})}
 function photoField(id,n){return `<div class="field"><span class="lab">${L((n||'')+'ถ่ายภาพหลักฐานการส่งใบตาม')}${REQUIRE_PHOTO?'':' <span class="opt">(ถ้ามี)</span>'}</span>
-  <div class="photo-box" id="${id}-box"><label class="photo-take" for="${id}">${icCam}<span>แตะเพื่อถ่ายภาพใบตามที่วางในตะกร้ารับสิ่งส่งตรวจ</span></label></div>
+  <div class="photo-box" id="${id}-box"><button type="button" class="photo-take" data-take="${id}">${icCam}<span>แตะเพื่อถ่ายภาพใบตามที่วางในตะกร้ารับสิ่งส่งตรวจ</span></button></div>
   <input type="file" id="${id}" accept="image/*" capture="environment" style="position:absolute;opacity:0;width:1px;height:1px"></div>`}
+/* ถ่ายรูปในแอป: เปิดกล้องในหน้าแอปเลย ไม่ต้องสลับไปแอปกล้อง (ถ้าเปิดไม่ได้ ใช้กล้องของเครื่องแทน) */
+let shotStream=null;
+function closeShot(){const o=document.getElementById('shot-ov');if(o)o.hidden=true;if(shotStream){shotStream.getTracks().forEach(t=>t.stop());shotStream=null}}
+async function openShot(onFile,fallback){
+  let o=document.getElementById('shot-ov');
+  if(!o){o=document.createElement('div');o.id='shot-ov';o.className='scan-ov';o.innerHTML=`<div class="scan-top"><span class="ttl">ถ่ายภาพหลักฐาน</span></div>
+    <div class="shot-wrap"><video id="shot-v" playsinline muted autoplay></video><div class="shot-frame"></div></div>
+    <div class="msg" id="shot-msg">ให้ใบตามอยู่ในกรอบ แล้วกดปุ่มถ่าย</div>
+    <button class="shot-btn" id="shot-go" aria-label="ถ่ายภาพ"></button>
+    <div class="row"><button class="btn btn-ghost" id="shot-alt">ใช้กล้องของเครื่องแทน</button><button class="btn btn-ghost" id="shot-x">ปิด</button></div>`;document.body.appendChild(o)}
+  o.hidden=false;const v=o.querySelector('#shot-v'),msg=o.querySelector('#shot-msg'),go=o.querySelector('#shot-go');
+  msg.textContent='กำลังเปิดกล้อง…';go.disabled=true;
+  o.querySelector('#shot-x').onclick=closeShot;
+  o.querySelector('#shot-alt').onclick=()=>{closeShot();fallback()};
+  try{
+    shotStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1440}},audio:false});
+    v.srcObject=shotStream;await v.play().catch(()=>{});store.set('cbcCamOk','1');
+    msg.textContent='ให้ใบตามอยู่ในกรอบ แล้วกดปุ่มถ่าย';go.disabled=false;
+  }catch(e){closeShot();if(e&&e.name==='NotAllowedError'){camHelp('denied');return}fallback();return}
+  go.onclick=()=>{if(!v.videoWidth)return;const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;
+    c.getContext('2d').drawImage(v,0,0);go.disabled=true;o.classList.add('hit');
+    c.toBlob(b=>{o.classList.remove('hit');closeShot();if(b)onFile(new File([b],'evidence.jpg',{type:'image/jpeg'}))},'image/jpeg',0.92)};
+}
 function bindPhoto(id,onChange){
   const inp=document.getElementById(id),box=document.getElementById(id+'-box');
-  inp.addEventListener('change',async()=>{const f=inp.files[0];inp.value='';if(!f)return;
+  const handle=async f=>{if(!f)return;
     box.innerHTML='<div class="muted small">กำลังเตรียมรูป…</div>';
     try{const data=await shrinkPhoto(f);onChange(data);
-      box.innerHTML=`<div class="photo-prev"><img src="${data}" alt="ภาพหลักฐานการส่งใบตาม"><div><div class="flag ok">ถ่ายภาพแล้ว</div><label class="linkbtn" for="${id}" style="display:inline-block;margin-top:6px">ถ่ายใหม่</label></div></div>`}
-    catch(e){onChange('');box.innerHTML=`<div class="alert bad">${esc(e.message)}</div><label class="photo-take" for="${id}">${icCam}<span>ถ่ายใหม่</span></label>`}});
+      box.innerHTML=`<div class="photo-prev"><img src="${data}" alt="ภาพหลักฐานการส่งใบตาม"><div><div class="flag ok">ถ่ายภาพแล้ว</div><button type="button" class="linkbtn" data-take="${id}" style="display:inline-block;margin-top:6px">ถ่ายใหม่</button></div></div>`}
+    catch(e){onChange('');box.innerHTML=`<div class="alert bad">${esc(e.message)}</div><button type="button" class="photo-take" data-take="${id}">${icCam}<span>ถ่ายใหม่</span></button>`}};
+  inp.addEventListener('change',()=>{const f=inp.files[0];inp.value='';handle(f)});
+  box.addEventListener('click',e=>{if(!e.target.closest('[data-take]'))return;e.preventDefault();
+    if(camEnv()==='inapp'||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return inp.click();
+    openShot(handle,()=>inp.click())});
 }
 
 /* ---------- staff views ---------- */
