@@ -213,6 +213,11 @@ body.noNav main{padding-bottom:60px}
 :root[data-fest-tone="light"] .fest-chip{background:rgba(255,255,255,.75);border-color:color-mix(in srgb,var(--fest-accent) 45%,transparent);color:var(--fest-accent)}
 :root[data-fest] .appbar{box-shadow:inset 0 -3px 0 0 var(--fest-accent,#f4c34a)}
 :root[data-fest] svg.bot{overflow:visible}
+.fest-list{display:grid;gap:8px;max-height:52vh;overflow:auto;padding:2px}
+.fest-opt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:12px 14px;border-radius:var(--r-m);border:2px solid var(--line-2);background:var(--surface);color:var(--ink);cursor:pointer;font:inherit}
+.fest-opt span{font-size:.85rem;color:var(--muted)}
+.fest-opt[aria-pressed="true"]{border-color:var(--teal);background:color-mix(in srgb,var(--teal) 10%,var(--surface))}
+.fest-opt[aria-pressed="true"] b::after{content:"  ✓ ใช้อยู่";color:var(--teal);font-size:.85rem}
 .fest-chip{display:inline-flex;white-space:nowrap;align-items:center;gap:6px;margin-top:8px;align-self:flex-start;background:rgba(255,224,138,.16);border:1px solid rgba(255,224,138,.55);color:#ffe08a;border-radius:999px;padding:3px 10px;font-size:.78rem;font-weight:600}
 
 .hero-t{flex:1;min-width:0;max-width:42%;text-shadow:0 0 8px var(--hero-fade),0 0 2px var(--hero-fade);display:flex;flex-direction:column;gap:2px;position:relative}
@@ -425,6 +430,9 @@ tbody tr:hover{background:var(--surface-2)}
 .late{color:var(--bad);font-weight:700}
 .ltabs{display:flex;gap:4px;background:var(--surface-3);border-radius:14px;padding:4px;align-self:flex-start;max-width:100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .ltabs::-webkit-scrollbar{display:none}
+.photo-link{border:0;background:none;padding:4px 0;color:var(--blue,#1f5fae);font-weight:600;font-size:.85rem;cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-family:inherit}
+.ph-box{border-radius:var(--r-m);overflow:hidden;background:var(--surface-3);min-height:120px;display:grid;place-items:center}
+.ph-img{display:block;width:100%;max-height:65vh;object-fit:contain;background:#000}
 
 .lab-top{display:flex;align-items:center;gap:10px;max-width:100%}
 .lab-top .ltabs{flex:0 1 auto;min-width:0}
@@ -534,8 +542,7 @@ details.tbl th,details.tbl td{padding:6px 10px}
 </div></header>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
 
-  <symbol id="nong-fest" viewBox="0 0 120 140">
-    <g id="nong-fest-extra"></g></symbol>
+  <symbol id="nong-fest" viewBox="0 0 120 140"></symbol>
   <symbol id="nong" viewBox="0 0 120 140">
     <defs>
       <linearGradient id="ng-shell" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d5efec"/></linearGradient>
@@ -621,7 +628,7 @@ const RPC={apiInit:['api_init','p_token'],apiRegister:['api_register','d'],apiLo
   apiIncludeCheck:['api_include_check','p_token','d'],apiInclude:['api_include','p_token','d'],apiSearch:['api_search','p_token','q'],
   apiLabList:['api_lab_list','p_pin'],apiLabStats:['api_lab_stats','p_pin','p_days'],apiSetPhoto:['api_set_photo','p_token','p_id','p_path'],apiUndo:['api_undo','p_token','p_id','p_kind'],
   apiLabFix:['api_lab_fix','p_pin','p_id','p_action','p_reason'],apiLabStaff:['api_lab_staff','p_pin'],apiLabStaffSet:['api_lab_staff_set','p_pin','p_staff','p_state'],
-  apiLabBackups:['api_lab_backups','p_pin'],apiAdminWards:['api_admin_wards','p_pin'],apiAdminWardSave:['api_admin_ward_save','p_pin','p_action','p_name','p_new'],apiLabPurge:['api_lab_purge','p_pin','p_month','p_confirm']};
+  apiLabBackups:['api_lab_backups','p_pin'],apiAdminWards:['api_admin_wards','p_pin'],apiLabFestSet:['api_lab_fest_set','p_pin','p_fest'],apiAdminWardSave:['api_admin_ward_save','p_pin','p_action','p_name','p_new'],apiLabPurge:['api_lab_purge','p_pin','p_month','p_confirm']};
 /* คีย์แบบใหม่ (sb_publishable_…) ส่งใน apikey อย่างเดียว คีย์ anon แบบเดิม (eyJ…) ส่งใน Authorization ด้วย */
 const supaHead=extra=>Object.assign({apikey:SUPA_KEY},/^eyJ/.test(SUPA_KEY)?{Authorization:'Bearer '+SUPA_KEY}:{},extra||{});
 async function rpc(fn,args){
@@ -927,11 +934,12 @@ const FESTS=[
    greet:'วันพ่อแห่งชาติ',chip:'💛 5 ธันวาคม',says:['สุขสันต์วันพ่อครับ 💛','กลับบ้านไปกอดพ่อด้วยนะครับ','ดอกพุทธรักษา ดอกไม้วันพ่อครับ']},
   {id:'xmas',rng:y=>[`${y}-12-20`,`${y}-12-26`],tone:'dark',accent:'#ffd76a',
    greet:'สุขสันต์วันคริสต์มาส',chip:'🎄 Merry Christmas',says:['Merry Christmas ครับ 🎄','ของขวัญวันนี้คือสไลด์ที่หาเจอครับ 🎁','อากาศเย็นแล้ว รักษาสุขภาพนะครับ']}];
-const FEST=(()=>{const val=v=>typeof v==='function'?v():v;
-  const pick=f=>f&&Object.assign({},f,{greet:val(f.greet),chip:val(f.chip),says:val(f.says)});
-  try{const q=new URLSearchParams(location.search).get('fest');if(q==='off')return null;const f=FESTS.find(x=>x.id===q);if(f)return pick(f)}catch(e){}
-  const now=new Date(),t=isoDate(now),y=now.getFullYear();
-  return pick(FESTS.find(f=>[y-1,y].some(yy=>{const [a,b]=f.rng(yy);return t>=a&&t<=b})))})();
+const FEST_NAMES={newyear:'ปีใหม่',kids:'วันเด็ก',valentine:'วาเลนไทน์',songkran:'สงกรานต์',mother:'วันแม่',halloween:'ฮาโลวีน',father:'วันพ่อ',xmas:'คริสต์มาส'};
+const festPick=f=>{const val=v=>typeof v==='function'?v():v;return f?Object.assign({},f,{greet:val(f.greet),chip:val(f.chip),says:val(f.says)}):null};
+const festByDate=()=>{const now=new Date(),t=isoDate(now),y=now.getFullYear();
+  return festPick(FESTS.find(f=>[y-1,y].some(yy=>{const [a,b]=f.rng(yy);return t>=a&&t<=b})))};
+const FEST_URL=(()=>{try{const q=new URLSearchParams(location.search).get('fest');return q==='off'||FEST_NAMES[q]?q:null}catch(e){return null}})();
+let FEST=null, festMode='auto';   // festMode = ค่าที่หน้าแลปตั้งไว้: auto (ตามวันที่) | off | ชื่อธีม
 // ของแต่งตัวน้องสไลด์ (พิกัดในกรอบ 120x140 เดียวกับตัวน้อง)
 const garland=(c1,c2,s1,s2)=>'<g><path d="M22 24q38-22 76 0" fill="none" stroke="#2f9a52" stroke-width="3" stroke-linecap="round"/>'
   +[22,32,43,54,66,77,88,98].map((x,i)=>{const y=24-Math.sin(Math.PI*(x-22)/76)*11;return `<circle cx="${x}" cy="${y.toFixed(1)}" r="4.2" fill="${i%2?c2:c1}" stroke="${i%2?s2:s1}" stroke-width="1.2"/>`}).join('')+'</g>';
@@ -964,11 +972,16 @@ const FEST_ACC={
     +'<circle cx="46" cy="-7" r="4.5" fill="#f4c34a" stroke="#16324f" stroke-width="1.5"/></g>'
     +'<g><path d="M98 118L108 88" stroke="#8a6d3b" stroke-width="2.5" stroke-linecap="round"/>'
     +'<g class="ny-spark"><path d="M108 76v24M96 88h24M100 80l16 16M116 80l-16 16" stroke="#ffd54a" stroke-width="2.2" stroke-linecap="round"/><circle cx="108" cy="88" r="3.5" fill="#fff6c2"/></g></g>'};
-if(FEST){const H=document.documentElement;H.dataset.fest=FEST.id;H.dataset.festTone=FEST.tone||'dark';if(FEST.accent)H.style.setProperty('--fest-accent',FEST.accent);
-  const ex=document.getElementById('nong-fest-extra'),acc=FEST_ACC[FEST.id];
-  if(ex&&acc){
-    ex.outerHTML='<g>'+document.getElementById('nong').innerHTML.replace(/<defs>[\s\S]*?<\/defs>/,'')+'</g>'+acc();
-    document.querySelectorAll('use[href="#nong"]').forEach(u=>u.setAttribute('href','#nong-fest'))}
+function applyFest(mode){
+  festMode=mode||'auto';const want=FEST_URL||festMode;
+  FEST=want==='off'?null:want==='auto'?festByDate():festPick(FESTS.find(f=>f.id===want))||festByDate();
+  const H=document.documentElement;
+  if(FEST){H.dataset.fest=FEST.id;H.dataset.festTone=FEST.tone||'dark';if(FEST.accent)H.style.setProperty('--fest-accent',FEST.accent);else H.style.removeProperty('--fest-accent')}
+  else{delete H.dataset.fest;delete H.dataset.festTone;H.style.removeProperty('--fest-accent')}
+  const sym=document.getElementById('nong-fest'),acc=FEST&&FEST_ACC[FEST.id];
+  if(sym)sym.innerHTML=acc?'<g>'+document.getElementById('nong').innerHTML.replace(/<defs>[\s\S]*?<\/defs>/,'')+'</g>'+acc():'';
+  document.querySelectorAll('use[href="#nong"],use[href="#nong-fest"]').forEach(u=>u.setAttribute('href',NONG()));
+  if(typeof SAYS!=='undefined'){SAYS.length=0;SAYS.push(...(FEST&&FEST.says||[]),...BASE_SAYS);const fs0=document.getElementById('fab-say');if(fs0)fs0.textContent=SAYS[0]}
 }
 const NONG=()=>FEST&&FEST_ACC[FEST.id]?'#nong-fest':'#nong';
 const sv=b=>`<div class="fest-scene" aria-hidden="true"><svg viewBox="0 0 400 190" preserveAspectRatio="xMidYMid slice">${b}</svg></div>`;
@@ -1062,10 +1075,10 @@ function openModal(html,cls){
   m.querySelectorAll('[data-close]').forEach(b=>b.onclick=close);
   document.body.appendChild(m);m.querySelector('.modal-x').focus();
 }
-const BOT='<svg class="bot" viewBox="0 0 120 140" aria-hidden="true"><use href="'+NONG()+'"/></svg>';
+const botSvg=()=>'<svg class="bot" viewBox="0 0 120 140" aria-hidden="true"><use href="'+NONG()+'"/></svg>';
 // หน้าต่างแนะนำวิธีตาม Slide (ขึ้นทุกครั้งที่เปิดแอปหลังเข้าสู่ระบบ) — น้องสไลด์ยืนอธิบาย
 function showGuide(){
-  openModal(`<div class="guide-top"><div class="bot">${BOT}</div>
+  openModal(`<div class="guide-top"><div class="bot">${botSvg()}</div>
     <div class="say"><b>สวัสดีครับ ผมน้องสไลด์</b>ก่อนเริ่มใช้งาน ขออนุญาตแนะนำวิธีการตาม Slide นะครับ</div></div>
   <div class="modal-body">
     <ol class="steps">
@@ -1139,12 +1152,12 @@ const FAQ=[
 function chipsHtml(list){return `<div class="chips">${list.map(i=>`<button class="chip" data-q="${i}">${esc(FAQ[i].q)}</button>`).join('')}</div>`}
 function allChips(){let g='',h='';FAQ.forEach((f,i)=>{if(f.g!==g){g=f.g;h+=`<h4>${esc(g)}</h4>`}h+=`<button class="chip" data-q="${i}">${esc(f.q)}</button>`});return `<div class="chips">${h}</div>`}
 function openAssistant(){
-  openModal(`<div class="guide-top"><div class="bot">${BOT}</div><div class="say"><b>น้องสไลด์ยินดีช่วยครับ</b>กดเลือกคำถามด้านล่างได้เลยครับ</div></div>
+  openModal(`<div class="guide-top"><div class="bot">${botSvg()}</div><div class="say"><b>น้องสไลด์ยินดีช่วยครับ</b>กดเลือกคำถามด้านล่างได้เลยครับ</div></div>
     <div class="modal-body"><div class="chat" id="chat"></div><div id="chips">${allChips()}</div></div>`);
   const chat=$('#chat'),chips=$('#chips');
   const ask=i=>{const f=FAQ[i];
     chat.insertAdjacentHTML('beforeend',`<div class="msg me"><div class="txt">${esc(f.q)}</div></div>
-      <div class="msg"><div class="av">${BOT}</div><div class="txt">${esc(f.a).replace(/&lt;span class=&quot;call&quot;&gt;8133&lt;\/span&gt;/g,CALL)}${f.go?'<div class="go"><button class="btn btn-blue" data-go="search">เปิดหน้าค้นหาสถานะสไลด์</button></div>':''}</div></div>`);
+      <div class="msg"><div class="av">${botSvg()}</div><div class="txt">${esc(f.a).replace(/&lt;span class=&quot;call&quot;&gt;8133&lt;\/span&gt;/g,CALL)}${f.go?'<div class="go"><button class="btn btn-blue" data-go="search">เปิดหน้าค้นหาสถานะสไลด์</button></div>':''}</div></div>`);
     chat.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{document.querySelector('.modal').remove();mode='ward';view='search';render()});
     const next=(f.n||[]).map(x=>x-1).filter(x=>x!==i);
     chips.innerHTML=(next.length?'<div class="chips"><h4>คำถามที่เกี่ยวข้อง</h4></div>'+chipsHtml(next):'')+'<div class="chips" style="margin-top:6px"><button class="chip" data-all="1">ดูคำถามทั้งหมด</button></div>';
@@ -1153,8 +1166,9 @@ function openAssistant(){
     const all=chips.querySelector('[data-all]');if(all)all.onclick=()=>{chips.innerHTML=allChips();bindChips()}};
   bindChips();
 }
-const SAYS=['สอบถามได้นะครับ 💬','หาสไลด์ไม่เจอ ถามน้องได้ครับ','มีอะไรให้ช่วยไหมครับ'];
-if(FEST&&FEST.says){SAYS.unshift(...FEST.says);const fs0=document.getElementById('fab-say');if(fs0)fs0.textContent=SAYS[0]}let sayI=0,sayT=null;
+const BASE_SAYS=['สอบถามได้นะครับ 💬','หาสไลด์ไม่เจอ ถามน้องได้ครับ','มีอะไรให้ช่วยไหมครับ'],SAYS=[...BASE_SAYS];
+applyFest(store.get('cbcFest')||'auto');   // ใช้ค่าที่จำไว้ก่อน แล้วอัปเดตจากเซิร์ฟเวอร์เมื่อโหลดเสร็จ
+let sayI=0,sayT=null;
 // กล่องข้อความของน้องขึ้นสักพักแล้วหายไป จะได้ไม่บังช่องกรอก
 function sayAgain(){const el=$('#fab-say');el.classList.remove('quiet');clearTimeout(sayT);sayT=setTimeout(()=>el.classList.add('quiet'),7000)}
 window.addEventListener('scroll',()=>{if(view!=='home')$('#fab-say').classList.add('quiet')},{passive:true});
@@ -1294,7 +1308,7 @@ function vHome(){
   const load=async()=>{try{const rows=await run('apiMine',store.get(TOKEN_KEY));if(!$('#mylist'))return;homeRows=rows;drawLive();
     $('#mylist').innerHTML=rows.length?rows.map(r=>`<div class="it ${r.status}"><div style="min-width:0"><div class="mono" style="font-weight:600">HN ${esc(r.hn)}${r.include?'<span class="tag-inc">Include</span>':''}</div>
       <div class="small muted">${r.sample?'Sample '+esc(r.sample)+' · ':''}${esc(r.ward)}</div>
-      <div class="small muted">${r.status==='out'?'รับสไลด์ '+esc(r.recvAt):'ส่งใบตาม '+esc(r.reqAt)}</div></div>${pill(r.status)}</div>`).join(''):'<div class="empty"><div class="art sm">'+artSearch+'</div><div class="muted small">ยังไม่มีรายการ เมื่อบันทึกส่งใบตามหรือรับสไลด์ รายการจะขึ้นที่นี่</div></div>'}
+      <div class="small muted">${r.status==='out'?'รับสไลด์ '+esc(r.recvAt):'ส่งใบตาม '+esc(r.reqAt)}</div>${photoBtn(r,'user')}</div>${pill(r.status)}</div>`).join(''):'<div class="empty"><div class="art sm">'+artSearch+'</div><div class="muted small">ยังไม่มีรายการ เมื่อบันทึกส่งใบตามหรือรับสไลด์ รายการจะขึ้นที่นี่</div></div>'}
     catch(err){if($('#mylist'))$('#mylist').innerHTML=errBox(err.message)}};
   $('#refresh').onclick=load;load();
   timers.push(setInterval(drawLive,15000),setInterval(load,60000));
@@ -1486,6 +1500,7 @@ function vSearch(){
     ${r.include?'':`<dt>ส่งใบตามโดย</dt><dd>${esc(r.reqName)}<br><span class="small muted">${esc(r.reqAt)}</span></dd>`}
     ${r.status==='out'?`<dt>รับไปโดย</dt><dd><b>${esc(r.recvName)}</b><br><span class="small muted">${esc(r.recvAt)}</span></dd>`:''}</dl>
     ${r.status==='in'?'<div class="small muted">ยังไม่มีใครบันทึกรับ สไลด์ควรอยู่ในตะกร้า หรือยังรอห้องปฏิบัติการ</div>':''}
+    ${photoBtn(r,'user')}
   </div>`;
   const go=async b=>{const q=inp.value.trim();$('#err').innerHTML='';const box=$('#s-res');
     if(!q){$('#err').innerHTML=errBox('กรอก HN หรือ Sample No. ที่ต้องการค้นหา');return}
@@ -1588,7 +1603,7 @@ function renderLab(){
      const late=r.status==='in'&&m>LATE_MIN;
      return `<tr><td class="mono">${esc(r.hn)}</td><td class="mono">${r.sample?esc(r.sample):'<span class="muted">–</span>'}</td><td>${esc(r.ward)}</td>
        <td>${esc(r.specAt||'–')}</td>
-       <td>${r.include?'<span class="tag-inc" style="margin:0">Include</span><br><span class="small muted">ไม่ได้ส่งใบตาม</span>':`${esc(r.reqName)}<br><span class="small muted">${esc(r.reqAt)}</span>${r.photo?`<br><span class="small muted" title="ดูรูปได้ที่ Supabase → Storage → evidence">📷 มีรูปหลักฐาน · ${esc(r.photo.split('/')[0])} / เลข ${r.row}</span>`:''}`}</td>
+       <td>${r.include?'<span class="tag-inc" style="margin:0">Include</span><br><span class="small muted">ไม่ได้ส่งใบตาม</span>':`${esc(r.reqName)}<br><span class="small muted">${esc(r.reqAt)}</span>${r.photo?`<br>${photoBtn(r,'lab')}<span class="small muted" title="ไฟล์ใน Supabase → Storage → evidence"> · ${esc(r.photo.split('/')[0])} / เลข ${r.row}</span>`:''}`}</td>
        <td>${r.status==='out'?`${esc(r.recvName)}<br><span class="small muted">${esc(r.recvAt)}</span>`:'<span class="muted">–</span>'}</td>
        <td class="${late?'late':''}">${m==null?'–':dur(m)}</td>
        <td><button class="btn btn-ghost" style="min-height:40px;padding:8px 12px;font-size:.88rem" data-fix="${r.row}">แก้ไข</button></td></tr>`}).join(''):'<tr><td colspan="8" class="muted" style="text-align:center;padding:28px">ไม่มีรายการในกลุ่มนี้</td></tr>'}
@@ -1790,14 +1805,63 @@ function offWard(w){
 
 function lockLab(msg){labPin='';adminPin='';labRows=[];statData=null;statCache={};try{sessionStorage.removeItem('cbcLabPin')}catch(e){}
   labTab='list';if(mode==='lab')render();toast(msg||'ล็อกหน้าแลปแล้ว')}
+/* ---------- เลือกธีมเทศกาล (PIN แลป) — มีผลกับทุกเครื่อง ---------- */
+function festSheet(){
+  const auto=festByDate(),y=new Date().getFullYear();
+  const rngTxt=f=>{const [a,b]=f.rng(isoDate(new Date())>f.rng(y)[1]?y+1:y);const d=x=>{const [yy,m,dd]=x.split('-');return `${+dd}/${+m}`};return `${d(a)}–${d(b)}`};
+  const opt=(v,t,sub)=>`<button type="button" class="fest-opt" data-v="${v}" aria-pressed="${festMode===v}"><b>${t}</b><span>${sub}</span></button>`;
+  const sh=openSheet(`<div class="eyebrow">ธีมเทศกาล · มีผลกับทุกเครื่อง</div><h2>เลือกธีม</h2>
+    <div class="fest-list">
+      ${opt('auto','อัตโนมัติตามวันที่ (แนะนำ)',auto?`ตอนนี้: ${FEST_NAMES[auto.id]}`:'ตอนนี้ไม่มีเทศกาล · แสดงแบบปกติ')}
+      ${opt('off','ปิดธีมทั้งหมด','แสดงแบบปกติตลอด ไม่เปลี่ยนตามเทศกาล')}
+      ${FESTS.map(f=>opt(f.id,FEST_NAMES[f.id],`ใช้ตอนนี้เลย · ปกติแสดงเอง ${rngTxt(f)}`)).join('')}
+    </div>
+    <div class="small muted" style="margin:8px 0 4px">ถ้าเลือกธีมเอง ธีมนั้นจะแสดงจนกว่าจะเปลี่ยนกลับเป็น "อัตโนมัติ" วันที่ของแต่ละเทศกาลยังเหมือนเดิม</div>
+    <div id="fs-err"></div><button class="btn btn-soft btn-block" data-close>ปิด</button>`);
+  sh.el.querySelectorAll('.fest-opt').forEach(b=>b.onclick=async()=>{
+    if(b.getAttribute('aria-pressed')==='true')return sh.close();
+    sh.el.querySelectorAll('.fest-opt').forEach(x=>x.disabled=true);
+    try{const r=await run('apiLabFestSet',labPin,b.dataset.v);store.set('cbcFest',r.fest);applyFest(r.fest);sh.close();
+      toast(r.fest==='auto'?'ใช้ธีมอัตโนมัติตามวันที่แล้ว':r.fest==='off'?'ปิดธีมเทศกาลแล้ว':`เปลี่ยนเป็นธีม${FEST_NAMES[r.fest]}แล้ว`);render()}
+    catch(err){sh.el.querySelectorAll('.fest-opt').forEach(x=>x.disabled=false);sh.el.querySelector('#fs-err').innerHTML=errBox(err.message)}});
+}
+
+/* ---------- ดูรูปหลักฐาน (ผู้ใช้ และหน้าแลป) ----------
+   รูปอยู่ในที่เก็บแบบส่วนตัว หน้าเว็บเปิดตรงไม่ได้ จึงขอลิงก์ชั่วคราว 2 นาทีจาก Edge Function "lab-photo"
+   ผู้ใช้: ตรวจบัญชีบนเครื่อง (ดูได้เฉพาะรายการที่ค้นหาเห็นได้)  ·  แลป: ตรวจ PIN แลป */
+const photoBtn=(r,who)=>r&&r.photo?`<button type="button" class="photo-link" data-photo-row="${r.row}" data-photo-who="${who}" data-hn="${esc(r.hn)}">📷 ดูรูปหลักฐาน</button>`:'';
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-photo-row]');if(!b)return;e.preventDefault();
+  photoSheet(+b.dataset.photoRow,b.dataset.photoWho,b.dataset.hn)});
+async function photoSheet(row,who,hn){
+  const sh=openSheet(`<div class="eyebrow">รูปหลักฐานการส่งใบตาม</div><h2 class="mono">HN ${esc(hn||'')}</h2>
+    <div id="ph-box" class="ph-box"><div class="sk" style="height:260px;width:100%"></div></div>
+    <div class="small muted" style="margin-top:8px">รูปนี้มีข้อมูลผู้ป่วย ดูในแอปเท่านั้น ห้ามบันทึกภาพหน้าจอหรือส่งต่อ</div>
+    <button class="btn btn-soft btn-block" data-close>ปิด</button>`);
+  const box=sh.el.querySelector('#ph-box');
+  try{
+    const body=who==='lab'?{pin:labPin,id:row}:{token:store.get(TOKEN_KEY),id:row};
+    let res;try{res=await fetch(`${SUPA_URL}/functions/v1/lab-photo`,{method:'POST',headers:supaHead({'Content-Type':'application/json'}),body:JSON.stringify(body)})}
+    catch(e){throw new Error('เชื่อมต่อไม่ได้ ตรวจอินเทอร์เน็ตแล้วลองใหม่')}
+    if(res.status===404)throw new Error('ยังไม่ได้ติดตั้งระบบดูรูป (Edge Function ชื่อ lab-photo ใน Supabase) แจ้งผู้ดูแลระบบครับ');
+    if(res.status===401)throw new Error('ระบบดูรูปยังเปิด "Verify JWT" อยู่ แจ้งผู้ดูแลระบบให้ปิดที่ Edge Functions → lab-photo');
+    let j=null;try{j=await res.json()}catch(e){}
+    if(!j||j.__err||!j.url){const m=(j&&(j.__err||j.error))||'เปิดรูปไม่สำเร็จ';
+      if(who==='lab'&&/^(PIN ไม่ถูกต้อง|ใส่ PIN ผิด)/.test(m)){sh.close();return lockLab(m)}throw new Error(m)}
+    const img=new Image();img.alt='รูปหลักฐาน HN '+(hn||'');img.className='ph-img';
+    img.onload=()=>{box.innerHTML='';box.appendChild(img)};img.onerror=()=>{box.innerHTML=errBox('โหลดรูปไม่สำเร็จ ลองใหม่อีกครั้ง')};
+    img.src=j.url;
+  }catch(err){box.innerHTML=errBox(err.message)}
+}
+
 const labTabs=()=>`<div class="lab-top"><div class="ltabs" role="tablist" aria-label="มุมมองของห้องปฏิบัติการ">
   <button role="tab" data-tab="list" aria-selected="${labTab==='list'}">${icList}รายการสไลด์</button>
   <button role="tab" data-tab="stats" aria-selected="${labTab==='stats'}">${icChart}สถิติและกราฟ</button>
   <button role="tab" data-tab="staff" aria-selected="${labTab==='staff'}">${icUsers}ผู้ใช้งาน</button>
   <button role="tab" data-tab="wards" aria-selected="${labTab==='wards'}">${icBed}วอร์ด</button>
   <button role="tab" data-tab="backup" aria-selected="${labTab==='backup'}">${icArchive}สำรองข้อมูล</button></div>
+  <button class="btn btn-soft lab-lock" id="lab-fest" type="button" aria-label="เลือกธีมเทศกาล">🎨<span>ธีม</span></button>
   <button class="btn btn-soft lab-lock" id="lab-lock" type="button" aria-label="ล็อกหน้าแลป (ต้องใส่ PIN ใหม่)">${icLock}<span>ล็อก</span></button></div>`;
-function bindTabs(){const lk=$('#lab-lock');if(lk)lk.onclick=()=>lockLab();const sel=app.querySelector('.ltabs [aria-selected="true"]');if(sel)try{sel.scrollIntoView({inline:'center',block:'nearest'})}catch(e){}app.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{if(labTab===b.dataset.tab)return;labTab=b.dataset.tab;if(!ADMIN_TABS.includes(labTab))adminPin='';labTab==='stats'?loadStats():labTab==='staff'?loadStaff():labTab==='backup'?loadBackups():labTab==='wards'?loadWards():renderLab()})}
+function bindTabs(){const lk=$('#lab-lock');if(lk)lk.onclick=()=>lockLab();const lf=$('#lab-fest');if(lf)lf.onclick=festSheet;const sel=app.querySelector('.ltabs [aria-selected="true"]');if(sel)try{sel.scrollIntoView({inline:'center',block:'nearest'})}catch(e){}app.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{if(labTab===b.dataset.tab)return;labTab=b.dataset.tab;if(!ADMIN_TABS.includes(labTab))adminPin='';labTab==='stats'?loadStats():labTab==='staff'?loadStaff():labTab==='backup'?loadBackups():labTab==='wards'?loadWards():renderLab()})}
 async function loadStats(force){
   if(!force&&statCache[statDays]){statData=statCache[statDays];return renderStats()}
   statData=null;renderStats();
@@ -1967,7 +2031,7 @@ async function navTo(t){adminPin='';
 document.querySelectorAll('[data-tab-nav]').forEach(b=>b.onclick=()=>navTo(b.dataset.tabNav));
 setInterval(()=>{if(mode==='lab'&&labPin&&labTab==='list'&&document.activeElement&&document.activeElement.id!=='lab-q')reloadLab()},60000);
 
-run('apiInit',store.get(TOKEN_KEY)).then(d=>{WARDS=d.wards;ME=d.me;LATE_MIN=d.lateMin;view=ME?'home':'register';render()})
+run('apiInit',store.get(TOKEN_KEY)).then(d=>{WARDS=d.wards;ME=d.me;LATE_MIN=d.lateMin;if(d.fest){store.set('cbcFest',d.fest);applyFest(d.fest)}view=ME?'home':'register';render()})
   .catch(err=>{app.innerHTML=`<div class="col"><div class="alert bad">โหลดไม่สำเร็จ: ${esc(err.message)}</div></div>`});
 })();
 </script>
