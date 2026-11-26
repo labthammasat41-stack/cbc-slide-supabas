@@ -584,7 +584,9 @@ details.tbl th,details.tbl td{padding:6px 10px}
 @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
 
 @media (min-width:900px){ .tabbar-in{max-width:620px} }
-.hema-grid{display:grid;gap:16px}.hema-side{display:flex;flex-direction:column;gap:12px}
+.hema-grid{display:grid;gap:16px}.hd-chips{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:6px}
+.hd-chips .daychip{background:var(--surface-3);display:flex;flex-direction:column;align-items:center;padding:8px 4px;min-height:54px}.hd-chips small{font-size:.72rem;font-weight:400;opacity:.8}
+.hd-chips .daychip[aria-pressed="true"]{background:var(--teal);color:#fff;border-color:var(--teal)}.hema-side{display:flex;flex-direction:column;gap:12px}
 /* ---------- เวอร์ชัน PC (จอกว้าง 1024 px ขึ้นไป): เมนูด้านซ้าย เนื้อหากว้างขึ้น ---------- */
 @media (min-width:1024px){
   .tabbar{top:0;bottom:0;right:auto;width:96px;border-top:0;border-right:1px solid var(--line);padding:calc(var(--bar-h) + 12px) 0 0}
@@ -792,7 +794,7 @@ const icRecv='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
 
 
 /* ---------- live camera scanner ---------- */
-let qr=null, scanTarget=null;
+let qr=null, scanTarget=null, scanKeep=null, keepLast='', keepAt=0, keepN=0;
 const FORMATS=()=>window.Html5QrcodeSupportedFormats?[Html5QrcodeSupportedFormats.CODE_128,Html5QrcodeSupportedFormats.CODE_39,Html5QrcodeSupportedFormats.CODABAR,Html5QrcodeSupportedFormats.ITF,Html5QrcodeSupportedFormats.EAN_13,Html5QrcodeSupportedFormats.QR_CODE]:undefined;
 // อ่านค่าเดียวกันได้ 2 ครั้งติดกันจึงยอมรับ กันอ่านเลขเพี้ยนจากภาพเบลอ
 // Code 128 / EAN-13 / QR มีตัวตรวจสอบในตัว อ่านครั้งเดียวก็เชื่อได้ (ช่วย iPhone ที่อ่านติดไม่ต่อเนื่อง)
@@ -813,7 +815,15 @@ function beep(){if(store.get(SND_KEY)==='0')return;try{actx=actx||new (window.Au
   g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.22,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+.16);o.connect(g).connect(actx.destination);o.start(t);o.stop(t+.17)}catch(e){}}
 function gotCode(text){
   if(!scanTarget)return;
-  text=String(text).trim();beep();if(navigator.vibrate)navigator.vibrate(80);
+  text=String(text).trim();
+  if(scanKeep){ // สแกนต่อเนื่อง: ไม่ปิดกล้อง ส่งทีละแผ่น
+    const now=Date.now();if(text===keepLast&&now-keepAt<4000)return;keepLast=text;keepAt=now;lastCode='';lastHits=0;
+    const ov=$('#scan-ov');ov.classList.add('hit');setTimeout(()=>ov.classList.remove('hit'),350);
+    $('#scan-msg').textContent=`กำลังบันทึก ${text}…`;
+    Promise.resolve(scanKeep(text)).then(r=>{r=r||{};if(r.ok){keepN++;beep();if(navigator.vibrate)navigator.vibrate(60)}else{errBeep();if(navigator.vibrate)navigator.vibrate([200,80,200])}
+      $('#scan-ttl').textContent=`สแกนต่อเนื่อง · บันทึกแล้ว ${keepN} แผ่น`;$('#scan-msg').innerHTML=`<b style="color:${r.ok?'#7ee2b8':'#ffb4a8'}">${r.ok?'✅':'⚠️'} ${esc(text)}</b> ${esc(r.msg||'')}<br><span style="opacity:.8">เล็งแผ่นถัดไปได้เลย · กด "ปิด" เมื่อเสร็จ</span>`});
+    return}
+  beep();if(navigator.vibrate)navigator.vibrate(80);
   $('#scan-ov').classList.add('hit');
   const t=scanTarget;scanTarget=null;
   if(typeof t==='function'){closeScanner().then(()=>t(text));return}
@@ -822,7 +832,11 @@ function gotCode(text){
 }
 const newReader=()=>new Html5Qrcode('reader',{formatsToSupport:FORMATS(),verbose:false,
   experimentalFeatures:{useBarCodeDetectorIfSupported:true}});   // ใช้ตัวอ่านบาร์โค้ดของมือถือเองถ้ามี (แม่นและเร็วกว่า)
-async function openScanner(target,title){
+function errBeep(){if(store.get(SND_KEY)==='0')return;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+  const t=actx.currentTime,o=actx.createOscillator(),g=actx.createGain();o.type='square';o.frequency.setValueAtTime(320,t);o.frequency.setValueAtTime(220,t+.15);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.18,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+.34);o.connect(g).connect(actx.destination);o.start(t);o.stop(t+.35)}catch(e){}}
+async function openScanner(target,title,opt){
+  scanKeep=opt&&opt.keep?target:null;keepLast='';keepN=0;
   scanTarget=target;lastCode='';lastHits=0;$('#scan-ttl').textContent=title||'สแกนบาร์โค้ด';$('#scan-ov').classList.remove('hit');
   $('#scan-ov').hidden=false;$('#zoom-box').hidden=true;$('#torch').hidden=true;
   $('#scan-msg').textContent='กำลังเปิดกล้อง…';
@@ -858,7 +872,8 @@ function setupCamExtras(){
 }
 async function closeScanner(){
   clearTimeout(iosHintT);$('#photo-lbl').classList.remove('pulse');
-  $('#scan-ov').hidden=true;scanTarget=null;
+  const wasKeep=scanKeep;scanKeep=null;
+  $('#scan-ov').hidden=true;scanTarget=null;if(wasKeep&&typeof onKeepClose==='function')setTimeout(onKeepClose,0);
   if(qr){try{if(qr.isScanning)await qr.stop();qr.clear()}catch(e){}qr=null}
 }
 $('#scan-close').onclick=closeScanner;
@@ -1462,7 +1477,7 @@ function pickListHtml(d){
   return (w.length?w.map(k=>`<div class="pk-w"><b>${esc(k)}</b> <span class="pill st-ready">${g[k].length} ใบ</span>
       <div class="small muted mono">${g[k].map(r=>'HN '+esc(r.hn)+(r.sample?' · '+esc(r.sample):'')).join('<br>')}</div></div>`).join('')
     :'<div class="small muted" style="padding:6px 0">ยังไม่มีออร์เดอร์ที่แลปยืนยันพร้อม</div>')
-   +(d.inc.length?`<div class="pk-w inc"><b>Slide include พร้อมรับ</b> <span class="pill st-inc">${d.inc.length} ใบ</span><div class="small muted mono">${d.inc.map(x=>'HN '+esc(x.hn)+' · '+esc(x.sample)).join('<br>')}</div></div>`:'');
+   +(d.inc.length?`<div class="pk-w inc"><b>Slide include พร้อมรับ</b> <span class="pill st-inc">${d.inc.length} ใบ</span><div class="small muted mono">${d.inc.map(x=>(x.hn?'HN '+esc(x.hn)+' · ':'')+esc(x.sample)).join('<br>')}</div></div>`:'');
 }
 
 /* ส่งใบตามสไลด์: บังคับ HN + วันเวลาส่งตรวจ + วอร์ด, Sample No. ไม่บังคับ */
@@ -1718,8 +1733,8 @@ async function pickFind(code){
     <button class="btn btn-blue btn-block" data-pk-out="${r.row}" data-hn="${esc(r.hn)}">รับสไลด์ใบนี้</button></div>`).join('');
   h+=wait.map(r=>`<div class="pk-c warn"><div class="pk-hn mono">HN ${esc(r.hn)}</div><div class="small">${esc(r.ward)}</div>
     <div class="small"><b>แลปยังไม่ได้ยืนยันว่าพบสไลด์นี้</b> ให้เจ้าหน้าที่แลปกด "พบสไลด์" ในคิวงานก่อน แล้วสแกนใหม่</div></div>`).join('');
-  h+=d.inc.map(x=>`<div class="pk-c inc"><div class="pk-hn mono">HN ${esc(x.hn)} <span class="tag-inc">Include</span></div>
-    <div class="small muted">Hemato สแกนพร้อม ${esc(x.readyAt)}${x.readyBy?' โดย '+esc(x.readyBy):''}</div>
+  h+=d.inc.map(x=>`<div class="pk-c inc"><div class="pk-hn mono">${x.hn?'HN '+esc(x.hn):esc(x.sample)} <span class="tag-inc">Include</span></div>
+    <div class="small muted">ส่งตรวจ ${esc(x.specDate||'–')} · สแกนพร้อม ${esc(x.readyAt)}${x.readyBy?' โดย '+esc(x.readyBy):''}</div>
     ${wardCombo('pw-'+x.id,'','วอร์ดที่จะนำสไลด์ไป')}<div id="pe-${x.id}"></div>
     <button class="btn btn-violet btn-block" data-pk-inc="${x.id}" data-hn="${esc(x.hn)}">รับ Slide include</button></div>`).join('');
   if(!ready.length&&!wait.length&&!d.inc.length){
@@ -1727,8 +1742,8 @@ async function pickFind(code){
       :`<div class="alert warn">ไม่พบออร์เดอร์หรือ Slide include ที่พร้อมรับของ Sample No. นี้ ตรวจเลขอีกครั้ง หรือสอบถามเจ้าหน้าที่แลป</div>`}
   box.innerHTML=h;if(navigator.vibrate)navigator.vibrate(ready.length||d.inc.length?60:[120,80,120]);
   d.inc.forEach(x=>bindCombo('pw-'+x.id));
-  const ok=(rec,inc)=>{pickDone.unshift({hn:rec.hn,sample:rec.sample,ward:rec.ward,time:rec.time,inc});beep();if(navigator.vibrate)navigator.vibrate([60,40,60]);
-    toast(`รับสไลด์ HN ${rec.hn} แล้ว ✅ สแกนแผ่นถัดไปได้เลย`);box.innerHTML='';const s=$('#p-sample');if(s)s.value='';$('#pk-n').textContent=pickDone.length;$('#pk-done').innerHTML=pickDoneHtml();window.scrollTo({top:0,behavior:'smooth'})};
+  const ok=(rec,inc)=>{pickDone.unshift({hn:rec.hn||'–',sample:rec.sample,ward:rec.ward,time:rec.time,inc});beep();if(navigator.vibrate)navigator.vibrate([60,40,60]);
+    toast(`รับสไลด์ ${rec.hn?'HN '+rec.hn:rec.sample} แล้ว ✅ สแกนแผ่นถัดไปได้เลย`);box.innerHTML='';const s=$('#p-sample');if(s)s.value='';$('#pk-n').textContent=pickDone.length;$('#pk-done').innerHTML=pickDoneHtml();window.scrollTo({top:0,behavior:'smooth'})};
   box.querySelectorAll('[data-pk-out]').forEach(b=>b.onclick=async()=>{busy(b,true,'กำลังบันทึก…');
     try{const r=await run('apiCheckOut',store.get(TOKEN_KEY),{sample:code,hn:b.dataset.hn,row:+b.dataset.pkOut});ok(r,false)}catch(err){busy(b,false);toast(err.message)}});
   box.querySelectorAll('[data-pk-inc]').forEach(b=>b.onclick=async()=>{const id=b.dataset.pkInc,w=$('#pw-'+id).value.trim(),er=$('#pe-'+id);er.innerHTML='';
@@ -1896,7 +1911,7 @@ function drawQueue(){const box=$('#q-body');if(!box)return;
   const d=qData,sec=(t,n,cls,html,empty)=>`<div class="section-h"><h3>${t} <span class="qbadge ${cls}">${n}</span></h3></div><div class="qgrid">${n?html:`<div class="small muted" style="padding:8px 2px">${empty}</div>`}</div>`;
   box.innerHTML=`<div class="qcol qmain">${sec('🔔 รอหาสไลด์',d.wait.length,'',d.wait.map(r=>qCard(r,'wait')).join(''),'ไม่มีออร์เดอร์ค้าง 👍')}</div>
     <div class="qcol">${sec('✅ พร้อมรับ รอคนงานมารับ',d.ready.length,'ok',d.ready.map(r=>qCard(r,'ready')).join(''),'–')}</div>
-    <div class="qcol">${sec('🧪 Include พร้อมรับ',d.inc.length,'inc',d.inc.map(x=>`<div class="qc inc"><div class="qh"><b class="mono">HN ${esc(x.hn)}</b><span class="pill st-inc">Include</span></div><div class="small mono">${esc(x.sample)}</div><div class="small muted">สแกน ${esc(x.readyAt)}${x.readyBy?' · '+esc(x.readyBy):''}</div></div>`).join(''),'–')}
+    <div class="qcol">${sec('🧪 Include พร้อมรับ',d.inc.length,'inc',d.inc.map(x=>`<div class="qc inc"><div class="qh"><b class="mono">${x.hn?'HN '+esc(x.hn):esc(x.sample)}</b><span class="pill st-inc">Include</span></div><div class="small mono">${x.hn?esc(x.sample)+' · ':''}ส่งตรวจ ${esc(x.specDate||'–')}</div><div class="small muted">สแกน ${esc(x.readyAt)}${x.readyBy?' · '+esc(x.readyBy):''}</div></div>`).join(''),'–')}
     ${d.nf.length?sec('❌ หาไม่เจอ (24 ชม.)',d.nf.length,'bad',d.nf.map(r=>qCard(r,'nf')).join(''),''):''}</div>`;
   box.querySelectorAll('[data-qf]').forEach(b=>b.onclick=()=>{if(needBy())qFound(d.wait.find(r=>String(r.row)===b.dataset.qf))});
   box.querySelectorAll('[data-qn]').forEach(b=>b.onclick=()=>{if(needBy())qNotFound(d.wait.find(r=>String(r.row)===b.dataset.qn))});
@@ -2436,26 +2451,60 @@ const hemaErr=err=>{if(/PIN ไม่ถูกต้อง|ยังไม่ไ
 async function loadHema(){hematoPin=labPin;try{const d=await run('apiHematoList',hematoPin);hemaItems=d.items}catch(err){if(hemaErr(err))return;hemaItems={__err:err.message}}if(mode==='lab'&&labTab==='hema')drawHemaList()}
 function renderHema(){
   hematoPin=labPin;const by=store.get('cbcHemaBy')||labBy()||'';
+  const today=isoDate(new Date()),dd=n=>{const x=new Date();x.setDate(x.getDate()-n);return isoDate(x)};
+  const chips=[[dd(0),'วันนี้'],[dd(1),'เมื่อวาน'],[dd(2),'2 วันก่อน'],[dd(3),'3 วันก่อน']];
   app.innerHTML=`<div class="wide">${labTabs()}<div class="hema-grid">
     <section class="panel hema"><div><div class="eyebrow">Include / ห้อง Hemato</div><h2 style="margin:2px 0 0">สแกนสไลด์ include พร้อมรับ</h2>
-      <p class="small muted" style="margin:4px 0 0">สไลด์ผู้ป่วยเด็ก / แพทย์ขอ include · ในเวลา Hemato สแกน นอกเวลาแลปสแกน</p></div>
-    <div class="field"><label for="h-by">ชื่อผู้แจ้ง <span class="opt">(จำไว้ในเครื่องนี้)</span></label><input class="input" id="h-by" value="${esc(by)}" placeholder="เช่น ชื่อเล่น" maxlength="60"></div>
-    <button class="btn btn-teal btn-block hema-shot" id="h-shot">${icCam}ถ่ายรูปสติกเกอร์สไลด์</button>
-    <button class="btn btn-ghost btn-block" id="h-manual">สแกนบาร์โค้ด / กรอกเอง</button>
-    <div class="small muted">ถ่ายให้สติกเกอร์เต็มกรอบ ตัวหนังสือชัด ไม่สะท้อนแสงจากถุง · ระบบอ่านเฉพาะตัวเลข และอ่านในเครื่องนี้เท่านั้น · ใช้เครื่องสแกนบาร์โค้ด (USB) ได้ที่ปุ่ม "กรอกเอง"</div></section>
-    <div class="hema-side"><div class="section-h" style="margin-top:0"><h3>แจ้งพร้อมแล้ว (2 วันล่าสุด)</h3><button class="linkbtn" id="h-ref">รีเฟรช</button></div>
+      <p class="small muted" style="margin:4px 0 0">เลือกวันที่ส่งตรวจครั้งเดียว แล้วสแกน Sample No. รัว ๆ ได้เลย ไม่ต้องใส่ HN</p></div>
+    <div class="field"><label for="h-by">ชื่อผู้สแกน <span class="opt">(จำไว้ในเครื่องนี้)</span></label><input class="input" id="h-by" value="${esc(by)}" placeholder="เช่น ชื่อเล่น" maxlength="60"></div>
+    <div class="field"><span class="lab">1. วันที่ส่งตรวจ</span>
+      <div class="hd-chips">${chips.map(([v,l])=>`<button type="button" class="daychip" data-hd="${v}" aria-pressed="${hemaDate===v}">${l}<small>${thDate(v)}</small></button>`).join('')}</div>
+      <input class="input" id="h-date" type="date" max="${today}" value="${esc(hemaDate)}" aria-label="หรือเลือกวันอื่น"></div>
+    <div id="h-dmsg"></div>
+    <span class="lab" style="font-weight:700">2. สแกน Sample No.</span>
+    <button class="btn btn-teal btn-block hema-shot" id="h-rapid">${icCam}สแกนต่อเนื่องด้วยกล้อง</button>
+    <div class="field" style="margin:0"><label for="h-usb">หรือใช้เครื่องสแกน / พิมพ์ แล้วกด Enter</label>
+      <input class="input mono" id="h-usb" inputmode="numeric" autocomplete="off" maxlength="10" placeholder="คลิกที่ช่องนี้ แล้วยิงบาร์โค้ดได้เลย"></div>
+    <div class="small muted">ระบบตรวจให้ว่า Sample No. ตรงกับวันส่งตรวจที่เลือก (วันเดียวกันหรือวันถัดไป) · สแกนซ้ำแผ่นเดิมไม่บันทึกซ้ำ</div></section>
+    <div class="hema-side"><div class="section-h" style="margin-top:0"><h3>สแกนรอบนี้ · <span id="h-n">${hemaSess.filter(x=>x.ok).length}</span> แผ่น</h3></div>
+    <section class="panel" id="h-sess">${hemaSessHtml()}</section>
+    <div class="section-h"><h3>แจ้งพร้อมแล้ว (2 วันล่าสุด)</h3><button class="linkbtn" id="h-ref">รีเฟรช</button></div>
     <section class="panel" id="h-list"><div class="sk" style="height:80px"></div></section></div></div></div>`;
   bindTabs();
   $('#h-by').oninput=e=>store.set('cbcHemaBy',e.target.value.trim());
-  $('#h-shot').onclick=hemaShoot;$('#h-manual').onclick=()=>hemaConfirm({});$('#h-ref').onclick=loadHema;
-  if(hemaItems)drawHemaList();loadHema();
+  const setD=v=>{hemaDate=v;$('#h-date').value=v;app.querySelectorAll('[data-hd]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.hd===v));$('#h-dmsg').innerHTML=v?`<div class="flag ok">วันที่ส่งตรวจ: ${thDate(v)}</div>`:''};
+  app.querySelectorAll('[data-hd]').forEach(b=>b.onclick=()=>setD(b.dataset.hd));
+  $('#h-date').onchange=e=>setD(e.target.value);if(hemaDate)setD(hemaDate);
+  const need=()=>{if(!hemaDate){$('#h-dmsg').innerHTML=errBox('เลือกวันที่ส่งตรวจก่อนสแกน');errBeep();return false}if(!$('#h-by').value.trim()){toast('กรอกชื่อผู้สแกนก่อนครับ');$('#h-by').focus();return false}return true};
+  $('#h-rapid').onclick=()=>{if(need())openScanner(hemaOne,'สแกนต่อเนื่อง · '+thDate(hemaDate),{keep:true})};
+  const u=$('#h-usb');u.onkeydown=async e=>{if(e.key!=='Enter')return;e.preventDefault();const v=u.value.replace(/\D/g,'');u.value='';if(!v)return;if(!need())return;
+    const r=await hemaOne(v);r.ok?beep():errBeep()};
+  u.oninput=()=>{u.value=u.value.replace(/\D/g,'')};
+  $('#h-ref').onclick=loadHema;if(hemaItems)drawHemaList();loadHema();
+  if(innerWidth>=1024)setTimeout(()=>{if(hemaDate)u.focus()},50);
 }
+let hemaDate='',hemaSess=[];
+function hemaSessHtml(){return hemaSess.length?`<div class="mylist">${hemaSess.slice(0,40).map(x=>`<div class="it ${x.ok?'out':'in'}"><div style="min-width:0"><div class="mono" style="font-weight:600">${esc(x.sample)}</div><div class="small ${x.ok?'muted':'nf-why'}">${esc(x.msg)} · ${esc(x.time)}</div></div>${x.ok&&x.id?`<button class="linkbtn" data-hsu="${x.id}" style="font-size:.82rem">ยกเลิก</button>`:''}</div>`).join('')}</div>`:'<div class="small muted" style="text-align:center;padding:12px">ยังไม่ได้สแกน</div>'}
+function drawHemaSess(){const b=$('#h-sess');if(!b)return;b.innerHTML=hemaSessHtml();const n=$('#h-n');if(n)n.textContent=hemaSess.filter(x=>x.ok).length;
+  b.querySelectorAll('[data-hsu]').forEach(x=>x.onclick=async()=>{x.disabled=true;try{await run('apiHematoUndo',labPin,+x.dataset.hsu);const it=hemaSess.find(y=>String(y.id)===x.dataset.hsu);if(it){it.ok=false;it.msg='ยกเลิกแล้ว';it.id=0}drawHemaSess();loadHema()}catch(err){x.disabled=false;toast(err.message)}})}
+let hemaBusy=Promise.resolve(),hemaLT=null;
+function hemaOne(code){ // บันทึกทีละแผ่น (เรียงคิว ไม่ยิงซ้อน)
+  const job=hemaBusy.then(async()=>{const t=new Date(),time=p2(t.getHours())+':'+p2(t.getMinutes())+':'+p2(t.getSeconds());
+    if(!/^\d{10}$/.test(code)){const it={sample:code,ok:false,msg:'ไม่ใช่ Sample No. 10 หลัก',time};hemaSess.unshift(it);drawHemaSess();return it}
+    if(hemaSess.some(x=>x.ok&&x.sample===code)){return {ok:true,msg:'สแกนแผ่นนี้ไปแล้ว'}}
+    try{const r=await run('apiHematoReady',labPin,{sample:code,specDate:hemaDate,by:store.get('cbcHemaBy')||labBy()||''});
+      const msg=r.newly?`พร้อมรับ · ตรงกับออร์เดอร์ ${r.newly} ใบ (แจ้งวอร์ดแล้ว)`:r.again?'แจ้งพร้อมไว้แล้ว':'พร้อมรับ';
+      if(r.newly)flushPush();const it={sample:code,ok:true,msg,time,id:r.ready.id};hemaSess.unshift(it);drawHemaSess();clearTimeout(hemaLT);hemaLT=setTimeout(loadHema,900);return it}
+    catch(err){if(hemaErr(err))return {ok:false,msg:err.message};const it={sample:code,ok:false,msg:err.message,time};hemaSess.unshift(it);drawHemaSess();return it}});
+  hemaBusy=job.catch(()=>{});return job;
+}
+function onKeepClose(){if(mode==='lab'&&labTab==='hema'){loadHema();const u=$('#h-usb');if(u&&innerWidth>=1024)u.focus()}}
 function drawHemaList(){const box=$('#h-list');if(!box)return;
   if(!hemaItems){box.innerHTML='<div class="sk" style="height:80px"></div>';return}
   if(hemaItems.__err){box.innerHTML=errBox(hemaItems.__err);return}
   box.innerHTML=hemaItems.length?`<div class="mylist">${hemaItems.map(x=>`<div class="it ${x.status==='picked'?'out':'in'}"><div style="min-width:0">
-      <div class="mono" style="font-weight:600">HN ${esc(x.hn)} · ${esc(x.sample)}</div>
-      <div class="small muted">ส่งตรวจ ${esc(x.specAt||'–')} · แจ้งพร้อม ${esc(x.readyAt.slice(-5))}${x.readyBy?' โดย '+esc(x.readyBy):''}</div>
+      <div class="mono" style="font-weight:600">${esc(x.sample)}${x.hn?' · HN '+esc(x.hn):''}</div>
+      <div class="small muted">ส่งตรวจ ${esc(x.specDate||x.specAt||'–')} · แจ้งพร้อม ${esc(x.readyAt.slice(-5))}${x.readyBy?' โดย '+esc(x.readyBy):''}</div>
       <div class="small">${x.status==='picked'?'✅ รับสไลด์ไปแล้ว':x.matched?`🔔 ตรงกับออร์เดอร์ ${x.matched} ใบ${x.wards?' ('+esc(x.wards)+')':''}`:'🧪 Include พร้อมรับ · คนงานสแกนรับที่แลปได้เลย'}</div></div>
       ${x.status==='ready'?`<button class="linkbtn" data-hundo="${x.id}" style="font-size:.82rem">ยกเลิก</button>`:''}</div>`).join('')}</div>`
     :'<div class="small muted" style="text-align:center;padding:14px">ยังไม่มีรายการ</div>';
