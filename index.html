@@ -1394,6 +1394,7 @@ function render(){
    เครื่องจะจำไว้จนกว่าจะกดออกจากระบบ · พยาบาล/คนงานจะไม่เห็นเมนูแลป */
 const LABDEV_KEY='cbcLabDev';
 const isLabDev=()=>!!store.get(LABDEV_KEY);
+const labName=t=>{t=String(t||'').trim().toLowerCase().replace(/\s+/g,'');return t===''||/^lab+o*ratory$/.test(t)||t==='lab'||t==='แลป'||t==='ห้องแลป'};
 async function tryLabLogin(code,errEl,btn){
   code=String(code||'').trim();if(!/^\d{4,8}$/.test(code))return false;
   busy(btn,true,'กำลังตรวจสอบ…');
@@ -1449,7 +1450,7 @@ function vRegister(){
   $('#to-login').onclick=()=>{view='login';render()};bindRoleWard('r-wbox','r-ward');
   $('#f').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button[type=submit]');
     const v=k=>document.getElementById('r-'+k).value.trim();
-    if(v('id')&&!v('first')&&!v('last')&&!v('nick')&&await tryLabLogin(v('id'),$('#err'),b))return;
+    if(v('id')&&labName(v('first'))&&!v('last')&&!v('nick')&&await tryLabLogin(v('id'),$('#err'),b))return;
     busy(b,true);
     const rl=(document.querySelector('input[name=role]:checked')||{}).value||'';
     if(!rl){$('#err').innerHTML=errBox('เลือกบทบาท: พยาบาล หรือ คนงาน');busy(b,false);return}
@@ -1467,10 +1468,10 @@ function vLogin(){
    <button class="linkbtn" id="back">กลับไปลงทะเบียนใหม่</button></section></div>`;
   $('#back').onclick=()=>{view='register';render()};
   $('#f').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button[type=submit]');
-    if($('#l-id').value.trim()&&!$('#l-first').value.trim()&&await tryLabLogin($('#l-id').value,$('#err'),b))return;
+    if($('#l-id').value.trim()&&labName($('#l-first').value)&&await tryLabLogin($('#l-id').value,$('#err'),b))return;
     busy(b,true,'กำลังตรวจสอบ…');
     try{const r=await run('apiLogin',$('#l-id').value,$('#l-first').value);store.set(TOKEN_KEY,r.token);ME=r.me;view='home';render();toast('สวัสดี '+ME.nick)}
-    catch(err){$('#err').innerHTML=errBox(err.message);busy(b,false)}};
+    catch(err){$('#err').innerHTML=errBox(labName($('#l-first').value)?'รหัส Laboratory ไม่ถูกต้อง (หรือยังไม่ได้ตั้ง: select set_lab_pin(\'9120\') ใน SQL Editor)':err.message);busy(b,false)}};
 }
 let homeRows=[],timers=[];
 function stopTimers(){timers.forEach(clearInterval);timers=[]}
