@@ -251,7 +251,7 @@ body.noNav main{padding-bottom:60px}
 .st-nf{background:var(--bad-soft);color:var(--bad)}.st-inc{background:var(--violet-soft);color:var(--violet)}
 .lr.nf{border-color:color-mix(in srgb,var(--bad) 40%,transparent)}.ring2.st-nf,.ring2.st-ready{--rc:currentColor}.nf-t,.nf-why{color:var(--bad)}
 .lr .state small{display:block;font-weight:400;font-size:.72rem;white-space:normal}
-.lr .state{max-width:34%;white-space:normal}.lr{cursor:default;gap:10px}.lr .meta b{white-space:nowrap}
+.lr .state{max-width:40%;min-width:7.2em;white-space:normal}.lr{cursor:default;gap:10px}.lr .meta b{white-space:nowrap}
 .pk-w{padding:8px 0;border-bottom:1px solid var(--line)}.pk-w:last-child{border-bottom:0}.pk-w .small{margin-top:4px;line-height:1.6}
 .pk-c{border:1.5px solid var(--line);border-radius:var(--r-m);padding:12px;margin:8px 0;display:grid;gap:6px}
 .pk-c.ok{border-color:var(--blue);background:var(--blue-soft)}.pk-c.warn{border-color:var(--warn);background:var(--warn-soft)}.pk-c.inc{border-color:var(--violet);background:var(--violet-soft)}
@@ -584,6 +584,27 @@ details.tbl th,details.tbl td{padding:6px 10px}
 @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
 
 @media (min-width:900px){ .tabbar-in{max-width:620px} }
+.hema-grid{display:grid;gap:16px}.hema-side{display:flex;flex-direction:column;gap:12px}
+/* ---------- เวอร์ชัน PC (จอกว้าง 1024 px ขึ้นไป): เมนูด้านซ้าย เนื้อหากว้างขึ้น ---------- */
+@media (min-width:1024px){
+  .tabbar{top:0;bottom:0;right:auto;width:96px;border-top:0;border-right:1px solid var(--line);padding:calc(var(--bar-h) + 12px) 0 0}
+  .tabbar-in{max-width:none;height:auto;grid-template-columns:1fr;grid-auto-rows:86px;align-content:start;gap:4px}
+  .tab{font-size:.8rem}.tab[aria-current="page"]::before{top:18px;bottom:18px;left:0;width:3px;height:auto;border-radius:0 3px 3px 0}
+  .tab.scan .ring{margin-top:0;width:54px;height:54px;box-shadow:0 6px 16px color-mix(in srgb,var(--teal) 40%,transparent)}
+  .appbar{z-index:27}
+  main{padding:24px 32px 60px 128px}
+  .appbar-in{max-width:none;padding-left:24px;padding-right:24px}
+  .col{max-width:640px}
+  .wide{max-width:1500px}
+  .big-actions .big{min-height:150px}
+  .qboard{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+  .qcol .qgrid{grid-template-columns:1fr}.qmain .qgrid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+  .qcol .section-h{margin-top:0}
+  .hema-grid{grid-template-columns:minmax(360px,440px) 1fr;align-items:start}
+  .ltabs{flex-wrap:wrap}
+  .fab{right:28px;bottom:28px}
+}
+@media (min-width:1024px) and (max-width:1279px){.qboard{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)}.qboard .qcol:last-child{grid-column:1/-1}.qboard .qcol:last-child .qgrid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}}
 @media (max-width:760px){.kpis{grid-template-columns:1fr 1fr}.charts{grid-template-columns:1fr}}
 @media (max-width:420px){.big b{font-size:1.04rem}.hero-t .nm{font-size:1.35rem}.brand .org{display:none}}
 @media (max-width:360px){.row2{grid-template-columns:1fr}.hero-t{max-width:52%}}
@@ -1322,7 +1343,7 @@ function render(){
   const cur=mode==='lab'?'lab':view==='search'?'search':'home';
   document.querySelectorAll('[data-tab-nav]').forEach(b=>{if(b.dataset.tabNav===cur)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
   if(mode==='lab'){$('#fab').hidden=true;window.scrollTo(0,0);return labPin?renderLab():vPin()}
-  if(mode==='hemato'){$('#fab').hidden=true;window.scrollTo(0,0);return vHemato()}
+  if(mode==='hemato'){mode='lab';labTab='hema';return render()}
   if(!ME&&view!=='login')view='register';
   if(ME&&!ME.role)view='role';
   if(ME&&(view==='checkout'||view==='include'))view=ME.role==='porter'?'pick':'home';
@@ -1793,12 +1814,13 @@ function vPin(){
     <div id="err"></div><button class="btn btn-blue btn-block" type="submit">เข้าดูภาพรวม</button></form></section></div>`;
   $('#pin').focus();
   $('#f').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button[type=submit]');busy(b,true,'กำลังตรวจสอบ…');
-    try{labRows=await run('apiLabList',$('#pin').value);labPin=$('#pin').value;try{sessionStorage.setItem('cbcLabPin',labPin)}catch(x){}renderLab()}
+    try{labRows=await run('apiLabList',$('#pin').value);labPin=$('#pin').value;hematoPin=labPin;try{sessionStorage.setItem('cbcLabPin',labPin);sessionStorage.setItem('cbcHemaPin',labPin)}catch(x){}renderLab()}
     catch(err){$('#err').innerHTML=`<div class="alert bad">${esc(err.message)}</div>`;busy(b,false)}};
 }
 async function reloadLab(){try{labRows=await run('apiLabList',labPin);if(mode==='lab')renderLab()}catch(err){toast(err.message)}}
 function renderLab(){
   if(labTab==='queue')return renderQueue();
+  if(labTab==='hema')return renderHema();
   if(labTab==='audit')return renderAudit();
   if(labTab==='stats')return renderStats();
   if(labTab==='staff')return renderStaff();
@@ -1835,6 +1857,7 @@ function renderLab(){
 /* ---------- คิวงานแลป: ออร์เดอร์ใหม่ขึ้นเอง (ทุก 15 วินาที) มีเสียงเตือน, พบสไลด์ = สแกนบาร์โค้ดยืนยัน ---------- */
 const icBell='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>';
 const icHist='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg>';
+const icMicro='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18h8M3 22h18M14 22a7 7 0 1 0 0-14h-1M9 14h2M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2zM12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg>';
 let qData=null,qKnown=null,qLoading=false;
 const labBy=()=>store.get('cbcLabBy')||'';
 async function loadQueue(){if(qLoading)return;qLoading=true;
@@ -1849,9 +1872,10 @@ function renderQueue(){
   app.innerHTML=`<div class="wide">${labTabs()}
    <div class="toolbar q-tools"><div class="field" style="margin:0;min-width:200px;flex:1"><label for="q-by">ชื่อผู้ปฏิบัติงาน (บันทึกในประวัติ)</label><input class="input" id="q-by" value="${esc(labBy())}" placeholder="เช่น ชื่อเล่น" maxlength="60"></div>
      <button class="btn btn-ghost" id="q-push">${lp?'🔔 แจ้งเตือนเครื่องนี้: เปิด':'🔕 แจ้งเตือนเครื่องนี้: ปิด'}</button>
+     <button class="btn btn-ghost" id="q-hema">🔬 สแกน include พร้อมรับ</button>
      <button class="btn btn-ghost" id="q-re">รีเฟรช</button><span class="small muted">อัปเดตเองทุก 15 วินาที มีเสียงเมื่อมีออร์เดอร์ใหม่</span></div>
-   <div id="q-body"><div class="sk" style="height:140px"></div></div></div>`;
-  bindTabs();$('#q-re').onclick=loadQueue;$('#q-by').oninput=e=>{store.set('cbcLabBy',e.target.value.trim());e.target.classList.remove('need')};
+   <div id="q-body" class="qboard"><div class="sk" style="height:140px"></div></div></div>`;
+  bindTabs();$('#q-re').onclick=loadQueue;$('#q-hema').onclick=()=>{labTab='hema';renderLab()};$('#q-by').oninput=e=>{store.set('cbcLabBy',e.target.value.trim());e.target.classList.remove('need')};
   $('#q-push').onclick=async e=>{const b=e.currentTarget;
     if(store.get('cbcLabPush')==='1'){store.set('cbcLabPush','0');pushOff('lab');b.textContent='🔕 แจ้งเตือนเครื่องนี้: ปิด';return}
     try{await pushSubscribe('lab');store.set('cbcLabPush','1');b.textContent='🔔 แจ้งเตือนเครื่องนี้: เปิด';toast('เครื่องนี้จะเด้งแจ้งเตือนเมื่อมีออร์เดอร์ใหม่')}catch(err){toast(err.message)}};
@@ -1870,10 +1894,10 @@ function qCard(r,kind){const m=mins(r.reqTs),late=kind==='wait'&&m>=30;
 function drawQueue(){const box=$('#q-body');if(!box)return;
   if(!qData)return;if(qData.__err){box.innerHTML=errBox(qData.__err);return}
   const d=qData,sec=(t,n,cls,html,empty)=>`<div class="section-h"><h3>${t} <span class="qbadge ${cls}">${n}</span></h3></div><div class="qgrid">${n?html:`<div class="small muted" style="padding:8px 2px">${empty}</div>`}</div>`;
-  box.innerHTML=sec('🔔 รอหาสไลด์',d.wait.length,'',d.wait.map(r=>qCard(r,'wait')).join(''),'ไม่มีออร์เดอร์ค้าง 👍')
-    +sec('✅ พร้อมรับ รอคนงานมารับ',d.ready.length,'ok',d.ready.map(r=>qCard(r,'ready')).join(''),'–')
-    +sec('🧪 Slide include พร้อมรับ (Hemato สแกนแล้ว)',d.inc.length,'inc',d.inc.map(x=>`<div class="qc inc"><div class="qh"><b class="mono">HN ${esc(x.hn)}</b><span class="pill st-inc">Include</span></div><div class="small mono">${esc(x.sample)}</div><div class="small muted">สแกน ${esc(x.readyAt)}${x.readyBy?' · '+esc(x.readyBy):''}</div></div>`).join(''),'–')
-    +(d.nf.length?sec('❌ หาไม่เจอ (24 ชม.)',d.nf.length,'bad',d.nf.map(r=>qCard(r,'nf')).join(''),''):'');
+  box.innerHTML=`<div class="qcol qmain">${sec('🔔 รอหาสไลด์',d.wait.length,'',d.wait.map(r=>qCard(r,'wait')).join(''),'ไม่มีออร์เดอร์ค้าง 👍')}</div>
+    <div class="qcol">${sec('✅ พร้อมรับ รอคนงานมารับ',d.ready.length,'ok',d.ready.map(r=>qCard(r,'ready')).join(''),'–')}</div>
+    <div class="qcol">${sec('🧪 Include พร้อมรับ',d.inc.length,'inc',d.inc.map(x=>`<div class="qc inc"><div class="qh"><b class="mono">HN ${esc(x.hn)}</b><span class="pill st-inc">Include</span></div><div class="small mono">${esc(x.sample)}</div><div class="small muted">สแกน ${esc(x.readyAt)}${x.readyBy?' · '+esc(x.readyBy):''}</div></div>`).join(''),'–')}
+    ${d.nf.length?sec('❌ หาไม่เจอ (24 ชม.)',d.nf.length,'bad',d.nf.map(r=>qCard(r,'nf')).join(''),''):''}</div>`;
   box.querySelectorAll('[data-qf]').forEach(b=>b.onclick=()=>{if(needBy())qFound(d.wait.find(r=>String(r.row)===b.dataset.qf))});
   box.querySelectorAll('[data-qn]').forEach(b=>b.onclick=()=>{if(needBy())qNotFound(d.wait.find(r=>String(r.row)===b.dataset.qn))});
   box.querySelectorAll('[data-qb]').forEach(b=>b.onclick=async()=>{if(!needBy())return;b.disabled=true;
@@ -2115,7 +2139,7 @@ function offWard(w){
     catch(err){ok.disabled=false;sh.el.querySelector('#wd-off-err').innerHTML=errBox(err.message)}};
 }
 
-function lockLab(msg){labPin='';adminPin='';labRows=[];qData=null;qKnown=null;audData=null;statData=null;statCache={};try{sessionStorage.removeItem('cbcLabPin')}catch(e){}
+function lockLab(msg){labPin='';hematoPin='';hemaItems=null;try{sessionStorage.removeItem('cbcHemaPin')}catch(e){}adminPin='';labRows=[];qData=null;qKnown=null;audData=null;statData=null;statCache={};try{sessionStorage.removeItem('cbcLabPin')}catch(e){}
   labTab='queue';if(mode==='lab')render();toast(msg||'ล็อกหน้าแลปแล้ว')}
 /* ---------- เลือกธีมเทศกาล (PIN แลป) — มีผลกับทุกเครื่อง ---------- */
 function festSheet(){
@@ -2167,6 +2191,7 @@ async function photoSheet(row,who,hn){
 
 const labTabs=()=>`<div class="lab-top"><div class="ltabs" role="tablist" aria-label="มุมมองของห้องปฏิบัติการ">
   <button role="tab" data-tab="queue" aria-selected="${labTab==='queue'}">${icBell}คิวงาน${qData&&!qData.__err&&qData.wait.length?` <span class="qbadge">${qData.wait.length}</span>`:''}</button>
+  <button role="tab" data-tab="hema" aria-selected="${labTab==='hema'}">${icMicro}Include / Hemato</button>
   <button role="tab" data-tab="list" aria-selected="${labTab==='list'}">${icList}รายการสไลด์</button>
   <button role="tab" data-tab="stats" aria-selected="${labTab==='stats'}">${icChart}สถิติและกราฟ</button>
   <button role="tab" data-tab="staff" aria-selected="${labTab==='staff'}">${icUsers}ผู้ใช้งาน</button>
@@ -2335,7 +2360,6 @@ function openMenu(){
       <button class="menu-it" id="m-snd">${icSound}เสียงเมื่อสแกนติด<span class="r"><span class="switch" aria-hidden="true" aria-checked="${snd}"></span></span></button>
       ${isStandalone()?'':`<button class="menu-it" id="m-install">${icInstall}ติดตั้งแอปลงหน้าจอมือถือ</button>`}
       ${ME?`<button class="menu-it" id="m-role">👤&nbsp; บทบาทของฉัน: ${esc(ROLE_TH[ME.role]||'ยังไม่เลือก')}</button>`:''}
-      <button class="menu-it" id="m-hemato">🔬&nbsp; ห้อง Hemato: แจ้งสไลด์พร้อมรับ</button>
       <button class="menu-it" id="m-cam">📷&nbsp; อนุญาตกล้อง / แก้กล้องไม่ทำงาน</button>
       <button class="menu-it" id="m-guide">${icBook}วิธีการตาม Slide</button>
       <button class="menu-it" id="m-help">${icHelp}วิธีใช้งานแอป</button>
@@ -2349,7 +2373,6 @@ function openMenu(){
   el.querySelector('#m-snd').onclick=()=>{const on=store.get(SND_KEY)==='0';store.set(SND_KEY,on?'1':'0');el.querySelector('#m-snd .switch').setAttribute('aria-checked',on);if(on)beep()};
   const mi=el.querySelector('#m-install');if(mi)mi.onclick=()=>{sh.close();doInstall()};
   el.querySelector('#m-guide').onclick=()=>{sh.close();showGuide()};
-  el.querySelector('#m-hemato').onclick=()=>{sh.close();openHemato()};
   const mr=el.querySelector('#m-role');if(mr)mr.onclick=()=>{sh.close();mode='ward';view='role';render()};
   el.querySelector('#m-cam').onclick=async()=>{sh.close();const st=await camState();st==='denied'?camHelp('denied'):askCamera()};
   el.querySelector('#m-help').onclick=()=>{sh.close();showHelp()};
@@ -2406,36 +2429,24 @@ async function camCard(){const c=$('#cam-card');if(!c)return;const st=await camS
    ถ่ายรูปสติกเกอร์สไลด์ → อ่านบาร์โค้ด (Sample No.) + อ่านตัวเลขจากรูป (HN, วันเวลาส่งตรวจ) ในเครื่อง → ตรวจแล้วกดยืนยัน
    ใช้ PIN Hemato (แยกจาก PIN แลป) · เปิดตรงได้ด้วยลิงก์ ?hemato */
 let hematoPin='',hemaItems=null;
-try{hematoPin=sessionStorage.getItem('cbcHemaPin')||''}catch(e){}
-function openHemato(){mode='hemato';render()}
-function lockHemato(msg){hematoPin='';hemaItems=null;try{sessionStorage.removeItem('cbcHemaPin')}catch(e){}if(mode==='hemato')render();if(msg)toast(msg)}
-const hemaErr=err=>{if(/PIN Hemato|ใส่ PIN ผิด/.test(err.message)){lockHemato(err.message);return true}return false};
-async function loadHema(){try{const d=await run('apiHematoList',hematoPin);hemaItems=d.items}catch(err){if(hemaErr(err))return;hemaItems={__err:err.message}}if(mode==='hemato')drawHemaList()}
-function vHemato(){
-  $('#tabbar').hidden=false;document.querySelectorAll('[data-tab-nav]').forEach(b=>b.removeAttribute('aria-current'));
-  if(!hematoPin){
-    app.innerHTML=`<div class="col"><section class="panel"><div class="eyebrow">ห้อง Hemato</div><h2>แจ้งสไลด์พร้อมรับ</h2>
-      <form id="f" class="form" novalidate><div class="field"><label for="hpin">PIN ห้อง Hemato</label>
-      <input class="input mono" id="hpin" type="password" inputmode="numeric" autocomplete="off"></div>
-      <div id="err"></div><button class="btn btn-teal btn-block" type="submit">เข้าใช้งาน</button></form>
-      <button class="btn btn-soft btn-block" id="h-back" style="margin-top:8px">กลับหน้าแรก</button></section></div>`;
-    $('#hpin').focus();$('#h-back').onclick=()=>{mode='ward';view=ME?'home':'register';render()};
-    $('#f').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button[type=submit]');busy(b,true,'กำลังตรวจสอบ…');
-      try{const d=await run('apiHematoList',$('#hpin').value);hematoPin=$('#hpin').value;hemaItems=d.items;try{sessionStorage.setItem('cbcHemaPin',hematoPin)}catch(x){}render()}
-      catch(err){$('#err').innerHTML=errBox(err.message);busy(b,false)}};
-    return}
-  const by=store.get('cbcHemaBy')||'';
-  app.innerHTML=`<div class="col"><section class="panel hema">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><div><div class="eyebrow">ห้อง Hemato</div><h2 style="margin:2px 0 0">แจ้งสไลด์พร้อมรับ</h2></div>
-      <button class="btn btn-soft lab-lock" id="h-lock" type="button">${icLock}<span>ล็อก</span></button></div>
-    <div class="field" style="margin-top:10px"><label for="h-by">ชื่อผู้แจ้ง <span class="opt">(จำไว้ในเครื่องนี้)</span></label><input class="input" id="h-by" value="${esc(by)}" placeholder="เช่น ชื่อเล่น" maxlength="60"></div>
+// ห้อง Hemato รวมอยู่ในหน้าแลป (แท็บ "Include / Hemato") ใช้ PIN เดียวกัน
+function openHemato(){mode='lab';labTab='hema';render()}
+function lockHemato(msg){lockLab(msg)}
+const hemaErr=err=>{if(/PIN ไม่ถูกต้อง|ยังไม่ได้ตั้ง PIN|ใส่ PIN ผิด/.test(err.message)){lockLab(err.message);return true}return false};
+async function loadHema(){hematoPin=labPin;try{const d=await run('apiHematoList',hematoPin);hemaItems=d.items}catch(err){if(hemaErr(err))return;hemaItems={__err:err.message}}if(mode==='lab'&&labTab==='hema')drawHemaList()}
+function renderHema(){
+  hematoPin=labPin;const by=store.get('cbcHemaBy')||labBy()||'';
+  app.innerHTML=`<div class="wide">${labTabs()}<div class="hema-grid">
+    <section class="panel hema"><div><div class="eyebrow">Include / ห้อง Hemato</div><h2 style="margin:2px 0 0">สแกนสไลด์ include พร้อมรับ</h2>
+      <p class="small muted" style="margin:4px 0 0">สไลด์ผู้ป่วยเด็ก / แพทย์ขอ include · ในเวลา Hemato สแกน นอกเวลาแลปสแกน</p></div>
+    <div class="field"><label for="h-by">ชื่อผู้แจ้ง <span class="opt">(จำไว้ในเครื่องนี้)</span></label><input class="input" id="h-by" value="${esc(by)}" placeholder="เช่น ชื่อเล่น" maxlength="60"></div>
     <button class="btn btn-teal btn-block hema-shot" id="h-shot">${icCam}ถ่ายรูปสติกเกอร์สไลด์</button>
     <button class="btn btn-ghost btn-block" id="h-manual">สแกนบาร์โค้ด / กรอกเอง</button>
-    <div class="small muted" style="margin-top:6px">ถ่ายให้สติกเกอร์เต็มกรอบ ตัวหนังสือชัด ไม่สะท้อนแสงจากถุง · ระบบอ่านเฉพาะตัวเลข และอ่านในเครื่องนี้เท่านั้น</div></section>
-    <div class="section-h"><h3>แจ้งพร้อมแล้ว (2 วันล่าสุด)</h3><button class="linkbtn" id="h-ref">รีเฟรช</button></div>
-    <section class="panel" id="h-list"><div class="sk" style="height:80px"></div></section></div>`;
+    <div class="small muted">ถ่ายให้สติกเกอร์เต็มกรอบ ตัวหนังสือชัด ไม่สะท้อนแสงจากถุง · ระบบอ่านเฉพาะตัวเลข และอ่านในเครื่องนี้เท่านั้น · ใช้เครื่องสแกนบาร์โค้ด (USB) ได้ที่ปุ่ม "กรอกเอง"</div></section>
+    <div class="hema-side"><div class="section-h" style="margin-top:0"><h3>แจ้งพร้อมแล้ว (2 วันล่าสุด)</h3><button class="linkbtn" id="h-ref">รีเฟรช</button></div>
+    <section class="panel" id="h-list"><div class="sk" style="height:80px"></div></section></div></div></div>`;
+  bindTabs();
   $('#h-by').oninput=e=>store.set('cbcHemaBy',e.target.value.trim());
-  $('#h-lock').onclick=()=>lockHemato('ล็อกหน้า Hemato แล้ว');
   $('#h-shot').onclick=hemaShoot;$('#h-manual').onclick=()=>hemaConfirm({});$('#h-ref').onclick=loadHema;
   if(hemaItems)drawHemaList();loadHema();
 }
@@ -2445,7 +2456,7 @@ function drawHemaList(){const box=$('#h-list');if(!box)return;
   box.innerHTML=hemaItems.length?`<div class="mylist">${hemaItems.map(x=>`<div class="it ${x.status==='picked'?'out':'in'}"><div style="min-width:0">
       <div class="mono" style="font-weight:600">HN ${esc(x.hn)} · ${esc(x.sample)}</div>
       <div class="small muted">ส่งตรวจ ${esc(x.specAt||'–')} · แจ้งพร้อม ${esc(x.readyAt.slice(-5))}${x.readyBy?' โดย '+esc(x.readyBy):''}</div>
-      <div class="small">${x.status==='picked'?'✅ รับสไลด์ไปแล้ว':x.matched?`🔔 แจ้งใบตามแล้ว ${x.matched} ใบ${x.wards?' ('+esc(x.wards)+')':''}`:'⏳ ยังไม่มีใบตาม · ถ้ามีคนส่งใบตามภายหลัง จะขึ้น "พร้อมรับ" ให้เอง'}</div></div>
+      <div class="small">${x.status==='picked'?'✅ รับสไลด์ไปแล้ว':x.matched?`🔔 ตรงกับออร์เดอร์ ${x.matched} ใบ${x.wards?' ('+esc(x.wards)+')':''}`:'🧪 Include พร้อมรับ · คนงานสแกนรับที่แลปได้เลย'}</div></div>
       ${x.status==='ready'?`<button class="linkbtn" data-hundo="${x.id}" style="font-size:.82rem">ยกเลิก</button>`:''}</div>`).join('')}</div>`
     :'<div class="small muted" style="text-align:center;padding:14px">ยังไม่มีรายการ</div>';
   box.querySelectorAll('[data-hundo]').forEach(b=>b.onclick=async()=>{b.disabled=true;
@@ -2519,12 +2530,12 @@ function hemaConfirm(v){
     if((d&&!/^([01]\d|2[0-3]):[0-5]\d$/.test(t))||(!d&&t))return el.querySelector('#h-err').innerHTML=errBox('กรอกวันที่และเวลาส่งตรวจให้ครบ หรือเว้นว่างทั้งคู่');
     busy(b,true,'กำลังบันทึก…');
     try{const r=await run('apiHematoReady',hematoPin,{sample,hn,specAt:d?`${d}T${t}`:'',by:store.get('cbcHemaBy')||''});sh.close();
-      const n=r.ready.matched;toast(n?`แจ้งพร้อมแล้ว · ตรงกับใบตาม ${n} ใบ`:'แจ้งพร้อมแล้ว · ยังไม่มีใบตาม (ถ้ามีภายหลังจะขึ้นพร้อมรับเอง)');
+      const n=r.ready.matched;toast(n?`แจ้งพร้อมแล้ว · ตรงกับออร์เดอร์ ${n} ใบ (แจ้งวอร์ดแล้ว)`:'แจ้งพร้อมแล้ว · include พร้อมให้คนงานมารับ');
       if(navigator.vibrate)navigator.vibrate(60);if(r.newly)flushPush();loadHema()}
     catch(err){busy(b,false);if(hemaErr(err)){sh.close();return}el.querySelector('#h-err').innerHTML=errBox(err.message)}};
 }
 /* แถบเมนูล่าง */
-async function navTo(t){adminPin='';if(mode==='hemato'&&t!=='menu'){mode='ward'}
+async function navTo(t){adminPin='';
   if(t==='menu')return openMenu();
   if(t==='scan'){if(!ME){mode='ward';view='register';render();toast('ลงทะเบียนก่อนใช้งานสแกนครับ');return}return quickScan()}
   if(t==='lab'){mode='lab';if(!labPin){try{labPin=sessionStorage.getItem('cbcLabPin')||''}catch(e){}}
@@ -2536,7 +2547,7 @@ document.querySelectorAll('[data-tab-nav]').forEach(b=>b.onclick=()=>navTo(b.dat
 setInterval(()=>{if(mode==='lab'&&labPin&&labTab==='list'&&document.activeElement&&document.activeElement.id!=='lab-q')reloadLab()},60000);
 
 run('apiInit',store.get(TOKEN_KEY)).then(d=>{WARDS=d.wards;ME=d.me;LATE_MIN=d.lateMin;if(d.fest){store.set('cbcFest',d.fest);applyFest(d.fest)}view=ME?'home':'register';
-  try{if(new URLSearchParams(location.search).has('hemato'))mode='hemato'}catch(e){}render();
+  try{if(new URLSearchParams(location.search).has('hemato')){mode='lab';labTab='hema'}}catch(e){}render();
   if(ME&&store.get(NOTIF_KEY)==='1')pushSubscribe('me',true).catch(()=>{});if(labPin&&store.get('cbcLabPush')==='1')pushSubscribe('lab',true).catch(()=>{})})
   .catch(err=>{app.innerHTML=`<div class="col"><div class="alert bad">โหลดไม่สำเร็จ: ${esc(err.message)}</div></div>`});
 })();
