@@ -1401,18 +1401,20 @@ function render(){
 }
 /* ---------- โปรไฟล์กลาง "Laboratory": ใส่ PIN แลปในช่องรหัสพนักงาน (เว้นช่องอื่นว่าง) แล้วเข้าได้เลย
    เครื่องจะจำไว้จนกว่าจะกดออกจากระบบ · พยาบาล/เจ้าหน้าที่รับสไลด์จะไม่เห็นเมนูแลป */
-const LABDEV_KEY='cbcLabDev';
+const LABDEV_KEY='cbcLabDev',LABWHO_KEY='cbcLabWho';
+const PROF_TH={ipd:'IPD',hemato:'HEMATO'};const labWho=()=>store.get(LABWHO_KEY)==='hemato'?'hemato':'ipd';const profName=()=>PROF_TH[labWho()];
 const isLabDev=()=>!!store.get(LABDEV_KEY);
-const labName=t=>{t=String(t||'').trim().toLowerCase().replace(/\s+/g,'');return t===''||/^lab+o*ratory$/.test(t)||t==='lab'||t==='แลป'||t==='ห้องแลป'||t==='opd'||t==='เคาน์เตอร์opd'};
+const labName=t=>{t=String(t||'').trim().toLowerCase().replace(/\s+/g,'');return t===''||['ipd','opd','hemato','hema','lab','แลป','ห้องแลป','เคาน์เตอร์opd'].includes(t)||/^lab+o*ratory$/.test(t)};
 async function tryLabLogin(code,errEl,btn){
   code=String(code||'').trim();if(!/^\d{4,8}$/.test(code))return false;
   busy(btn,true,'กำลังตรวจสอบ…');
-  try{labRows=await run('apiLabList',code)}catch(err){const ok=await tryOpdLogin(code,btn);if(!ok)busy(btn,false);return ok}
+  let q;try{q=await run('apiLabQueue',code)}catch(err){const ok=await tryOpdLogin(code,btn);if(!ok)busy(btn,false);return ok}
+  store.set(LABWHO_KEY,q.who||'ipd');qData=q;qKnown=new Set(q.wait.map(r=>r.row));labRows=[];
   labPin=code;hematoPin=code;store.set(LABDEV_KEY,code);try{sessionStorage.setItem('cbcLabPin',code)}catch(e){}
-  ME=null;mode='lab';labTab='queue';render();toast('เข้าใช้ในชื่อ Laboratory');return true}
-function labLogout(){store.del(LABDEV_KEY);try{sessionStorage.removeItem('cbcLabPin');sessionStorage.removeItem('cbcHemaPin')}catch(e){}
+  ME=null;mode='lab';labTab='queue';render();toast('เข้าใช้ในชื่อ '+profName());return true}
+function labLogout(){const nm=profName();store.del(LABDEV_KEY);store.del(LABWHO_KEY);try{sessionStorage.removeItem('cbcLabPin');sessionStorage.removeItem('cbcHemaPin')}catch(e){}
   labPin='';hematoPin='';hemaItems=null;adminPin='';labRows=[];qData=null;qKnown=null;audData=null;statData=null;statCache={};
-  mode='ward';view=store.get(TOKEN_KEY)?'home':'register';render();toast('ออกจากโปรไฟล์ Laboratory แล้ว')}
+  mode='ward';view=store.get(TOKEN_KEY)?'home':'register';render();toast('ออกจากโปรไฟล์ '+nm+' แล้ว')}
 function navFor(){ // แถบเมนู: เครื่องแลปเห็นแค่ แลป + เมนู, พยาบาล/เจ้าหน้าที่รับสไลด์ไม่เห็นแลป
   const lab=isLabDev(),opd=isOpdDev();document.querySelectorAll('[data-tab-nav]').forEach(b=>{const t=b.dataset.tabNav;b.hidden=opd?t!=='menu':lab?!(t==='lab'||t==='menu'):t==='lab'});
   document.querySelector('.tabbar-in').style.setProperty('--tabs',opd?1:lab?2:4)}
@@ -1430,8 +1432,8 @@ const isOpdDev=()=>!!store.get(OPDDEV_KEY);
 let opdPin='',opdData=null,opdKnown=null,opdSess=[];
 async function tryOpdLogin(code,btn){
   try{opdData=await run('apiOpdList',code)}catch(err){return false}
-  opdPin=code;store.set(OPDDEV_KEY,code);ME=null;mode='opd';render();toast('เข้าใช้ในชื่อ เคาน์เตอร์ OPD');return true}
-function opdLogout(){store.del(OPDDEV_KEY);opdPin='';opdData=null;opdKnown=null;mode='ward';view=store.get(TOKEN_KEY)?'home':'register';render();toast('ออกจากโปรไฟล์เคาน์เตอร์ OPD แล้ว')}
+  opdPin=code;store.set(OPDDEV_KEY,code);ME=null;mode='opd';render();toast('เข้าใช้ในชื่อ OPD');return true}
+function opdLogout(){store.del(OPDDEV_KEY);opdPin='';opdData=null;opdKnown=null;mode='ward';view=store.get(TOKEN_KEY)?'home':'register';render();toast('ออกจากโปรไฟล์ OPD แล้ว')}
 const opdBy=()=>store.get('cbcOpdBy')||'';
 async function loadOpd(){if(!opdPin)return;
   try{const d=await run('apiOpdList',opdPin);
@@ -1440,7 +1442,7 @@ async function loadOpd(){if(!opdPin)return;
   catch(err){if(/รหัสเคาน์เตอร์ OPD|ใส่ PIN ผิด|ยังไม่ได้ตั้งรหัส/.test(err.message)){opdLogout();toast(err.message);return}opdData={__err:err.message}}
   if(mode==='opd')drawOpd()}
 function vOpd(){
-  app.innerHTML=`<div class="wide"><div class="opd-top"><div><div class="eyebrow">โปรไฟล์กลาง</div><h2 style="margin:2px 0 0">เคาน์เตอร์ OPD</h2>
+  app.innerHTML=`<div class="wide"><div class="opd-top"><div><div class="eyebrow">โปรไฟล์กลาง</div><h2 style="margin:2px 0 0">OPD <span class="small muted" style="font-weight:400">เคาน์เตอร์ OPD</span></h2>
       <span class="small" id="opd-st"></span></div><button class="btn btn-soft lab-lock" id="opd-out" type="button">${icLock}<span>ออกจากระบบ</span></button></div>
     <div class="hema-grid"><section class="panel"><div class="eyebrow">สไลด์มาถึงทางกระสวย</div><h3 style="margin:0">สแกนรับเข้าเคาน์เตอร์</h3>
       <div class="field"><label for="opd-by">ชื่อผู้รับที่เคาน์เตอร์</label><input class="input" id="opd-by" value="${esc(opdBy())}" placeholder="เช่น ชื่อเล่น" maxlength="60"></div>
@@ -1538,7 +1540,7 @@ function vLogin(){
     if($('#l-id').value.trim()&&labName($('#l-first').value)&&await tryLabLogin($('#l-id').value,$('#err'),b))return;
     busy(b,true,'กำลังตรวจสอบ…');
     try{const r=await run('apiLogin',$('#l-id').value,$('#l-first').value);store.set(TOKEN_KEY,r.token);ME=r.me;view='home';render();toast('สวัสดี '+ME.nick)}
-    catch(err){$('#err').innerHTML=errBox(labName($('#l-first').value)?'รหัส Laboratory ไม่ถูกต้อง (หรือยังไม่ได้ตั้ง: select set_lab_pin(\'9120\') ใน SQL Editor)':err.message);busy(b,false)}};
+    catch(err){$('#err').innerHTML=errBox(labName($('#l-first').value)?'รหัส IPD / HEMATO / OPD ไม่ถูกต้อง':err.message);busy(b,false)}};
 }
 let homeRows=[],timers=[];
 function stopTimers(){timers.forEach(clearInterval);timers=[]}
@@ -2023,7 +2025,7 @@ function quickScan(){
 
 /* ---------- lab overview ---------- */
 function vPin(){
-  app.innerHTML=`<div class="col"><section class="panel"><div class="art sm">${artScope}</div><h2>Laboratory</h2><p class="small muted" style="margin:0">โปรไฟล์กลางของห้องปฏิบัติการ</p>
+  app.innerHTML=`<div class="col"><section class="panel"><div class="art sm">${artScope}</div><h2>IPD / HEMATO</h2><p class="small muted" style="margin:0">ใส่รหัสของโปรไฟล์ IPD หรือ HEMATO</p>
     <form id="f" class="form" novalidate><div class="field"><label for="pin">PIN ของห้องปฏิบัติการ</label>
     <input class="input mono" id="pin" type="password" inputmode="numeric" autocomplete="off"></div>
     <div id="err"></div><button class="btn btn-blue btn-block" type="submit">เข้าดูภาพรวม</button></form></section></div>`;
@@ -2077,9 +2079,10 @@ let qData=null,qKnown=null,qLoading=false;
 const labBy=()=>store.get('cbcLabBy')||'';
 async function loadQueue(){if(qLoading)return;qLoading=true;
   try{const d=await run('apiLabQueue',labPin);const ids=d.wait.map(r=>r.row);
-    if(qKnown){const nw=d.wait.filter(r=>!qKnown.has(r.row));if(nw.length){alarm();
+    const mine=r=>(d.who==='hemato')===(r.queue==='hema');
+    if(qKnown){const nw=d.wait.filter(r=>!qKnown.has(r.row)&&mine(r));if(nw.length){alarm();
       toast(nw.length===1?`ออร์เดอร์ใหม่ HN ${nw[0].hn} · ${nw[0].ward}`:`ออร์เดอร์ใหม่ ${nw.length} รายการ`)}}
-    qKnown=new Set(ids);qData=d}
+    qKnown=new Set(ids);qData=d;if(d.who&&d.who!==store.get(LABWHO_KEY)){store.set(LABWHO_KEY,d.who)}}
   catch(err){if(!labPin)return;qData={__err:err.message}}finally{qLoading=false}
   if(mode==='lab'&&labTab==='queue')drawQueue()}
 function renderQueue(){
@@ -2109,15 +2112,16 @@ function qCard(r,kind){const m=mins(r.reqTs),late=kind==='wait'&&m>=30;
 function drawQueue(){const box=$('#q-body');if(!box)return;
   if(!qData)return;if(qData.__err){box.innerHTML=errBox(qData.__err);return}
   const d=qData,sec=(t,n,cls,html,empty)=>`<div class="section-h"><h3>${t} <span class="qbadge ${cls}">${n}</span></h3></div><div class="qgrid">${n?html:`<div class="small muted" style="padding:8px 2px">${empty}</div>`}</div>`;
-  const wl=d.wait.filter(r=>r.queue!=='hema'),wh=d.wait.filter(r=>r.queue==='hema');
-  box.innerHTML=`<div class="qcol qmain">${sec('🔔 รอหาสไลด์ · แลป IPD',wl.length,'',wl.map(r=>qCard(r,'wait')).join(''),'ไม่มีออร์เดอร์ค้าง 👍')}
-      ${sec('🔬 รอหาสไลด์ · Hemato (Slide OPD)',wh.length,'',wh.map(r=>qCard(r,'wait')).join(''),'ไม่มี')}</div>
-    <div class="qcol">${sec('✅ พร้อมรับที่แลป IPD',d.ready.length,'ok',d.ready.map(r=>qCard(r,'ready')).join(''),'–')}
-      ${sec('🚀 ส่งกระสวยไป OPD แล้ว (ยังไม่ถึง)',d.sent.length,'',d.sent.map(r=>qCard(r,'sent')).join(''),'–')}
-      ${d.readyOpd?`<div class="small muted">ถึงเคาน์เตอร์ OPD แล้ว รอมารับ ${d.readyOpd} รายการ</div>`:''}</div>
+  const hem=d.who==='hemato',wl=d.wait.filter(r=>r.queue!=='hema'),wh=d.wait.filter(r=>r.queue==='hema'),mine=hem?wh:wl,other=hem?wl:wh;
+  box.innerHTML=`<div class="qcol qmain">${sec(hem?'🔬 รอหาสไลด์ · HEMATO (Slide OPD)':'🔔 รอหาสไลด์ · IPD',mine.length,'',mine.map(r=>qCard(r,'wait')).join(''),'ไม่มีออร์เดอร์ค้าง 👍')}
+      ${other.length?`<div class="small muted">${hem?'คิว IPD':'คิว HEMATO (Slide OPD)'} มีอีก ${other.length} รายการ</div>`:''}</div>
+    <div class="qcol">${hem?sec('🚀 ส่งกระสวยไป OPD แล้ว (ยังไม่ถึง)',d.sent.length,'',d.sent.map(r=>qCard(r,'sent')).join(''),'–')
+        +(d.readyOpd?`<div class="small muted">ถึงเคาน์เตอร์ OPD แล้ว รอมารับ ${d.readyOpd} รายการ</div>`:'')
+      :sec('✅ พร้อมรับที่แลป IPD',d.ready.length,'ok',d.ready.map(r=>qCard(r,'ready')).join(''),'–')}</div>
     <div class="qcol">${sec('🧪 Include พร้อมรับ',d.inc.length,'inc',d.inc.map(x=>`<div class="qc inc"><div class="qh"><b class="mono">${x.hn?'HN '+esc(x.hn):esc(x.sample)}</b><span class="pill st-inc">Include</span></div><div class="small mono">${x.hn?esc(x.sample)+' · ':''}ส่งตรวจ ${esc(x.specDate||'–')}</div><div class="small muted">สแกน ${esc(x.readyAt)}${x.readyBy?' · '+esc(x.readyBy):''}</div></div>`).join(''),'–')}
-    ${d.nf.length?sec('❌ หาไม่เจอ (24 ชม.)',d.nf.length,'bad',d.nf.map(r=>qCard(r,'nf')).join(''),''):''}</div>`;
+    ${(()=>{const nf=d.nf.filter(r=>(r.queue==='hema')===hem);return nf.length?sec('❌ หาไม่เจอ (24 ชม.)',nf.length,'bad',nf.map(r=>qCard(r,'nf')).join(''),''):''})()}</div>`;
   box.querySelectorAll('[data-qf]').forEach(b=>b.onclick=()=>{if(needBy())qFound(d.wait.find(r=>String(r.row)===b.dataset.qf))});
+  const qb=app.querySelector('.ltabs [data-tab="queue"] .qbadge');if(qb)qb.textContent=mine.length;
   box.querySelectorAll('[data-qn]').forEach(b=>b.onclick=()=>{if(needBy())qNotFound(d.wait.find(r=>String(r.row)===b.dataset.qn))});
   box.querySelectorAll('[data-qb]').forEach(b=>b.onclick=async()=>{if(!needBy())return;b.disabled=true;
     try{await run('apiLabBack',labPin,+b.dataset.qb,{by:labBy()});toast('ย้อนเป็นรอหาแล้ว');loadQueue()}catch(err){b.disabled=false;toast(err.message)}});
@@ -2436,7 +2440,7 @@ async function photoSheet(row,who,hn){
 }
 
 const labTabs=()=>`<div class="lab-top"><div class="ltabs" role="tablist" aria-label="มุมมองของห้องปฏิบัติการ">
-  <button role="tab" data-tab="queue" aria-selected="${labTab==='queue'}">${icBell}คิวงาน${qData&&!qData.__err&&qData.wait.length?` <span class="qbadge">${qData.wait.length}</span>`:''}</button>
+  <button role="tab" data-tab="queue" aria-selected="${labTab==='queue'}">${icBell}คิวงาน${qData&&!qData.__err&&qData.wait.length?` <span class="qbadge">${qData.wait.filter(r=>(qData.who==='hemato')===(r.queue==='hema')).length}</span>`:''}</button>
   <button role="tab" data-tab="hema" aria-selected="${labTab==='hema'}">${icMicro}Include / Hemato</button>
   <button role="tab" data-tab="list" aria-selected="${labTab==='list'}">${icList}รายการสไลด์</button>
   <button role="tab" data-tab="stats" aria-selected="${labTab==='stats'}">${icChart}สถิติและกราฟ</button>
@@ -2444,10 +2448,10 @@ const labTabs=()=>`<div class="lab-top"><div class="ltabs" role="tablist" aria-l
   <button role="tab" data-tab="wards" aria-selected="${labTab==='wards'}">${icBed}วอร์ด</button>
   <button role="tab" data-tab="audit" aria-selected="${labTab==='audit'}">${icHist}ประวัติการใช้งาน</button>
   <button role="tab" data-tab="backup" aria-selected="${labTab==='backup'}">${icArchive}สำรองข้อมูล</button></div>
-  <span class="lab-prof" title="โปรไฟล์กลางของห้องปฏิบัติการ">🧪 Laboratory</span>
+  <span class="lab-prof" title="โปรไฟล์กลาง">${labWho()==='hemato'?'🔬':'🧪'} ${profName()}</span>
   <button class="btn btn-soft lab-lock" id="lab-maint" type="button" aria-label="สถานะแอป">${MAINT?'🚧':'✅'}<span>${MAINT?'ปิดอยู่':'เปิดอยู่'}</span></button>
   <button class="btn btn-soft lab-lock" id="lab-fest" type="button" aria-label="เลือกธีมเทศกาล">🎨<span>ธีม</span></button>
-  <button class="btn btn-soft lab-lock" id="lab-lock" type="button" aria-label="ออกจากระบบ Laboratory">${icLock}<span>${isLabDev()?'ออกจากระบบ':'ล็อก'}</span></button></div>`;
+  <button class="btn btn-soft lab-lock" id="lab-lock" type="button" aria-label="ออกจากระบบ">${icLock}<span>${isLabDev()?'ออกจากระบบ':'ล็อก'}</span></button></div>`;
 function bindTabs(){const lk=$('#lab-lock');if(lk)lk.onclick=()=>lockLab();const lf=$('#lab-fest');if(lf)lf.onclick=festSheet;const lm=$('#lab-maint');if(lm)lm.onclick=maintSheet;const sel=app.querySelector('.ltabs [aria-selected="true"]');if(sel)try{sel.scrollIntoView({inline:'center',block:'nearest'})}catch(e){}app.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{if(labTab===b.dataset.tab)return;labTab=b.dataset.tab;if(!ADMIN_TABS.includes(labTab))adminPin='';labTab==='stats'?loadStats():labTab==='staff'?loadStaff():labTab==='backup'?loadBackups():labTab==='wards'?loadWards():renderLab()})}
 async function loadStats(force){
   if(!force&&statCache[statDays]){statData=statCache[statDays];return renderStats()}
@@ -2614,8 +2618,8 @@ function openMenu(){
       <button class="menu-it" id="m-bot">${icChat}ถามน้องสไลด์</button>
     </div>
     ${ME?`<button class="btn btn-block logout-btn" id="m-logout">${icOut}ออกจากระบบ (Log out)</button>`:''}
-    ${isLabDev()?`<button class="btn btn-block logout-btn" id="m-lablogout">${icOut}ออกจากโปรไฟล์ Laboratory</button>`:''}
-    ${isOpdDev()?`<button class="btn btn-block logout-btn" id="m-opdlogout">${icOut}ออกจากโปรไฟล์เคาน์เตอร์ OPD</button>`:''}
+    ${isLabDev()?`<button class="btn btn-block logout-btn" id="m-lablogout">${icOut}ออกจากโปรไฟล์ ${profName()}</button>`:''}
+    ${isOpdDev()?`<button class="btn btn-block logout-btn" id="m-opdlogout">${icOut}ออกจากโปรไฟล์ OPD</button>`:''}
     <button class="btn btn-soft btn-block" data-close>ปิด</button>`);
   const el=sh.el;
   el.querySelectorAll('[data-fs]').forEach(b=>b.onclick=()=>setFS(b.dataset.fs));
