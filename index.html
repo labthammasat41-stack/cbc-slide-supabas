@@ -2108,7 +2108,7 @@ function fixSheet(r){
 }
 /* ---------- ผู้ใช้งาน (ระงับ / เปิดใช้) ---------- */
 let staffRows=null,staffQ='';
-async function loadStaff(){staffRows=null;renderStaff();try{staffRows=await run('apiLabStaff',labPin)}catch(err){staffRows={__err:err.message}}if(mode==='lab'&&labTab==='staff')renderStaff()}
+async function loadStaff(){if(!adminPin)return adminGate();staffRows=null;renderStaff();try{staffRows=await run('apiLabStaff',adminPin)}catch(err){if(/PIN ผู้ดูแล|ใส่ PIN ผิด/.test(err.message)){adminPin='';return adminGate(err.message)}staffRows={__err:err.message}}if(mode==='lab'&&labTab==='staff')renderStaff()}
 function renderStaff(){
   const head=`${labTabs()}<div class="toolbar"><input class="input" id="st-q" placeholder="ค้นหารหัสพนักงาน หรือชื่อ" value="${esc(staffQ)}"><button class="btn btn-ghost" id="st-re">รีเฟรช</button>
     <span class="small muted">"ระงับ" = ใช้แอปไม่ได้ แต่ประวัติการบันทึกยังอยู่ครบ</span></div>`;
@@ -2128,7 +2128,7 @@ function renderStaff(){
     const sh=openSheet(`<h2>รีเซ็ตบทบาท?</h2><p style="margin:0">${esc(u.first)} ${esc(u.last)} (${esc(u.nick)}) · ปัจจุบัน: ${esc(ROLE_TH[u.role]||'')}${u.ward?' · '+esc(u.ward):''}</p>
       <div class="alert info">ครั้งถัดไปที่ผู้ใช้เปิดแอป จะให้เลือกบทบาท (และวอร์ด) ใหม่ ประวัติเดิมยังอยู่ครบ</div>
       <button class="btn btn-teal btn-block" id="rr-ok">รีเซ็ต</button><button class="btn btn-soft btn-block" data-close>ยกเลิก</button>`);
-    sh.el.querySelector('#rr-ok').onclick=async()=>{sh.close();try{await run('apiLabStaffSet',labPin,u.id,'รีเซ็ตบทบาท');u.role='';u.ward='';toast(`รีเซ็ตบทบาทของ ${u.nick} แล้ว`);renderStaff()}catch(err){toast(err.message)}}});
+    sh.el.querySelector('#rr-ok').onclick=async()=>{sh.close();try{await run('apiLabStaffSet',adminPin,u.id,'รีเซ็ตบทบาท');u.role='';u.ward='';toast(`รีเซ็ตบทบาทของ ${u.nick} แล้ว`);renderStaff()}catch(err){toast(err.message)}}});
   app.querySelectorAll('[data-u]').forEach(b=>b.onclick=async()=>{const u=staffRows.find(x=>x.id===b.dataset.u),to=b.dataset.s;
     if(to==='ระงับ')return askStaff(u,to);
     await setStaff(u,to)});
@@ -2139,7 +2139,7 @@ function askStaff(u,to){
     <button class="btn btn-teal btn-block" id="sa-ok">ระงับ</button><button class="btn btn-soft btn-block" data-close>ยกเลิก</button>`);
   sh.el.querySelector('#sa-ok').onclick=async()=>{sh.close();await setStaff(u,to)};
 }
-async function setStaff(u,to){try{await run('apiLabStaffSet',labPin,u.id,to);u.state=to;toast(to==='ระงับ'?`ระงับ ${u.nick} แล้วครับ`:`เปิดใช้ ${u.nick} แล้วครับ`);renderStaff()}catch(err){toast(err.message)}}
+async function setStaff(u,to){try{await run('apiLabStaffSet',adminPin,u.id,to);u.state=to;toast(to==='ระงับ'?`ระงับ ${u.nick} แล้วครับ`:`เปิดใช้ ${u.nick} แล้วครับ`);renderStaff()}catch(err){toast(err.message)}}
 function bindStaff(){bindTabs();const r=$('#st-re');if(r)r.onclick=loadStaff;
   const qi=$('#st-q');if(qi)qi.oninput=()=>{staffQ=qi.value;const p=qi.selectionStart;renderStaff();const n=$('#st-q');n.focus();n.setSelectionRange(p,p)}}
 
@@ -2149,20 +2149,20 @@ const TH_MONTH_FULL=['มกราคม','กุมภาพันธ์','ม�
 const monthTh=m=>{const [y,mm]=m.split('-').map(Number);return `${TH_MONTH_FULL[mm-1]} ${y+543}`};
 const icLock='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
 let bkData=null, adminPin='';
-const ADMIN_TABS=['backup','wards'];
+const ADMIN_TABS=['backup','wards','staff'],ADMIN_T={wards:'จัดการวอร์ด',staff:'ผู้ใช้งาน',backup:'สำรองข้อมูล'};
 /* PIN ผู้ดูแลจำไว้ในหน่วยความจำเท่านั้น และลืมทันทีเมื่อออกจากแท็บนี้ (เครื่องแลปใช้ร่วมกันหลายคน) */
 async function loadBackups(){if(!adminPin)return adminGate();bkData=null;renderBackups();
   try{bkData=await run('apiLabBackups',adminPin)}catch(err){if(/PIN ผู้ดูแล|ใส่ PIN ผิด/.test(err.message)){adminPin='';return adminGate(err.message)}bkData={__err:err.message}}
   if(mode==='lab'&&labTab==='backup')renderBackups()}
 function adminGate(msg){
   app.innerHTML=`<div class="wide">${labTabs()}<div class="card" style="max-width:420px;margin:18px auto">
-    <div class="eyebrow">เฉพาะผู้ดูแลระบบ</div><h2 style="margin:4px 0 6px">${labTab==='wards'?'จัดการวอร์ด':'สำรองข้อมูล'}</h2>
+    <div class="eyebrow">เฉพาะผู้ดูแลระบบ</div><h2 style="margin:4px 0 6px">${ADMIN_T[labTab]||'สำรองข้อมูล'}</h2>
     <p class="small muted" style="margin:0 0 14px">หน้านี้ใช้ PIN ผู้ดูแล ซึ่งแยกจาก PIN แลป</p>
     <form id="adm-f"><div class="field"><label for="adm-pin">PIN ผู้ดูแล</label>
     <input class="input mono" id="adm-pin" type="password" inputmode="numeric" autocomplete="off"></div>
-    ${msg?errBox(msg):''}<button class="btn btn-block" type="submit">เข้าสู่หน้า${labTab==='wards'?'จัดการวอร์ด':'สำรองข้อมูล'}</button></form></div></div>`;
+    ${msg?errBox(msg):''}<button class="btn btn-block" type="submit">เข้าสู่หน้า${ADMIN_T[labTab]||'สำรองข้อมูล'}</button></form></div></div>`;
   bindTabs();const i=$('#adm-pin');i.focus();
-  $('#adm-f').onsubmit=e=>{e.preventDefault();if(!i.value.trim())return i.focus();adminPin=i.value.trim();labTab==='wards'?loadWards():loadBackups()};
+  $('#adm-f').onsubmit=e=>{e.preventDefault();if(!i.value.trim())return i.focus();adminPin=i.value.trim();labTab==='wards'?loadWards():labTab==='staff'?loadStaff():loadBackups()};
 }
 function renderBackups(){
   const head=`${labTabs()}<div class="toolbar"><button class="btn btn-ghost" id="bk-re">รีเฟรช</button>
