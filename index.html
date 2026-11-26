@@ -245,6 +245,27 @@ body.noNav main{padding-bottom:60px}
 .ins-arrow{position:fixed;left:50%;bottom:calc(6px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:200;font-size:2.4rem;color:#0b7a75;text-shadow:0 0 0 #fff,0 2px 8px rgba(0,0,0,.25);animation:ins-b 1s ease-in-out infinite;pointer-events:none}
 @keyframes ins-b{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,8px)}}
 @media (prefers-reduced-motion:reduce){.ins-arrow{animation:none}}
+.role-pick{display:grid;gap:10px}.rp{display:flex;gap:12px;align-items:center;padding:14px;border:1.5px solid var(--line);border-radius:var(--r-m);background:var(--field);cursor:pointer}
+.rp input{width:22px;height:22px;accent-color:var(--teal);flex:none}.rp .ri{font-size:1.7rem}.rp b{display:block}.rp small{display:block;color:var(--muted);font-size:.82rem;line-height:1.35}
+.rp:has(input:checked){border-color:var(--teal);background:var(--teal-soft)}
+.st-nf{background:var(--bad-soft);color:var(--bad)}.st-inc{background:var(--violet-soft);color:var(--violet)}
+.lr.nf{border-color:color-mix(in srgb,var(--bad) 40%,transparent)}.ring2.st-nf,.ring2.st-ready{--rc:currentColor}.nf-t,.nf-why{color:var(--bad)}
+.lr .state small{display:block;font-weight:400;font-size:.72rem;white-space:normal}
+.lr .state{max-width:34%;white-space:normal}.lr{cursor:default;gap:10px}.lr .meta b{white-space:nowrap}
+.pk-w{padding:8px 0;border-bottom:1px solid var(--line)}.pk-w:last-child{border-bottom:0}.pk-w .small{margin-top:4px;line-height:1.6}
+.pk-c{border:1.5px solid var(--line);border-radius:var(--r-m);padding:12px;margin:8px 0;display:grid;gap:6px}
+.pk-c.ok{border-color:var(--blue);background:var(--blue-soft)}.pk-c.warn{border-color:var(--warn);background:var(--warn-soft)}.pk-c.inc{border-color:var(--violet);background:var(--violet-soft)}
+.pk-hn{font-size:1.35rem;font-weight:700}
+.qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px;margin-bottom:8px}
+.qc{background:var(--surface);border:1.5px solid var(--line);border-radius:var(--r-m);padding:12px;display:grid;gap:4px;box-shadow:var(--shadow)}
+.qc.wait{border-left:5px solid var(--warn)}.qc.ready{border-left:5px solid var(--ok)}.qc.nf{border-left:5px solid var(--bad)}.qc.inc{border-left:5px solid var(--violet)}
+.qh{display:flex;justify-content:space-between;align-items:center;gap:8px}.qh b{font-size:1.15rem}.q-why{background:var(--acc-soft);border-radius:8px;padding:4px 8px}
+.qa{display:flex;gap:8px;margin-top:6px}.qa .btn{flex:1;min-height:44px;font-size:.92rem;padding:8px 10px}
+.qbadge{display:inline-flex;min-width:22px;height:22px;padding:0 7px;border-radius:999px;background:var(--warn);color:#fff;font-size:.78rem;font-weight:700;align-items:center;justify-content:center}
+.qbadge.ok{background:var(--ok)}.qbadge.inc{background:var(--violet)}.qbadge.bad{background:var(--bad)}
+.q-tools{align-items:flex-end;flex-wrap:wrap}.input.need{box-shadow:0 0 0 2px var(--bad)}
+.hema-shot{min-height:64px;font-size:1.08rem;margin-top:6px;gap:10px}.hema-shot svg{width:26px;height:26px}
+.hr-img{display:block;width:100%;max-height:180px;object-fit:contain;border-radius:var(--r-m);background:#000;margin-bottom:8px}
 .fest-chip{display:inline-flex;white-space:nowrap;align-items:center;gap:6px;margin-top:8px;align-self:flex-start;background:rgba(255,224,138,.16);border:1px solid rgba(255,224,138,.55);color:#ffe08a;border-radius:999px;padding:3px 10px;font-size:.78rem;font-weight:600}
 
 .hero-t{flex:1;min-width:0;max-width:42%;text-shadow:0 0 8px var(--hero-fade),0 0 2px var(--hero-fade);display:flex;flex-direction:column;gap:2px;position:relative}
@@ -308,7 +329,8 @@ body.noNav main{padding-bottom:60px}
 .mylist .it+.it{border-top:1px dashed var(--line)}
 .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:.76rem;font-weight:700;white-space:nowrap}
 .pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
-.st-in{background:var(--warn-soft);color:var(--warn)}.st-out{background:var(--ok-soft);color:var(--ok)}
+.st-in{background:var(--warn-soft);color:var(--warn)}.st-ready{background:color-mix(in srgb,var(--teal) 16%,var(--surface));color:var(--teal);box-shadow:inset 0 0 0 1.5px var(--teal)}
+.hema-ok{color:var(--ok)}.st-out{background:var(--ok-soft);color:var(--ok)}
 
 /* ---------- cards ---------- */
 .check{border:1.5px solid var(--line);border-radius:var(--r-l);padding:18px;display:flex;flex-direction:column;gap:12px;background:var(--surface)}
@@ -646,9 +668,9 @@ details.tbl th,details.tbl td{padding:6px 10px}
 <script>
 (function(){
 const TOKEN_KEY='cbcSlideToken', WARD_KEY='cbcLastWard';
-const STATUS={in:'ส่งใบตามแล้ว รอรับ',out:'รับสไลด์แล้ว'};
+const STATUS={in:'รอแลปหาสไลด์',out:'รับสไลด์แล้ว',nf:'หาไม่เจอ'};
 const lateTxt=()=>LATE_MIN%60===0?`${LATE_MIN/60} ชั่วโมง`:`${LATE_MIN} นาที`;
-let WARDS=[], ME=null, LATE_MIN=60, mode='ward', view='home', lastDone=null, labPin='', labRows=[], labFilter='in', labQ='', labTab='list', statDays=7, statData=null, statCache={};
+let WARDS=[], ME=null, LATE_MIN=60, mode='ward', view='home', lastDone=null, labPin='', labRows=[], labFilter='in', labQ='', labTab='queue', statDays=7, statData=null, statCache={};
 
 /* ---------- ฐานข้อมูล Supabase ----------
    ใส่ค่า 2 ค่านี้จาก Supabase → Project Settings → API (Project URL และ Publishable key / anon key)
@@ -662,7 +684,7 @@ const RPC={apiInit:['api_init','p_token'],apiRegister:['api_register','d'],apiLo
   apiIncludeCheck:['api_include_check','p_token','d'],apiInclude:['api_include','p_token','d'],apiSearch:['api_search','p_token','q'],
   apiLabList:['api_lab_list','p_pin'],apiLabStats:['api_lab_stats','p_pin','p_days'],apiSetPhoto:['api_set_photo','p_token','p_id','p_path'],apiUndo:['api_undo','p_token','p_id','p_kind'],
   apiLabFix:['api_lab_fix','p_pin','p_id','p_action','p_reason'],apiLabStaff:['api_lab_staff','p_pin'],apiLabStaffSet:['api_lab_staff_set','p_pin','p_staff','p_state'],
-  apiLabBackups:['api_lab_backups','p_pin'],apiAdminWards:['api_admin_wards','p_pin'],apiLabFestSet:['api_lab_fest_set','p_pin','p_fest'],apiAdminWardSave:['api_admin_ward_save','p_pin','p_action','p_name','p_new'],apiLabPurge:['api_lab_purge','p_pin','p_month','p_confirm']};
+  apiLabBackups:['api_lab_backups','p_pin'],apiAdminWards:['api_admin_wards','p_pin'],apiLabFestSet:['api_lab_fest_set','p_pin','p_fest'],apiHematoReady:['api_hemato_ready','p_pin','d'],apiHematoList:['api_hemato_list','p_pin'],apiHematoUndo:['api_hemato_undo','p_pin','p_ready'],apiSetRole:['api_set_role','p_token','p_role'],apiPushSub:['api_push_sub','p_token','sub'],apiLabPushSub:['api_lab_push_sub','p_pin','sub','p_on'],apiPushUnsub:['api_push_unsub','p_endpoint'],apiLabQueue:['api_lab_queue','p_pin'],apiLabReady:['api_lab_ready','p_pin','p_row','d'],apiLabNf:['api_lab_nf','p_pin','p_row','d'],apiLabBack:['api_lab_back','p_pin','p_row','d'],apiPickFind:['api_pick_find','p_token','p_sample'],apiPickList:['api_pick_list','p_token'],apiLabAudit:['api_lab_audit','p_pin','q','p_days'],apiAdminWardSave:['api_admin_ward_save','p_pin','p_action','p_name','p_new'],apiLabPurge:['api_lab_purge','p_pin','p_month','p_confirm']};
 /* คีย์แบบใหม่ (sb_publishable_…) ส่งใน apikey อย่างเดียว คีย์ anon แบบเดิม (eyJ…) ส่งใน Authorization ด้วย */
 const supaHead=extra=>Object.assign({apikey:SUPA_KEY},/^eyJ/.test(SUPA_KEY)?{Authorization:'Bearer '+SUPA_KEY}:{},extra||{});
 async function rpc(fn,args){
@@ -711,7 +733,7 @@ const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},se
 const $=s=>document.querySelector(s);
 const app=$('#app');
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const pill=st=>`<span class="pill st-${st}">${STATUS[st]||st}</span>`;
+const pill=(st,r)=>{const k=r&&r.state?r.state:st;return k==='ready'?'<span class="pill st-ready">✅ พร้อมรับ</span>':k==='nf'?'<span class="pill st-nf">❌ หาไม่เจอ</span>':k==='wait'?'<span class="pill st-in">⏳ รอแลปหา</span>':`<span class="pill st-${st}">${STATUS[st]||st}</span>`};
 const dur=m=>m<60?`${m} นาที`:`${Math.floor(m/60)} ชม.${m%60?` ${m%60} นาที`:''}`;
 const ago=ts=>dur(Math.max(0,Math.round((Date.now()-ts)/60000)));
 function toast(msg){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
@@ -1147,10 +1169,10 @@ function showGuide(){
     <div class="say"><b>สวัสดีครับ ผมน้องสไลด์</b>ก่อนเริ่มใช้งาน ขออนุญาตแนะนำวิธีการตาม Slide นะครับ</div></div>
   <div class="modal-body">
     <ol class="steps">
-      <li><div><b>กรุณาหาสไลด์ในตะกร้าก่อนครับ</b><span class="small">ตรวจดู HN และ Sample No. ให้ตรงกับใบตาม</span></div></li>
-      <li><div><b>หากหาไม่พบ กรุณาวางใบตาม Slide ไว้ในตะกร้ารับสิ่งส่งตรวจ</b><span class="small">แล้วกด "ส่งใบตาม Slide ที่ห้องแลป" ในแอปครับ</span></div></li>
-      <li><div><b>รอประมาณ 1 ชั่วโมง</b><span class="small">แล้วกลับมาหาสไลด์ในตะกร้าอีกครั้งครับ</span></div></li>
-      <li><div><b>เมื่อพบสไลด์แล้ว กรุณากด "บันทึกรับสไลด์" ในแอป</b><span class="small">ทุกครั้งก่อนนำสไลด์ออกไปครับ</span></div></li>
+      <li><div><b>พยาบาล: กด "สั่งตามสไลด์" จากวอร์ดได้เลย</b><span class="small">ไม่ต้องใช้กระดาษ กรอก HN วันเวลาส่งตรวจ วอร์ด และเหตุผล</span></div></li>
+      <li><div><b>แลปหาสไลด์ แล้วกด "พบสไลด์"</b><span class="small">แอปจะขึ้น ✅ พร้อมรับ และเด้งแจ้งเตือนที่มือถือครับ</span></div></li>
+      <li><div><b>คนงานมารับที่แลป</b><span class="small">กด "สแกนรับสไลด์" แล้วสแกนบาร์โค้ดบนสไลด์ทุกแผ่น ก่อนนำออกไปครับ</span></div></li>
+      <li><div><b>Slide include (เด็ก / แพทย์ขอ)</b><span class="small">ห้อง Hemato สแกนว่าพร้อมไว้แล้ว คนงานสแกนรับแล้วเลือกวอร์ดได้เลยครับ</span></div></li>
     </ol>
     <div class="small muted" style="text-align:center">มีข้อสงสัย กดที่น้องสไลด์มุมขวาล่างได้ตลอดเลยครับ</div>
     <button class="btn btn-teal btn-block" data-close>รับทราบครับ/ค่ะ</button>
@@ -1160,28 +1182,24 @@ function showGuide(){
 function showHelp(){
   openModal(`<div class="modal-head help"><h2>วิธีใช้งานแอปเบื้องต้น</h2><p>ตาม Slide CBC</p></div>
   <div class="modal-body">
-    <section class="help-sec"><h3><span class="dot" style="background:var(--teal)"></span>1. บันทึกส่งใบตามสไลด์</h3>
-      <ol><li>หาสไลด์ในตะกร้าก่อน ถ้าไม่เจอให้วางใบตาม Slide ในตะกร้ารับสิ่งส่งตรวจ</li>
-      <li><b>ต้องนำใบตามสไลด์ตัวจริงมาส่งที่ห้องปฏิบัติการทุกครั้ง</b> บันทึกจากวอร์ดไม่ได้</li>
-      <li>กดปุ่มสีเขียว <b>ส่งใบตาม Slide ที่ห้องแลป</b></li>
+    <section class="help-sec"><h3><span class="dot" style="background:var(--teal)"></span>1. พยาบาล: สั่งตามสไลด์</h3>
+      <ol><li>กดปุ่มสีเขียว <b>สั่งตามสไลด์</b> (สั่งจากวอร์ดได้เลย ไม่ใช้กระดาษ)</li>
       <li>กรอก <b>HN</b> และ<b>วันที่ เวลาส่งตรวจ</b> (บังคับ)</li>
-      <li><b>Sample No.</b> ถ้ามี กดปุ่มกล้องสแกนบาร์โค้ด ระบบจะเติมวันที่ให้ (เป็นวันที่ทำสไลด์ ถ้าส่งตรวจตอนดึกอาจต้องเลือกเป็นเมื่อวาน)</li>
-      <li>เลือก<b>วอร์ด</b> ระบบจะบอกว่าตามได้ถึงเมื่อไหร่</li>
-      <li>ถ้าต้องการ กด<b>ถ่ายภาพหลักฐาน</b> ใบตามที่วางในตะกร้ารับสิ่งส่งตรวจ (ไม่บังคับ)</li>
-      <li>กด <b>ยืนยันบันทึกส่งใบตาม</b> แล้วกลับมาอีกประมาณ 1 ชั่วโมง</li></ol>
-      <div class="small muted">ถ้าขึ้นเตือนว่าส่งใบตามแล้ว ไม่ต้องบันทึกซ้ำ ถ้าขึ้นว่าเกินกำหนดหรือยังไม่ถึงเวลา จะบันทึกไม่ได้</div></section>
-    <section class="help-sec"><h3><span class="dot" style="background:var(--blue)"></span>2. บันทึกรับสไลด์</h3>
-      <ol><li>เจอสไลด์ในตะกร้าแล้ว กดปุ่มสีน้ำเงิน <b>บันทึกรับสไลด์</b></li>
-      <li>สแกน <b>Sample No.</b> จากสไลด์ และกรอก <b>HN</b></li>
-      <li>กด <b>ค้นหาใบตาม</b> ตรวจวอร์ด HN และ Sample No. ให้ตรงกับสไลด์</li>
-      <li>กด <b>ยืนยันรับสไลด์</b> ก่อนนำสไลด์ไปทุกครั้ง</li></ol>
-      <div class="small muted">ถ้าไม่พบใบตาม และเป็นสไลด์ผู้ป่วยเด็กหรือสไลด์ที่แพทย์ขอ include ให้ใช้ปุ่มสีม่วง</div></section>
-    <section class="help-sec"><h3><span class="dot" style="background:var(--violet)"></span>3. บันทึกรับ Slide include</h3>
-      <ol><li>ใช้กับสไลด์ผู้ป่วยเด็ก และสไลด์ที่แพทย์ขอ include ซึ่งห้องปฏิบัติการวางไว้ในตะกร้าให้ ไม่ต้องส่งใบตาม</li>
-      <li><b>ถ้าได้ส่งใบตามสไลด์นี้ไว้แล้ว</b> ให้บันทึกที่ปุ่มสีฟ้า <b>บันทึกรับสไลด์</b> แทน แอปจะแจ้งเตือนให้</li>
-      <li>กดปุ่มสีม่วง <b>บันทึกรับ Slide include</b></li>
-      <li>สแกน <b>Sample No.</b> กรอก <b>HN</b> และเลือก<b>วอร์ด</b></li>
-      <li>กด <b>ยืนยันรับ Slide include</b> ก่อนนำสไลด์ไป</li></ol></section>
+      <li><b>Sample No.</b> ถ้ามี กดปุ่มกล้องสแกนบาร์โค้ด (ถ้าไม่มี เว้นว่างได้ แลปจะสแกนจากสไลด์ให้)</li>
+      <li>เลือก<b>วอร์ด</b> ระบบจะบอกว่าตามได้ถึงเมื่อไหร่ แล้วกรอก<b>เหตุผล</b>ที่ตาม</li>
+      <li>กด <b>ส่งออร์เดอร์ตามสไลด์</b> ออร์เดอร์จะขึ้นที่แลปทันที</li>
+      <li>เปิดสวิตช์ <b>แจ้งเตือนเด้ง</b> ที่หน้าแรกไว้ เมื่อแลปพบสไลด์จะเด้งบอก แล้วให้คนงานไปรับ</li></ol>
+      <div class="small muted">ถ้าแลปหาไม่เจอ จะขึ้น ❌ พร้อมเหตุผล สอบถามได้ที่ 8133 · iPhone ต้องติดตั้งแอปบนหน้าจอโฮมก่อนจึงจะได้แจ้งเตือนเด้ง</div></section>
+    <section class="help-sec"><h3><span class="dot" style="background:var(--blue)"></span>2. คนงาน: สแกนรับสไลด์ที่แลป</h3>
+      <ol><li>หน้าแรกจะบอกว่ามีสไลด์ <b>พร้อมให้มารับ</b> กี่ใบ ของวอร์ดไหน</li>
+      <li>กดปุ่มสีน้ำเงิน <b>สแกนรับสไลด์ที่แลป</b> แล้ว<b>สแกนบาร์โค้ดบนสไลด์ทุกแผ่น</b></li>
+      <li>ดูว่า <b>HN บนสไลด์ตรงกับ HN ในแอป</b> แล้วกด <b>รับสไลด์ใบนี้</b></li>
+      <li>สแกนแผ่นถัดไปต่อได้เลย รายการที่รับแล้วจะขึ้นด้านล่าง</li></ol>
+      <div class="small muted">ถ้าขึ้นว่า "แลปยังไม่ได้ยืนยัน" หรือ "ไม่พบออร์เดอร์" อย่าเพิ่งนำสไลด์ไป แจ้งเจ้าหน้าที่แลปก่อน</div></section>
+    <section class="help-sec"><h3><span class="dot" style="background:var(--violet)"></span>3. Slide include</h3>
+      <ol><li>สไลด์ผู้ป่วยเด็ก และสไลด์ที่แพทย์ขอ include <b>ห้อง Hemato จะสแกนว่าพร้อมรับ</b>ไว้ให้</li>
+      <li>คนงานสแกนบาร์โค้ดบนสไลด์ในหน้า <b>สแกนรับสไลด์</b> ตามปกติ</li>
+      <li>เลือก<b>วอร์ด</b>ที่จะนำสไลด์ไป (แตะ 2 ครั้ง) แล้วกด <b>รับ Slide include</b></li></ol></section>
     <section class="help-sec"><h3><span class="dot" style="background:var(--muted)"></span>4. ค้นหาสถานะสไลด์</h3>
       <ol><li>หาสไลด์ไม่เจอ หรืออยากรู้ว่ามีคนรับไปแล้วหรือยัง กด <b>ค้นหาสถานะสไลด์</b> ที่หน้าแรก</li>
       <li>พิมพ์หรือสแกน <b>HN</b> หรือ <b>Sample No.</b> แล้วกด <b>ค้นหา</b></li>
@@ -1194,25 +1212,25 @@ function showHelp(){
 /* ---------- ผู้ช่วยน้องสไลด์ (กดเลือกคำถาม ไม่ใช้ AI) ---------- */
 const CALL='<span class="call">8133</span>';
 const FAQ=[
- {g:'การตาม Slide',q:'ตาม Slide ต้องทำอะไรบ้าง',a:'ขั้นตอนการตาม Slide มีดังนี้ครับ\n1. หาสไลด์ในตะกร้าก่อน\n2. หากหาไม่พบ นำใบตาม Slide ตัวจริงมาวางในตะกร้ารับสิ่งส่งตรวจที่แลป แล้วกด "ส่งใบตาม Slide ที่ห้องแลป" ในแอป\n3. รอประมาณ 1 ชั่วโมง แล้วกลับมาหาอีกครั้ง\n4. เมื่อพบสไลด์แล้ว กด "บันทึกรับสไลด์" ในแอปทุกครั้งก่อนนำออกไปครับ',n:[18,2,3]},
- {g:'การตาม Slide',q:'หาสไลด์ในตะกร้าไม่เจอ ทำอย่างไร',a:'กรุณาวางใบตาม Slide ไว้ในตะกร้ารับสิ่งส่งตรวจ แล้วกดปุ่มสีเขียว "ส่งใบตาม Slide ที่ห้องแลป" ในแอปครับ\nจากนั้นรอประมาณ 1 ชั่วโมง แล้วกลับมาหาในตะกร้าอีกครั้งนะครับ',n:[3,6,7]},
- {g:'การตาม Slide',q:'ส่งใบตามแล้ว ต้องรอนานเท่าไร',a:'รอประมาณ 1 ชั่วโมงครับ แล้วกลับมาหาสไลด์ในตะกร้าอีกครั้ง\nหากรอนานแล้วยังไม่พบ สอบถามได้ที่ '+CALL+' ครับ',n:[4,13]},
+ {g:'การตาม Slide',q:'ตาม Slide ต้องทำอะไรบ้าง',a:'ขั้นตอนใหม่ (ไม่ใช้กระดาษ) มีดังนี้ครับ\n1. พยาบาลกด "สั่งตามสไลด์" จากวอร์ด กรอก HN วันเวลาส่งตรวจ วอร์ด และเหตุผล\n2. ออร์เดอร์ขึ้นที่แลปทันที แลปหาสไลด์แล้วกด "พบสไลด์"\n3. แอปขึ้น ✅ พร้อมรับ และเด้งแจ้งเตือน\n4. คนงานมารับที่แลป สแกนบาร์โค้ดบนสไลด์ทุกแผ่นก่อนนำออกไปครับ',n:[18,2,3]},
+ {g:'การตาม Slide',q:'แลปหาสไลด์ไม่เจอ ทำอย่างไร',a:'ถ้าแลปหาไม่เจอ หน้าแรกจะขึ้น ❌ หาไม่เจอ พร้อมเหตุผลที่แลปแจ้งไว้ครับ\nสอบถามรายละเอียดได้ที่ '+CALL+' ครับ',n:[3,6,7]},
+ {g:'การตาม Slide',q:'สั่งตามแล้ว ต้องรอนานเท่าไร',a:'ไม่ต้องกะเวลาเองแล้วครับ เมื่อแลปพบสไลด์ แอปจะขึ้น ✅ พร้อมรับ และเด้งแจ้งเตือน (ถ้าเปิดสวิตช์แจ้งเตือนไว้)\nหากรอนานแล้วยังขึ้น "แลปกำลังหา" สอบถามได้ที่ '+CALL+' ครับ',n:[4,13]},
  {g:'การตาม Slide',q:'ตามได้ถึงกี่โมง',a:'ใช้กติกาเดียวกันทุกวอร์ด ทั้งผู้ป่วยในและผู้ป่วยนอก นับจากวันเวลาส่งตรวจ CBC ครับ\n\n• ส่งตรวจถึง 20:00 น.\n  ตามได้ 08:00–22:00 น. ของวันที่ส่งตรวจ\n\n• ส่งตรวจหลัง 20:00 น.\n  ตามได้ 20:00–22:00 น. ของวันที่ส่งตรวจ\n  และ 08:00–14:00 น. ของวันถัดไป\n\n• Slide include ตามได้ภายใน 5 วันหลังส่งตรวจ\n\nหากพ้นกำหนดจะไม่สามารถติดตาม Slide ได้ เมื่อกรอกวันเวลาส่งตรวจแล้ว แอปจะบอกให้ทันทีครับ',n:[10,11]},
- {g:'การตาม Slide',q:'Slide include คืออะไร',a:'Slide include คือสไลด์ผู้ป่วยเด็ก และสไลด์ที่แพทย์ขอไว้ ห้องปฏิบัติการจะวางไว้ในตะกร้าให้เลยครับ ไม่ต้องส่งใบตาม\nเมื่อพบแล้ว กดปุ่มสีม่วง "บันทึกรับ Slide include" กรอก Sample No., HN และวอร์ด แล้วกดยืนยันก่อนนำออกไปนะครับ\n\nสำคัญ: หากได้ส่งใบตามสไลด์นี้ไว้แล้ว กรุณาบันทึกที่ปุ่มสีฟ้า "บันทึกรับสไลด์" แทนนะครับ แอปจะแจ้งเตือนให้ครับ\nหากแน่ใจว่าเป็นสไลด์ของการส่งตรวจคนละครั้ง สอบถามได้ที่ '+CALL+' ครับ',n:[17,1,13]},
- {g:'การใช้งานแอป',q:'ไม่มี Sample No. ส่งใบตามได้ไหม',a:'ได้ครับ ตอนส่งใบตาม กรอกเพียง HN และวันเวลาส่งตรวจก็บันทึกได้\nแต่ตอนรับสไลด์ ต้องสแกน Sample No. จากสไลด์ และกรอก HN ทุกครั้งนะครับ',n:[7,8]},
- {g:'การใช้งานแอป',q:'ดูวันเวลาส่งตรวจจากไหน',a:'ดูวันเวลาส่งตรวจได้จากใบตาม Slide ครับ\nหากในใบตามไม่มี กรุณาสอบถามพยาบาล และกรอกข้อมูลให้ครบทุกช่องก่อนบันทึกนะครับ',n:[6,4]},
+ {g:'การตาม Slide',q:'Slide include คืออะไร',a:'Slide include คือสไลด์ผู้ป่วยเด็ก และสไลด์ที่แพทย์ขอไว้ ไม่ต้องสั่งตามครับ\nห้อง Hemato จะสแกนว่าพร้อมรับไว้ให้ คนงานสแกนบาร์โค้ดบนสไลด์ในหน้า "สแกนรับสไลด์" แล้วเลือกวอร์ดได้เลย\n\nถ้าสแกนแล้วขึ้นว่า Hemato ยังไม่ได้สแกน แจ้งเจ้าหน้าที่ Hemato ก่อนครับ หากสงสัย สอบถามได้ที่ '+CALL+' ครับ',n:[17,1,13]},
+ {g:'การใช้งานแอป',q:'ไม่มี Sample No. สั่งตามได้ไหม',a:'ได้ครับ กรอก HN วันเวลาส่งตรวจ วอร์ด และเหตุผลก็สั่งได้\nแลปจะสแกน Sample No. จากสไลด์ตอนพบให้เองครับ',n:[7,8]},
+ {g:'การใช้งานแอป',q:'ดูวันเวลาส่งตรวจจากไหน',a:'ดูได้จากระบบของโรงพยาบาล หรือสติกเกอร์บนหลอดเลือดครับ\nกรุณากรอกให้ตรง เพราะแลปใช้วันเวลานี้หาสไลด์ครับ',n:[6,4]},
  {g:'การใช้งานแอป',q:'สแกนบาร์โค้ดไม่ติด ทำอย่างไร',a:'ลองวิธีนี้ครับ\n• วางบาร์โค้ดแนวนอนให้เต็มกรอบ ห่างประมาณ 10–15 ซม. แล้วถือนิ่งๆ\n• ถ้าบาร์โค้ดบนสไลด์เล็ก ให้เลื่อนแถบซูมแล้วถอยมือถือออกมาเล็กน้อย กล้องจะโฟกัสชัดขึ้น\n• ถ้ามืด กดปุ่มไฟฉาย\n• เช็ดเลนส์กล้องให้สะอาด และระวังแสงสะท้อนบนสติกเกอร์\n• ถ้ายังไม่ได้ กด "📷 ถ่ายรูปบาร์โค้ด" หรือปิดกล้องแล้วพิมพ์เลขเองได้ครับ\n\niPhone: ถือห่างประมาณ 15–20 ซม. เพราะกล้อง iPhone โฟกัสใกล้มากไม่ได้ ถ้าอ่านไม่ติดใน 5–10 วินาที กด "📷 ถ่ายรูปบาร์โค้ด" จะอ่านได้ง่ายกว่า (ให้บาร์โค้ดอยู่กลางภาพ)\n\nหากกล้องไม่เปิดเลย Android ให้เปิดด้วย Chrome, iPhone ให้เปิดด้วย Safari แล้วกดอนุญาตให้ใช้กล้องนะครับ',n:[6]},
- {g:'การใช้งานแอป',q:'ต้องถ่ายภาพหลักฐานไหม',a:'ไม่บังคับครับ แต่แนะนำให้ถ่ายภาพใบตามที่วางในตะกร้ารับสิ่งส่งตรวจไว้เป็นหลักฐาน จะช่วยยืนยันได้ว่าได้ส่งใบตามแล้วครับ',n:[2]},
+ {g:'การใช้งานแอป',q:'เปิดแจ้งเตือนเด้งอย่างไร',a:'พยาบาล: ที่หน้าแรก ใต้การ์ด "ออร์เดอร์ตามสไลด์ของฉัน" กดสวิตช์ "แจ้งเตือนเด้ง" แล้วกดอนุญาตครับ\n• Android: ใช้ Chrome ได้เลย\n• iPhone: ต้องติดตั้งแอปบนหน้าจอโฮมก่อน (ปุ่มแชร์ → เพิ่มไปยังหน้าจอโฮม) แล้วเปิดจากไอคอน จึงจะเปิดแจ้งเตือนได้\nเปิดครั้งเดียว ใช้ได้ตลอด แม้ปิดแอปอยู่ครับ',n:[2]},
  {g:'แจ้งเตือนและปัญหา',q:'ขึ้น "เกินกำหนดการตาม Slide"',a:'ขออภัยครับ สไลด์นี้เกินกำหนดเวลาการตามแล้ว จึงไม่สามารถตามได้\nหากมีข้อสงสัย สอบถามได้ที่ '+CALL+' ครับ',n:[4]},
- {g:'แจ้งเตือนและปัญหา',q:'ขึ้น "ยังไม่ถึงเวลาตาม Slide"',a:'ตอนนี้อยู่นอกช่วงเวลาที่ตามได้ครับ เช่น\n• ส่งตรวจช่วงกลางคืน/เช้ามืด ตามได้ตั้งแต่ 08:00 น.\n• ส่งตรวจหลัง 20:00 น. และเลย 22:00 น. ไปแล้ว ตามได้อีกครั้ง 08:00–14:00 น. ของวันถัดไป\nแอปจะบอกช่วงเวลาที่ตามได้ไว้ในข้อความครับ หากมีข้อสงสัย สอบถามได้ที่ '+CALL+' ครับ'+CALL+' ครับ',n:[4]},
- {g:'แจ้งเตือนและปัญหา',q:'ขึ้นว่า "ถูกส่งใบตามมาแล้ว"',a:'แปลว่าสไลด์นี้มีผู้ส่งใบตามไว้แล้วครับ ไม่ต้องบันทึกซ้ำ\nกรุณาดูรายละเอียดในกล่องสีส้ม แล้วไปหาสไลด์ในตะกร้าได้เลยครับ\nหากแอปแจ้งว่า "อาจซ้ำ" และตรวจแล้วเป็นการส่งตรวจคนละครั้งจริง กด "เป็นคนละรายการ บันทึกต่อ" ได้ครับ',n:[3]},
- {g:'แจ้งเตือนและปัญหา',q:'รับสไลด์แล้วขึ้น "ไม่พบใบตาม"',a:'กรุณาตรวจ HN และ Sample No. บนสไลด์อีกครั้งครับ\n• หากเป็นสไลด์ผู้ป่วยเด็กหรือสไลด์ที่แพทย์ขอ include ให้ใช้ปุ่มสีม่วง "บันทึกรับ Slide include"\n• หากยังไม่แน่ใจ สอบถามได้ที่ '+CALL+' ครับ',n:[5,14]},
- {g:'แจ้งเตือนและปัญหา',q:'Sample No. ไม่ตรงกับใบตาม',a:'กรุณาอย่าเพิ่งนำสไลด์ไปครับ อาจหยิบสไลด์ผิดใบ\nตรวจ Sample No. และ HN บนสไลด์อีกครั้ง หากยังไม่ตรง สอบถามได้ที่ '+CALL+' ครับ',n:[13]},
- {g:'แจ้งเตือนและปัญหา',q:'เปลี่ยนมือถือ หรือแอปจำชื่อไม่ได้',a:'ไม่ต้องลงทะเบียนใหม่ครับ กด "เคยลงทะเบียนแล้ว แต่เปลี่ยนเครื่อง" แล้วกรอกรหัสพนักงานกับชื่อจริงที่ลงทะเบียนไว้ได้เลยครับ',n:[1]},
- {g:'แจ้งเตือนและปัญหา',q:'ไม่ทำตามขั้นตอน จะเป็นอย่างไร',a:'หากไม่ปฏิบัติตามขั้นตอนการตาม Slide เช่น นำสไลด์ไปโดยไม่ได้บันทึกรับในแอป จะมีการเขียนรายงาน Incident Report ไปยังต้นสังกัดครับ\nรบกวนบันทึกในแอปทุกครั้งนะครับ ขอบคุณครับ 🙏',n:[1]},
- {g:'ค้นหาสไลด์',q:'หาสไลด์ include ในตะกร้าไม่เจอ',a:'ไม่ต้องกังวลครับ ลองทำตามนี้นะครับ\n1. ตรวจในตะกร้าอีกครั้ง ดู HN และ Sample No. ให้ตรง\n2. กด "ค้นหาสถานะสไลด์" แล้วใส่ HN หรือ Sample No. ระบบจะบอกว่ามีคนบันทึกรับไปแล้วหรือยัง ถ้ารับไปแล้วจะเห็นชื่อผู้รับและเวลาครับ\n3. หากไม่พบข้อมูล และหาในตะกร้าไม่เจอ สอบถามได้ที่ '+CALL+' ครับ',n:[18,5],go:'search'},
+ {g:'แจ้งเตือนและปัญหา',q:'ขึ้น "ยังไม่ถึงเวลาตาม Slide"',a:'ตอนนี้อยู่นอกช่วงเวลาที่ตามได้ครับ เช่น\n• ส่งตรวจช่วงกลางคืน/เช้ามืด ตามได้ตั้งแต่ 08:00 น.\n• ส่งตรวจหลัง 20:00 น. และเลย 22:00 น. ไปแล้ว ตามได้อีกครั้ง 08:00–14:00 น. ของวันถัดไป\nแอปจะบอกช่วงเวลาที่ตามได้ไว้ในข้อความครับ หากมีข้อสงสัย สอบถามได้ที่ '+CALL+' ครับ',n:[4]},
+ {g:'แจ้งเตือนและปัญหา',q:'ขึ้นว่า "ถูกสั่งตามแล้ว"',a:'แปลว่าสไลด์นี้มีผู้สั่งตามไว้แล้วครับ ไม่ต้องสั่งซ้ำ\nดูรายละเอียดในกล่องสีส้ม แล้วรอแจ้งเตือนว่าพร้อมรับได้เลยครับ\nหากแอปแจ้งว่า "อาจซ้ำ" และตรวจแล้วเป็นการส่งตรวจคนละครั้งจริง กด "เป็นคนละรายการ บันทึกต่อ" ได้ครับ',n:[3]},
+ {g:'แจ้งเตือนและปัญหา',q:'สแกนรับแล้วขึ้น "ไม่พบออร์เดอร์"',a:'อย่าเพิ่งนำสไลด์ไปครับ ตรวจ Sample No. บนสไลด์อีกครั้ง\n• ถ้าขึ้นว่า "แลปยังไม่ได้ยืนยัน" ให้เจ้าหน้าที่แลปกด "พบสไลด์" ก่อน\n• ถ้าเป็นสไลด์ include ให้ห้อง Hemato สแกนก่อน\n• หากยังไม่แน่ใจ สอบถามได้ที่ '+CALL+' ครับ',n:[5,14]},
+ {g:'แจ้งเตือนและปัญหา',q:'HN บนสไลด์ไม่ตรงกับในแอป',a:'กรุณาอย่าเพิ่งนำสไลด์ไปครับ อาจหยิบสไลด์ผิดใบ\nแจ้งเจ้าหน้าที่แลปตรวจอีกครั้ง หรือสอบถามได้ที่ '+CALL+' ครับ',n:[13]},
+ {g:'แจ้งเตือนและปัญหา',q:'เปลี่ยนมือถือ หรือแอปจำชื่อไม่ได้',a:'ไม่ต้องลงทะเบียนใหม่ครับ กด "เคยลงทะเบียนแล้ว แต่เปลี่ยนเครื่อง" แล้วกรอกรหัสพนักงานกับชื่อจริงที่ลงทะเบียนไว้ได้เลยครับ\nถ้าเปลี่ยนหน้าที่ (พยาบาล / คนงาน) เปลี่ยนได้ที่ เมนู → บทบาทของฉัน',n:[1]},
+ {g:'แจ้งเตือนและปัญหา',q:'ไม่ทำตามขั้นตอน จะเป็นอย่างไร',a:'ระบบบันทึกทุกการกระทำไว้ว่าใครทำอะไร เมื่อไร หากนำสไลด์ไปโดยไม่ได้สแกนรับในแอป จะมีการเขียนรายงาน Incident Report ไปยังต้นสังกัดครับ\nรบกวนสแกนรับในแอปทุกครั้งนะครับ ขอบคุณครับ 🙏',n:[1]},
+ {g:'ค้นหาสไลด์',q:'สไลด์ include ไม่ขึ้นในระบบ',a:'ไม่ต้องกังวลครับ ลองทำตามนี้นะครับ\n1. กด "ค้นหาสถานะสไลด์" แล้วใส่ HN หรือ Sample No. ระบบจะบอกว่ามีคนรับไปแล้วหรือยัง\n2. ถ้ายังไม่มีใครรับ และสแกนแล้วขึ้นว่า Hemato ยังไม่ได้สแกน แจ้งห้อง Hemato ก่อน\n3. หากยังไม่พบ สอบถามได้ที่ '+CALL+' ครับ',n:[18,5],go:'search'},
  {g:'ค้นหาสไลด์',q:'ตรวจสอบว่าใครรับสไลด์ไปแล้ว',a:'กดปุ่ม "ค้นหาสถานะสไลด์" ที่หน้าแรก แล้วพิมพ์หรือสแกน HN หรือ Sample No. ได้เลยครับ\nระบบจะแสดงรายการย้อนหลัง 7 วัน ว่ารับสไลด์ไปแล้วหรือยัง ใครเป็นผู้รับ และรับเมื่อไรครับ',n:[17],go:'search'},
- {g:'การตาม Slide',q:'ส่งใบตามจากวอร์ดได้ไหม',a:'ไม่ได้ครับ ต้องนำใบตามสไลด์ตัวจริง (กระดาษ) มาส่งที่ห้องปฏิบัติการทุกครั้ง\nแอปใช้บันทึกตอนส่งใบที่แลปเท่านั้น ไม่ได้ใช้ส่งแทนใบ เพราะเจ้าหน้าที่แลปต้องใช้ใบตามตัวจริงในการหาสไลด์ครับ\nก่อนกดบันทึก แอปจะให้ติ๊กยืนยันว่านำใบมาส่งแล้วทุกครั้ง',n:[0,1]}
+ {g:'การตาม Slide',q:'สั่งตามจากวอร์ดได้ไหม',a:'ได้ครับ ระบบใหม่ไม่ใช้กระดาษแล้ว พยาบาลกด "สั่งตามสไลด์" จากวอร์ดได้เลย\nออร์เดอร์จะขึ้นที่หน้าจอแลปทันที เมื่อแลปพบสไลด์จะแจ้งให้คนงานมารับครับ',n:[0,1]}
 ];
 function chipsHtml(list){return `<div class="chips">${list.map(i=>`<button class="chip" data-q="${i}">${esc(FAQ[i].q)}</button>`).join('')}</div>`}
 function allChips(){let g='',h='';FAQ.forEach((f,i)=>{if(f.g!==g){g=f.g;h+=`<h4>${esc(g)}</h4>`}h+=`<button class="chip" data-q="${i}">${esc(f.q)}</button>`});return `<div class="chips">${h}</div>`}
@@ -1304,9 +1322,13 @@ function render(){
   const cur=mode==='lab'?'lab':view==='search'?'search':'home';
   document.querySelectorAll('[data-tab-nav]').forEach(b=>{if(b.dataset.tabNav===cur)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
   if(mode==='lab'){$('#fab').hidden=true;window.scrollTo(0,0);return labPin?renderLab():vPin()}
+  if(mode==='hemato'){$('#fab').hidden=true;window.scrollTo(0,0);return vHemato()}
   if(!ME&&view!=='login')view='register';
+  if(ME&&!ME.role)view='role';
+  if(ME&&(view==='checkout'||view==='include'))view=ME.role==='porter'?'pick':'home';
+  if(ME&&view==='checkin'&&ME.role!=='nurse')view='home';
   $('#fab').hidden=!ME||view!=='home';if(view==='home')sayAgain();
-  ({register:vRegister,login:vLogin,home:vHome,checkin:vIn,checkout:vOut,include:vInc,search:vSearch,done:vDone})[view]();
+  ({register:vRegister,login:vLogin,home:vHome,checkin:vIn,checkout:vOut,include:vInc,search:vSearch,done:vDone,role:vRole,pick:vPick})[view]();
   window.scrollTo(0,0);
 }
 function vRegister(){
@@ -1317,6 +1339,7 @@ function vRegister(){
       <div class="row2"><div class="field"><label for="r-first">ชื่อ</label><input class="input" id="r-first"></div>
       <div class="field"><label for="r-last">นามสกุล</label><input class="input" id="r-last"></div></div>
       <div class="field"><label for="r-nick">ชื่อเล่น</label><input class="input" id="r-nick"></div>
+      <div class="field"><span class="lab">บทบาท</span>${rolePick('')}</div>
       <div id="err"></div>
       <button class="btn btn-teal btn-block" type="submit">ลงทะเบียนและเริ่มใช้งาน</button>
     </form>
@@ -1325,7 +1348,9 @@ function vRegister(){
   $('#f').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button[type=submit]');
     const v=k=>document.getElementById('r-'+k).value.trim();
     busy(b,true);
-    try{const r=await run('apiRegister',{id:v('id'),first:v('first'),last:v('last'),nick:v('nick')});
+    const rl=(document.querySelector('input[name=role]:checked')||{}).value||'';
+    if(!rl){$('#err').innerHTML=errBox('เลือกบทบาท: พยาบาล หรือ คนงาน');busy(b,false);return}
+    try{const r=await run('apiRegister',{id:v('id'),first:v('first'),last:v('last'),nick:v('nick'),role:rl});
       store.set(TOKEN_KEY,r.token);ME=r.me;view='home';render();toast('ลงทะเบียนแล้ว ยินดีต้อนรับ '+ME.nick)}
     catch(err){$('#err').innerHTML=errBox(err.message);busy(b,false)}};
 }
@@ -1347,90 +1372,98 @@ const greet=()=>{const h=new Date().getHours();return h<5?'สวัสดีค
 const TH_MONTH=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 const TH_DAY=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
 const thToday=()=>{const d=new Date();return `${TH_DAY[d.getDay()]} ${d.getDate()} ${TH_MONTH[d.getMonth()]} ${d.getFullYear()+543}`};
-const NOTIF_KEY='cbcNotif',READY_KEY='cbcReadyDone';
+const NOTIF_KEY='cbcNotif',SEEN_KEY='cbcSeenState';
 const notifOn=()=>store.get(NOTIF_KEY)==='1'&&'Notification' in window&&Notification.permission==='granted';
-const readyDone=()=>{try{return JSON.parse(store.get(READY_KEY)||'[]')}catch(e){return []}};
+const mins=ts=>Math.max(0,Math.round((Date.now()-ts)/60000));
 function liveHtml(rows){
-  const open=rows.filter(r=>r.status==='in'&&!r.include&&r.reqTs);if(!open.length)return '';
-  const now=Date.now(),span=LATE_MIN*60000;
-  return `<div class="live-h"><div class="ttl"><span class="pulse"></span><h3>ใบตามที่รอรับของฉัน · ${open.length} ใบ</h3></div></div>
-  ${open.map(r=>{const left=Math.ceil((r.reqTs+span-now)/60000),ready=left<=0,p=Math.min(100,Math.max(2,(now-r.reqTs)/span*100));
-    return `<button class="lr ${ready?'ready':''}" data-hn="${esc(r.hn)}" data-sample="${esc(r.sample)}">
-      <span class="ring2" style="--p:${p.toFixed(1)}"><span>${ready?'✓':left+'<small>นาที</small>'}</span></span>
-      <span class="meta"><b>HN ${esc(r.hn)}</b><span class="small muted">${esc(r.ward)} · ส่งใบตาม ${esc(String(r.reqAt).slice(-5))} น.</span></span>
-      <span class="state">${ready?'ไปรับได้แล้ว':'รออีก '+left+' นาที'}</span></button>`}).join('')}
-  <div class="notif"><button class="switch" id="nt-sw" role="switch" aria-checked="${notifOn()}" aria-label="แจ้งเตือนบนหน้าจอมือถือ"></button>แจ้งเตือนบนหน้าจอมือถือเมื่อถึงเวลาไปรับ</div>`;
+  const open=rows.filter(r=>!r.include&&(r.state==='wait'||r.state==='ready'||(r.state==='nf'&&r.reqTs>Date.now()-86400000)));if(!open.length)return '';
+  const ord={ready:0,nf:1,wait:2};
+  return `<div class="live-h"><div class="ttl"><span class="pulse"></span><h3>ออร์เดอร์ตามสไลด์ของฉัน · ${open.length} รายการ</h3></div></div>
+  ${open.sort((a,b)=>ord[a.state]-ord[b.state]||b.reqTs-a.reqTs).map(r=>`<div class="lr ${r.state==='ready'?'ready':r.state==='nf'?'nf':''}">
+      <span class="ring2 st-${r.state}" style="--p:100"><span>${r.state==='ready'?'✓':r.state==='nf'?'✕':mins(r.reqTs)+'<small>นาที</small>'}</span></span>
+      <span class="meta"><b>HN ${esc(r.hn)}</b><span class="small muted">${esc(r.ward)} · สั่ง ${esc(String(r.reqAt).slice(-5))} น.${r.reason?' · '+esc(r.reason):''}</span>
+      ${r.state==='nf'?`<span class="small nf-why">เหตุผล: ${esc(r.nfReason)}</span>`:''}</span>
+      <span class="state">${r.state==='ready'?'<b class="hema-ok">✅ พร้อมรับ</b><small class="muted">ให้คนงานไปรับที่แลป</small>':r.state==='nf'?'<b class="nf-t">❌ หาไม่เจอ</b><small class="muted">โทร 8133</small>':'แลปกำลังหา'}</span></div>`).join('')}
+  <div class="notif"><button class="switch" id="nt-sw" role="switch" aria-checked="${notifOn()}" aria-label="แจ้งเตือนเด้งบนมือถือ"></button>แจ้งเตือนเด้งเมื่อแลปพบสไลด์ (แม้ปิดแอปอยู่)</div>`;
 }
 function drawLive(){
   const box=$('#live');if(!box)return;const h=liveHtml(homeRows);box.hidden=!h;box.innerHTML=h;
-  box.querySelectorAll('.lr').forEach(b=>b.onclick=()=>{carryOut={sample:b.dataset.sample,hn:b.dataset.hn};view='checkout';render()});
   const sw=$('#nt-sw');if(sw)sw.onclick=async()=>{
-    if(notifOn()){store.set(NOTIF_KEY,'0');return drawLive()}
-    if(!('Notification' in window)){toast('มือถือเครื่องนี้ไม่รองรับการแจ้งเตือน แอปจะสั่นและมีเสียงแทนครับ');return}
-    const pm=await Notification.requestPermission();store.set(NOTIF_KEY,pm==='granted'?'1':'0');
-    if(pm!=='granted')toast('ยังไม่ได้อนุญาตการแจ้งเตือน เปิดได้ที่การตั้งค่าเบราว์เซอร์ครับ');drawLive()};
-  // ถึงเวลาไปรับ: สั่น มีเสียง และแจ้งเตือน (ครั้งเดียวต่อใบ)
-  const done=readyDone(),now=Date.now(),fresh=homeRows.filter(r=>r.status==='in'&&!r.include&&r.reqTs&&now>=r.reqTs+LATE_MIN*60000&&!done.includes(r.row));
-  if(fresh.length){store.set(READY_KEY,JSON.stringify(done.concat(fresh.map(r=>r.row)).slice(-50)));
-    const msg=fresh.length===1?`ถึงเวลาไปรับสไลด์ HN ${fresh[0].hn} แล้วครับ`:`ถึงเวลาไปรับสไลด์ ${fresh.length} ใบแล้วครับ`;
-    beep();if(navigator.vibrate)navigator.vibrate([200,100,200]);toast(msg);
-    if(notifOn()){const opt={body:'เปิดแอปตาม Slide CBC เพื่อบันทึกรับสไลด์',icon:'icon-192.png',tag:'cbc-ready'};
-      (navigator.serviceWorker&&navigator.serviceWorker.ready?navigator.serviceWorker.ready.then(r=>r.showNotification(msg,opt)):Promise.reject()).catch(()=>{try{new Notification(msg,opt)}catch(e){}})}}
+    if(notifOn()){store.set(NOTIF_KEY,'0');pushOff('me');toast('ปิดแจ้งเตือนเด้งแล้ว');return drawLive()}
+    sw.setAttribute('aria-busy','true');
+    try{await pushSubscribe('me');store.set(NOTIF_KEY,'1');toast('เปิดแจ้งเตือนเด้งแล้ว ✅ แลปพบสไลด์เมื่อไรจะเด้งบอกทันที')}
+    catch(err){if('Notification' in window&&Notification.permission==='granted')store.set(NOTIF_KEY,'1');toast(err.message)}drawLive()};
+  // สถานะเปลี่ยน (พร้อมรับ / หาไม่เจอ) ขณะเปิดแอป: สั่น มีเสียง (ครั้งเดียวต่อสถานะ)
+  let seen={};try{seen=JSON.parse(store.get(SEEN_KEY)||'{}')}catch(e){}
+  const first=!store.get(SEEN_KEY),ch=homeRows.filter(r=>(r.state==='ready'||r.state==='nf')&&seen[r.row]!==r.state&&!r.include);
+  homeRows.forEach(r=>{if(r.state)seen[r.row]=r.state});const keys=Object.keys(seen);if(keys.length>80)keys.slice(0,keys.length-80).forEach(k=>delete seen[k]);
+  store.set(SEEN_KEY,JSON.stringify(seen));
+  if(ch.length&&!first){const rd=ch.filter(r=>r.state==='ready'),nf=ch.filter(r=>r.state==='nf');
+    const m=rd.length?(rd.length===1?`สไลด์ HN ${rd[0].hn} พร้อมรับแล้วครับ ✅`:`สไลด์พร้อมรับ ${rd.length} รายการครับ ✅`):`แลปหาสไลด์ HN ${nf[0].hn} ไม่เจอ ❌`;
+    beep();if(navigator.vibrate)navigator.vibrate([120,60,120,60,240]);toast(m)}
 }
 function vHome(){
+  const nurse=ME.role==='nurse';
   app.innerHTML=`<div class="col">
    <section class="panel hero">${festScene()}<div class="hero-t"><span class="hi">${FEST?FEST.greet:greet()}</span><span class="nm">คุณ${esc(ME.nick)}</span>
-     <span class="small muted">${thToday()}</span>${FEST&&FEST.chip?`<span class="fest-chip">${FEST.chip}</span>`:''}</div></section>
+     <span class="small muted">${thToday()} · ${ROLE_TH[ME.role]||''}</span>${FEST&&FEST.chip?`<span class="fest-chip">${FEST.chip}</span>`:''}</div></section>
    <section class="panel live" id="live" hidden></section>
-   <div class="cam-card ins-card" id="ins-card" hidden><div class="cam-i">📲</div><div class="cam-b"><b>ติดตั้งแอปไว้บนหน้าจอ</b><span class="small">ครั้งต่อไปกดไอคอนเปิดได้เลย ไม่ต้องหาลิงก์</span>
+   <div class="cam-card ins-card" id="ins-card" hidden><div class="cam-i">📲</div><div class="cam-b"><b>ติดตั้งแอปไว้บนหน้าจอ</b><span class="small">ครั้งต่อไปกดไอคอนเปิดได้เลย${IOS?' และ iPhone จะรับแจ้งเตือนเด้งได้':''}</span>
      <button type="button" class="linkbtn" data-ins-skip style="align-self:flex-start;font-size:.82rem;margin-top:2px">ไว้ทีหลัง</button></div>
      <button class="btn btn-teal" type="button" data-ins>ติดตั้งแอป</button></div>
    <div class="cam-card" id="cam-card" hidden><div class="cam-i">📷</div><div class="cam-b"><b>เปิดใช้กล้องสำหรับสแกน</b><span class="cam-t small"></span></div>
      <button class="btn btn-teal" type="button">อนุญาตกล้อง</button></div>
-   <div class="big-actions">
-     <button class="big send" id="go-in">${icSend}<b>ส่งใบตาม Slide ที่ห้องแลป</b><span>นำใบตามสไลด์ (กระดาษ) มาส่งที่แลป แล้วบันทึกตอนส่ง</span></button>
-     <button class="big recv" id="go-out">${icRecv}<b>บันทึกรับสไลด์</b><span>เจอสไลด์ที่ส่งใบตามไว้แล้ว</span></button>
-     <button class="big inc" id="go-inc">${icInc}<span class="t"><b>บันทึกรับ Slide include</b><span>สไลด์ผู้ป่วยเด็ก / สไลด์ที่แพทย์ขอ include อยู่ในตะกร้า ไม่ต้องส่งใบตาม</span></span></button>
+   <div class="big-actions" style="grid-template-columns:1fr">
+     ${nurse?`<button class="big send" id="go-in">${icSend}<b>สั่งตามสไลด์</b><span>ส่งออร์เดอร์จากวอร์ดถึงแลปทันที ไม่ต้องใช้กระดาษ</span></button>`
+      :`<button class="big recv" id="go-pick">${icRecv}<b>สแกนรับสไลด์ที่แลป</b><span>สแกนบาร์โค้ดบนสไลด์ทุกแผ่น ระบบเทียบกับออร์เดอร์ให้</span></button>`}
    </div>
+   ${nurse?'':`<div class="section-h"><h3>พร้อมให้มารับที่แลป</h3><button class="linkbtn" id="pk-re">รีเฟรช</button></div><section class="panel" id="pk-list"><div class="sk sk-row"></div></section>`}
    <div class="tools"><button class="help-btn" id="go-search">${icSearch}ค้นหาสถานะสไลด์</button>
    <button class="help-btn" id="go-help">${icHelp}วิธีใช้งานแอป</button></div>
    <div class="section-h"><h3>รายการล่าสุดของฉัน</h3><button class="linkbtn" id="refresh">รีเฟรช</button></div>
    <section class="panel" style="padding:6px 18px"><div class="mylist" id="mylist" aria-busy="true"><div class="sk sk-row"></div><div class="sk sk-row"></div><div class="sk sk-row"></div></div></section></div>`;
-  $('#go-in').onclick=()=>{view='checkin';render()};
-  $('#go-out').onclick=()=>{view='checkout';render()};
-  $('#go-inc').onclick=()=>{view='include';render()};
+  const gi=$('#go-in');if(gi)gi.onclick=()=>{view='checkin';render()};
+  const gp=$('#go-pick');if(gp)gp.onclick=()=>{view='pick';render()};
   $('#go-help').onclick=showHelp;
   $('#go-search').onclick=()=>{view='search';render()};
   if(!guideShown){guideShown=true;showGuide()}
-  const load=async()=>{try{const rows=await run('apiMine',store.get(TOKEN_KEY));if(!$('#mylist'))return;homeRows=rows;drawLive();
+  const load=async()=>{try{const rows=await run('apiMine',store.get(TOKEN_KEY));if(!$('#mylist'))return;homeRows=rows;if(nurse)drawLive();
     $('#mylist').innerHTML=rows.length?rows.map(r=>`<div class="it ${r.status}"><div style="min-width:0"><div class="mono" style="font-weight:600">HN ${esc(r.hn)}${r.include?'<span class="tag-inc">Include</span>':''}</div>
       <div class="small muted">${r.sample?'Sample '+esc(r.sample)+' · ':''}${esc(r.ward)}</div>
-      <div class="small muted">${r.status==='out'?'รับสไลด์ '+esc(r.recvAt):'ส่งใบตาม '+esc(r.reqAt)}</div>${photoBtn(r,'user')}</div>${pill(r.status)}</div>`).join(''):'<div class="empty"><div class="art sm">'+artSearch+'</div><div class="muted small">ยังไม่มีรายการ เมื่อบันทึกส่งใบตามหรือรับสไลด์ รายการจะขึ้นที่นี่</div></div>'}
+      <div class="small muted">${r.status==='out'?'รับสไลด์ '+esc(r.recvAt):'สั่งตาม '+esc(r.reqAt)}</div>${photoBtn(r,'user')}</div>${pill(r.status,r)}</div>`).join(''):'<div class="empty"><div class="art sm">'+artSearch+'</div><div class="muted small">ยังไม่มีรายการ</div></div>'}
     catch(err){if($('#mylist'))$('#mylist').innerHTML=errBox(err.message)}};
-  $('#refresh').onclick=load;load();camCard().then(installCard);
-  timers.push(setInterval(drawLive,15000),setInterval(load,60000));
+  const loadPick=async()=>{const box=$('#pk-list');if(!box)return;try{const d=await run('apiPickList',store.get(TOKEN_KEY));if(!$('#pk-list'))return;box.innerHTML=pickListHtml(d)}catch(err){box.innerHTML=errBox(err.message)}};
+  $('#refresh').onclick=load;load();const pr=$('#pk-re');if(pr)pr.onclick=loadPick;loadPick();camCard().then(installCard);
+  timers.push(setInterval(load,30000));if(!nurse)timers.push(setInterval(loadPick,30000));
+}
+function pickListHtml(d){
+  const g={};d.ready.forEach(r=>{(g[r.ward]=g[r.ward]||[]).push(r)});const w=Object.keys(g);
+  return (w.length?w.map(k=>`<div class="pk-w"><b>${esc(k)}</b> <span class="pill st-ready">${g[k].length} ใบ</span>
+      <div class="small muted mono">${g[k].map(r=>'HN '+esc(r.hn)+(r.sample?' · '+esc(r.sample):'')).join('<br>')}</div></div>`).join('')
+    :'<div class="small muted" style="padding:6px 0">ยังไม่มีออร์เดอร์ที่แลปยืนยันพร้อม</div>')
+   +(d.inc.length?`<div class="pk-w inc"><b>Slide include พร้อมรับ</b> <span class="pill st-inc">${d.inc.length} ใบ</span><div class="small muted mono">${d.inc.map(x=>'HN '+esc(x.hn)+' · '+esc(x.sample)).join('<br>')}</div></div>`:'');
 }
 
 /* ส่งใบตามสไลด์: บังคับ HN + วันเวลาส่งตรวจ + วอร์ด, Sample No. ไม่บังคับ */
 function hardCard(r){
-  return `<div class="dupcard" role="alert"><h3>Sample No. ของคนไข้ HN นี้ถูกส่งใบตามมาแล้ว</h3>
+  return `<div class="dupcard" role="alert"><h3>Sample No. ของคนไข้ HN นี้ถูกสั่งตามแล้ว</h3>
     <div class="small">ไม่ต้องบันทึกซ้ำ</div>
     <dl class="kv"><dt>HN</dt><dd class="mono">${esc(r.hn)}</dd><dt>Sample No.</dt><dd class="mono">${sampleTxt(r.sample)}</dd>
     <dt>วอร์ด</dt><dd>${esc(r.ward)}</dd><dt>วันเวลาส่งตรวจ</dt><dd>${esc(r.specAt||'–')}</dd>
-    <dt>ส่งใบตามโดย</dt><dd>${esc(r.reqName)}</dd><dt>เวลาส่งใบตาม</dt><dd>${esc(r.reqAt)} <span class="small">(${ago(r.reqTs)}ที่แล้ว)</span></dd>
-    <dt>สถานะ</dt><dd>${r.status==='out'?`รับสไลด์แล้ว โดย ${esc(r.recvName)} เมื่อ ${esc(r.recvAt)}`:'ยังไม่ได้รับสไลด์'}</dd></dl></div>`;
+    <dt>สั่งตามโดย</dt><dd>${esc(r.reqName)}</dd><dt>เวลาสั่งตาม</dt><dd>${esc(r.reqAt)} <span class="small">(${ago(r.reqTs)}ที่แล้ว)</span></dd>
+    <dt>สถานะ</dt><dd>${r.status==='out'?`รับสไลด์แล้ว โดย ${esc(r.recvName)} เมื่อ ${esc(r.recvAt)}`:STATUS[r.status]||'ยังไม่ได้รับสไลด์'}</dd></dl></div>`;
 }
 function softCard(recs,withBtn){
-  return `<div class="dupcard" role="alert"><h3>HN นี้มีใบตามที่วันเวลาส่งตรวจใกล้กันอยู่แล้ว</h3>
-    <div class="small">อาจเป็นการส่งใบตามซ้ำ ตรวจรายการด้านล่างก่อน</div>
+  return `<div class="dupcard" role="alert"><h3>HN นี้มีออร์เดอร์ที่วันเวลาส่งตรวจใกล้กันอยู่แล้ว</h3>
+    <div class="small">อาจเป็นการสั่งตามซ้ำ ตรวจรายการด้านล่างก่อน</div>
     ${recs.slice(0,3).map(r=>`<dl class="kv"><dt>วันเวลาส่งตรวจ</dt><dd>${esc(r.specAt||'–')}</dd><dt>Sample No.</dt><dd class="mono">${sampleTxt(r.sample)}</dd>
-      <dt>วอร์ด</dt><dd>${esc(r.ward)}</dd><dt>ส่งใบตามโดย</dt><dd>${esc(r.reqName)} · ${esc(r.reqAt)}</dd><dt>สถานะ</dt><dd>${STATUS[r.status]}</dd></dl>`).join('<hr style="border:0;border-top:1px solid rgba(0,0,0,.08);width:100%;margin:2px 0">')}
+      <dt>วอร์ด</dt><dd>${esc(r.ward)}</dd><dt>สั่งตามโดย</dt><dd>${esc(r.reqName)} · ${esc(r.reqAt)}</dd><dt>สถานะ</dt><dd>${STATUS[r.status]}</dd></dl>`).join('<hr style="border:0;border-top:1px solid rgba(0,0,0,.08);width:100%;margin:2px 0">')}
     ${withBtn?'<button type="button" class="btn btn-ghost" id="force">เป็นคนละรายการ บันทึกต่อ</button>':''}</div>`;
 }
 const icPaper='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>';
 function vIn(){
-  app.innerHTML=`<div class="col"><section class="panel accent-teal">${backHead('บันทึกส่งใบตามสไลด์')}
-    <div class="alert paper">${icPaper}<div><b>ต้องนำใบตามสไลด์ตัวจริงมาส่งที่ห้องปฏิบัติการทุกครั้ง</b>แอปนี้ใช้บันทึกตอนส่งใบที่แลป ไม่ได้ใช้ส่งแทนใบ บันทึกจากวอร์ดไม่ได้</div></div>
+  app.innerHTML=`<div class="col"><section class="panel accent-teal">${backHead('สั่งตามสไลด์')}
+    <div class="alert info" style="margin-bottom:10px">ออร์เดอร์จะขึ้นที่หน้าจอแลปทันที เมื่อแลปพบสไลด์ แอปจะแจ้ง "พร้อมรับ" แล้วให้คนงานไปรับที่แลป</div>
     <form id="f" class="form" novalidate>
       ${hnField('q-hn','1. HN')}
       ${dtField('q','2. วันที่ส่งตรวจ')}
@@ -1438,19 +1471,17 @@ function vIn(){
       <div id="dup"></div>
       ${wardCombo('q-ward',store.get(WARD_KEY)||'','4. วอร์ด')}
       <div id="q-rule"></div>
-      ${photoField('q-photo','5. ')}
-      ${meBox('ผู้ส่งใบตาม')}
-      <div class="hint">เวลาส่งใบตามจะบันทึกให้อัตโนมัติเมื่อกดยืนยัน</div>
-      <label class="confirm-paper" id="q-paper-box"><input type="checkbox" id="q-paper"><span>ฉันนำ<b>ใบตามสไลด์ตัวจริง</b>มาส่งที่ห้องปฏิบัติการแล้ว</span></label>
+      <div class="field"><label for="q-reason">5. เหตุผลที่ตามสไลด์</label><textarea class="input" id="q-reason" rows="2" maxlength="200" placeholder="เช่น แพทย์ขอดูสไลด์"></textarea></div>
+      ${meBox('ผู้สั่งตาม')}
+      <div class="hint">เวลาสั่งตามจะบันทึกให้อัตโนมัติเมื่อกดยืนยัน</div>
       <div id="err"></div>
-      <button class="btn btn-teal btn-block" type="submit" id="q-submit" aria-disabled="true">ยืนยันบันทึกส่งใบตาม</button>
+      <button class="btn btn-teal btn-block" type="submit" id="q-submit">ส่งออร์เดอร์ตามสไลด์</button>
     </form></section></div>`;
   bindScan('q-sample');bindCombo('q-ward');bindDT('q');bindSampleDate('q-sample','q');
-  let photo='';bindPhoto('q-photo',d=>{photo=d;if(d)$('#err').innerHTML=''});
   if(carryIn){const c=carryIn;carryIn=null;setTimeout(()=>{const el=$('#q-sample');if(!el)return;el.value=c.sample||'';el.dispatchEvent(new Event('input',{bubbles:true}));if(c.hn)$('#q-hn').value=c.hn;$('#q-hn').focus()},0)}
   $('#back').onclick=()=>{view='home';render()};
   const sIn=$('#q-sample'),hIn=$('#q-hn');let seq=0,timer=null;
-  const data=force=>({hn:hIn.value.trim(),sample:sIn.value.trim(),specAt:getSpec('q'),ward:$('#q-ward').value.trim(),force:!!force,photo});
+  const data=force=>({hn:hIn.value.trim(),sample:sIn.value.trim(),specAt:getSpec('q'),ward:$('#q-ward').value.trim(),reason:$('#q-reason').value.trim(),force:!!force});
   const check=async()=>{if(!document.getElementById('q-hn'))return;const d=data(),box=$('#dup');
     if(!d.hn||(!d.sample&&!d.specAt)){box.innerHTML='';return}
     const my=++seq;let r;try{r=await run('apiPrecheck',store.get(TOKEN_KEY),{hn:d.hn,sample:d.sample,specAt:d.specAt})}catch(e){return}
@@ -1462,17 +1493,14 @@ function vIn(){
   ['q-hn','q-sample','q-date','q-time'].forEach(id=>{const el=document.getElementById(id);el.addEventListener('input',later);el.addEventListener('change',later)});
   ['q-date','q-time','q-ward','q-sample'].forEach(id=>{const el=document.getElementById(id);el.addEventListener('input',showRule);el.addEventListener('change',showRule)});
   sIn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#q-ward').focus()}});
-  const paper=$('#q-paper'),qs=$('#q-submit');
-  paper.onchange=()=>{if(paper.checked){qs.removeAttribute('aria-disabled');$('#q-paper-box').classList.remove('need');$('#err').innerHTML=''}else qs.setAttribute('aria-disabled','true')};
   const submit=async(force,b)=>{$('#err').innerHTML='';
-    if(!paper.checked){$('#q-paper-box').classList.add('need');$('#err').innerHTML=errBox('ติ๊กยืนยันว่านำใบตามสไลด์ตัวจริงมาส่งที่ห้องปฏิบัติการแล้ว ก่อนบันทึก');$('#q-paper-box').scrollIntoView({behavior:'smooth',block:'center'});return}
-    if(REQUIRE_PHOTO&&!photo){$('#err').innerHTML=errBox('ถ่ายภาพหลักฐานการส่งใบตามก่อนบันทึก');$('#q-photo-box').scrollIntoView({behavior:'smooth',block:'center'});return}
+    if(!$('#q-reason').value.trim()){$('#err').innerHTML=errBox('กรอกเหตุผลที่ตามสไลด์');$('#q-reason').focus();return}
     busy(b,true);
     try{const r=await run('apiCheckIn',store.get(TOKEN_KEY),data(force));
       if(r.dup==='hard'){$('#dup').innerHTML=hardCard(r.rec);$('#dup').scrollIntoView({behavior:'smooth',block:'center'});busy(b,false);return}
       if(r.dup==='soft'){$('#dup').innerHTML=softCard(r.recs,true);$('#dup').scrollIntoView({behavior:'smooth',block:'center'});busy(b,false);
         $('#force').onclick=()=>submit(true,$('#force'));return}
-      store.set(WARD_KEY,r.ward);lastDone={kind:'in',r};view='done';render();if(r.photoWarn)toast('บันทึกแล้ว แต่ส่งรูปหลักฐานไม่สำเร็จ (ไม่เป็นไรครับ)')}
+      flushPush();store.set(WARD_KEY,r.ward);lastDone={kind:'in',r};view='done';render()}
     catch(err){$('#err').innerHTML=errBox(err.message);busy(b,false)}};
   $('#f').onsubmit=e=>{e.preventDefault();submit(false,e.target.querySelector('button[type=submit]'))};
 }
@@ -1498,7 +1526,7 @@ function vOut(){
       <dl class="kv"><dt>HN</dt><dd class="mono" style="font-size:1.1rem;font-weight:600">${esc(r.hn)}</dd>
       <dt>วันเวลาส่งตรวจ</dt><dd style="font-size:1.1rem;font-weight:600">${esc(r.specAt||'–')}</dd>
       <dt>Sample No.</dt><dd class="mono">${r.sample?esc(r.sample):`<span class="muted">ยังไม่ระบุ</span>`}</dd>
-      <dt>ส่งใบตามโดย</dt><dd>${esc(r.reqName)}</dd><dt>เวลาส่งใบตาม</dt><dd>${esc(r.reqAt)}</dd></dl>
+      <dt>สั่งตามโดย</dt><dd>${esc(r.reqName)}</dd><dt>เวลาสั่งตาม</dt><dd>${esc(r.reqAt)}</dd></dl>
       <div class="flags">
         ${r.sampleFill?`<div class="flag ok">ระบบจะบันทึก Sample No. ${esc(d.sample)} ลงใบตามนี้ให้</div>`:r.sampleOk?'<div class="flag ok">Sample No. ตรงกับใบตาม</div>':`<div class="flag bad">Sample No. ไม่ตรงกับใบตาม ห้ามหยิบ</div>`}
         ${r.dateOk===false?'<div class="flag warn">วันที่ทำสไลด์ (จาก Sample No.) ไม่ตรงกับวันส่งตรวจของใบตามนี้ ตรวจให้แน่ใจก่อนหยิบ</div>':r.dateOk&&r.sampleFill?'<div class="flag ok">วันที่ใน Sample No. ตรงกับวันส่งตรวจ</div>':''}
@@ -1555,7 +1583,7 @@ function vInc(){
       <div class="small">กรุณาบันทึกที่ปุ่มสีฟ้า <b>"บันทึกรับสไลด์"</b> แทนนะครับ ไม่ต้องบันทึกในช่อง Slide include</div>
       <dl class="kv"><dt>HN</dt><dd class="mono">${esc(r.hn)}</dd><dt>Sample No.</dt><dd class="mono">${sampleTxt(r.sample)}</dd>
       <dt>วอร์ด</dt><dd>${esc(r.ward)}</dd><dt>วันเวลาส่งตรวจ</dt><dd>${esc(r.specAt||'–')}</dd>
-      <dt>ส่งใบตามโดย</dt><dd>${esc(r.reqName)} · ${esc(r.reqAt)}</dd></dl>
+      <dt>สั่งตามโดย</dt><dd>${esc(r.reqName)} · ${esc(r.reqAt)}</dd></dl>
       <button type="button" class="btn btn-blue btn-block" id="to-out">ไปที่บันทึกรับสไลด์ (สีฟ้า)</button>
       <div class="small">หากแน่ใจว่าเป็นสไลด์ของการส่งตรวจคนละครั้ง กรุณาสอบถามห้องปฏิบัติการที่ <span class="call">8133</span> ครับ</div></div>`;
     $('#to-out').onclick=()=>{carryOut={sample:$('#i-sample').value.trim(),hn:r.hn,specAt:r.specAt};view='checkout';render()};
@@ -1594,9 +1622,9 @@ function vSearch(){
     <div class="me"><span class="big-st">${r.status==='out'?'รับสไลด์ไปแล้ว':'ยังไม่มีผู้บันทึกรับ'}</span>${r.include?'<span class="tag-inc">Include</span>':''}</div>
     <dl class="kv"><dt>HN</dt><dd class="mono" style="font-weight:600">${esc(r.hn)}</dd><dt>Sample No.</dt><dd class="mono">${sampleTxt(r.sample)}</dd>
     <dt>วอร์ด</dt><dd>${esc(r.ward)}</dd>${r.specAt?`<dt>วันเวลาส่งตรวจ</dt><dd>${esc(r.specAt)}</dd>`:''}
-    ${r.include?'':`<dt>ส่งใบตามโดย</dt><dd>${esc(r.reqName)}<br><span class="small muted">${esc(r.reqAt)}</span></dd>`}
+    ${r.include?'':`<dt>สั่งตามโดย</dt><dd>${esc(r.reqName)}<br><span class="small muted">${esc(r.reqAt)}</span></dd>`}
     ${r.status==='out'?`<dt>รับไปโดย</dt><dd><b>${esc(r.recvName)}</b><br><span class="small muted">${esc(r.recvAt)}</span></dd>`:''}</dl>
-    ${r.status==='in'?'<div class="small muted">ยังไม่มีใครบันทึกรับ สไลด์ควรอยู่ในตะกร้า หรือยังรอห้องปฏิบัติการ</div>':''}
+    ${r.status==='in'?(r.readyAt?`<div class="alert ok" style="margin-top:6px">✅ ห้อง Hemato แจ้งว่าสไลด์พร้อมรับแล้ว (${esc(r.readyAt)}) ไปรับที่ห้องปฏิบัติการได้เลย</div>`:'<div class="small muted">ยังไม่มีใครบันทึกรับ สไลด์ควรอยู่ในตะกร้า หรือยังรอห้องปฏิบัติการ</div>'):''}
     ${photoBtn(r,'user')}
   </div>`;
   const go=async b=>{const q=inp.value.trim();$('#err').innerHTML='';const box=$('#s-res');
@@ -1613,14 +1641,15 @@ function vSearch(){
 }
 function vDone(){
   const {kind,r}=lastDone;
-  const T={in:['บันทึกส่งใบตามสไลด์แล้ว','ส่งใบตามอีกรายการ','checkin','btn-teal'],out:['บันทึกรับสไลด์แล้ว','รับสไลด์อีกรายการ','checkout','btn-blue'],inc:['บันทึกรับ Slide include แล้ว','รับ Slide include อีกรายการ','include','btn-violet']}[kind];
+  const T={in:['ส่งออร์เดอร์ตามสไลด์แล้ว','สั่งตามอีกรายการ','checkin','btn-teal'],out:['บันทึกรับสไลด์แล้ว','รับสไลด์อีกรายการ','checkout','btn-blue'],inc:['บันทึกรับ Slide include แล้ว','รับ Slide include อีกรายการ','include','btn-violet']}[kind];
   app.innerHTML=`<div class="col"><section class="panel done">
     <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg></div>
     <h2>${T[0]}</h2>
     <div><div class="time">${esc(r.time)}</div><div class="small muted">${esc(r.date)}</div></div>
     <div class="receipt"><dl class="kv"><dt>HN</dt><dd class="mono" style="font-weight:600">${esc(r.hn)}</dd><dt>Sample No.</dt><dd class="mono">${sampleTxt(r.sample)}</dd>
     ${r.specAt?`<dt>วันเวลาส่งตรวจ</dt><dd>${esc(r.specAt)}</dd>`:''}<dt>วอร์ด</dt><dd>${esc(r.ward)}</dd></dl></div>
-    ${kind==='in'?`<div class="alert info" style="width:100%;text-align:left">กลับมารับสไลด์ได้ในประมาณ ${lateTxt()} หน้าแรกจะนับถอยหลังและเตือนเมื่อถึงเวลาครับ</div>`:''}
+    ${kind==='in'&&r.readyAt?`<div class="alert ok" style="width:100%;text-align:left">✅ สไลด์นี้พร้อมรับอยู่แล้ว ให้คนงานไปรับที่แลปได้เลยครับ</div>`:''}
+    ${kind==='in'&&!r.readyAt?`<div class="alert info" style="width:100%;text-align:left">ออร์เดอร์ขึ้นที่แลปแล้ว เมื่อแลปพบสไลด์ หน้าแรกจะขึ้น "✅ พร้อมรับ"${notifOn()?' และเด้งแจ้งเตือนบนมือถือ':''} จากนั้นให้คนงานไปรับที่แลปครับ</div>`:''}
     ${r.id?`<div class="undo" id="undo" role="status"><span>บันทึกผิด? ยกเลิกได้ภายใน <b id="undo-n">10</b> วินาที</span><button id="undo-b">ยกเลิก</button><i class="bar"></i></div>`:''}
     <div class="next-row"><button class="btn btn-ghost" id="again">${T[1]}</button><button class="btn ${T[3]}" id="home">กลับหน้าแรก</button></div>
     ${kind!=='in'?`<button class="btn btn-soft btn-block" id="scan-next">${camIcon.replace('<svg ','<svg width="22" height="22" ')}สแกนสไลด์ถัดไปเลย</button>`:''}
@@ -1635,6 +1664,96 @@ function vDone(){
       catch(err){toast(err.message);const u=$('#undo');if(u)u.remove()}}}
 }
 
+/* ---------- คนงานรับสไลด์: สแกนบาร์โค้ดบนสไลด์ทีละแผ่น ระบบเทียบกับออร์เดอร์ที่แลปยืนยันแล้ว ---------- */
+let pickDone=[];
+function vPick(){
+  app.innerHTML=`<div class="col"><section class="panel accent-blue">${backHead('สแกนรับสไลด์')}
+    <button class="btn btn-blue btn-block hema-shot" id="pk-scan">${camIcon.replace('<svg ','<svg width="26" height="26" ')}สแกนบาร์โค้ดบนสไลด์</button>
+    <form id="f" class="form" novalidate style="margin-top:8px">${scanField('p-sample','หรือพิมพ์ Sample No.')}
+      <button class="btn btn-ghost btn-block" type="submit">ค้นหา</button></form>
+    <div id="pk-res" style="margin-top:10px"></div></section>
+    <div class="section-h"><h3>รับแล้วรอบนี้ · <span id="pk-n">${pickDone.length}</span> ใบ</h3></div>
+    <section class="panel" id="pk-done">${pickDoneHtml()}</section></div>`;
+  bindScan('p-sample');$('#back').onclick=()=>{view='home';render()};
+  const sIn=$('#p-sample');
+  $('#pk-scan').onclick=()=>openScanner(code=>{sIn.value=code;pickFind(code)},'สแกน Sample No. บนสไลด์');
+  sIn.addEventListener('input',()=>{const v=sIn.value.trim();if(/^\d{10}$/.test(v))pickFind(v)});
+  $('#f').onsubmit=e=>{e.preventDefault();pickFind(sIn.value.trim())};
+}
+function pickDoneHtml(){return pickDone.length?`<div class="mylist">${pickDone.map(x=>`<div class="it out"><div><div class="mono" style="font-weight:600">HN ${esc(x.hn)}${x.inc?'<span class="tag-inc">Include</span>':''}</div><div class="small muted">${esc(x.sample)} · ${esc(x.ward)} · ${esc(x.time)}</div></div><span class="pill st-out">รับแล้ว</span></div>`).join('')}</div>`:'<div class="small muted" style="text-align:center;padding:10px">ยังไม่มี สแกนสไลด์แผ่นแรกได้เลย</div>'}
+let pickSeq=0;
+async function pickFind(code){
+  const box=$('#pk-res');if(!box)return;
+  if(!/^\d{10}$/.test(code)){box.innerHTML=errBox('Sample No. ต้องเป็นตัวเลข 10 หลัก');return}
+  const my=++pickSeq;box.innerHTML='<div class="sk sk-row"></div><div class="sk sk-row"></div>';
+  let d;try{d=await run('apiPickFind',store.get(TOKEN_KEY),code)}catch(err){box.innerHTML=errBox(err.message);return}
+  if(my!==pickSeq||!$('#pk-res'))return;
+  const ready=d.orders.filter(r=>r.state==='ready'),wait=d.orders.filter(r=>r.state!=='ready');
+  let h=`<div class="eyebrow">Sample No.</div><h2 class="mono" style="margin:0 0 8px">${esc(code)}</h2>`;
+  if(ready.length>1)h+=`<div class="alert warn">Sample No. นี้มีออร์เดอร์ ${ready.length} รายการ ดู HN บนสไลด์แล้วเลือกให้ตรง</div>`;
+  h+=ready.map(r=>`<div class="pk-c ok"><div class="pk-hn mono">HN ${esc(r.hn)}</div><div class="small">${esc(r.ward)} · สั่งโดย ${esc(r.reqName)}</div>
+    <div class="small muted">แลปยืนยันพบ ${esc(String(r.readyAt).slice(-5))} น. ${esc(r.readyBy||'')}</div>
+    <div class="small"><b>ตรวจว่า HN บนสไลด์ตรงกับ HN นี้</b></div>
+    <button class="btn btn-blue btn-block" data-pk-out="${r.row}" data-hn="${esc(r.hn)}">รับสไลด์ใบนี้</button></div>`).join('');
+  h+=wait.map(r=>`<div class="pk-c warn"><div class="pk-hn mono">HN ${esc(r.hn)}</div><div class="small">${esc(r.ward)}</div>
+    <div class="small"><b>แลปยังไม่ได้ยืนยันว่าพบสไลด์นี้</b> ให้เจ้าหน้าที่แลปกด "พบสไลด์" ในคิวงานก่อน แล้วสแกนใหม่</div></div>`).join('');
+  h+=d.inc.map(x=>`<div class="pk-c inc"><div class="pk-hn mono">HN ${esc(x.hn)} <span class="tag-inc">Include</span></div>
+    <div class="small muted">Hemato สแกนพร้อม ${esc(x.readyAt)}${x.readyBy?' โดย '+esc(x.readyBy):''}</div>
+    ${wardCombo('pw-'+x.id,'','วอร์ดที่จะนำสไลด์ไป')}<div id="pe-${x.id}"></div>
+    <button class="btn btn-violet btn-block" data-pk-inc="${x.id}" data-hn="${esc(x.hn)}">รับ Slide include</button></div>`).join('');
+  if(!ready.length&&!wait.length&&!d.inc.length){
+    h+=d.done.length?`<div class="alert ok">สไลด์นี้ถูกรับไปแล้ว\nHN ${esc(d.done[0].hn)} · ${esc(d.done[0].ward)}\nรับโดย ${esc(d.done[0].recvName)} เมื่อ ${esc(d.done[0].recvAt)}</div>`
+      :`<div class="alert warn">ไม่พบออร์เดอร์หรือ Slide include ที่พร้อมรับของ Sample No. นี้ ตรวจเลขอีกครั้ง หรือสอบถามเจ้าหน้าที่แลป</div>`}
+  box.innerHTML=h;if(navigator.vibrate)navigator.vibrate(ready.length||d.inc.length?60:[120,80,120]);
+  d.inc.forEach(x=>bindCombo('pw-'+x.id));
+  const ok=(rec,inc)=>{pickDone.unshift({hn:rec.hn,sample:rec.sample,ward:rec.ward,time:rec.time,inc});beep();if(navigator.vibrate)navigator.vibrate([60,40,60]);
+    toast(`รับสไลด์ HN ${rec.hn} แล้ว ✅ สแกนแผ่นถัดไปได้เลย`);box.innerHTML='';const s=$('#p-sample');if(s)s.value='';$('#pk-n').textContent=pickDone.length;$('#pk-done').innerHTML=pickDoneHtml();window.scrollTo({top:0,behavior:'smooth'})};
+  box.querySelectorAll('[data-pk-out]').forEach(b=>b.onclick=async()=>{busy(b,true,'กำลังบันทึก…');
+    try{const r=await run('apiCheckOut',store.get(TOKEN_KEY),{sample:code,hn:b.dataset.hn,row:+b.dataset.pkOut});ok(r,false)}catch(err){busy(b,false);toast(err.message)}});
+  box.querySelectorAll('[data-pk-inc]').forEach(b=>b.onclick=async()=>{const id=b.dataset.pkInc,w=$('#pw-'+id).value.trim(),er=$('#pe-'+id);er.innerHTML='';
+    if(!w){er.innerHTML=errBox('เลือกวอร์ดก่อน');return}busy(b,true,'กำลังบันทึก…');
+    try{const r=await run('apiInclude',store.get(TOKEN_KEY),{sample:code,hn:b.dataset.hn,ward:w});
+      if(r.pending){busy(b,false);er.innerHTML=errBox('HN นี้มีออร์เดอร์ตามสไลด์ค้างอยู่ ให้รับผ่านออร์เดอร์แทน');return}ok(r,true)}
+    catch(err){busy(b,false);er.innerHTML=errBox(err.message)}});
+}
+
+/* ---------- บทบาทผู้ใช้: พยาบาล (สั่งตามสไลด์) / คนงาน (รับสไลด์ที่แลป) ---------- */
+const ROLE_TH={nurse:'พยาบาล',porter:'คนงาน'};
+function rolePick(cur){return `<div class="role-pick">
+  <label class="rp"><input type="radio" name="role" value="nurse" ${cur==='nurse'?'checked':''}><span class="ri">👩‍⚕️</span><span><b>พยาบาล / วอร์ด</b><small>สั่งตามสไลด์จากวอร์ด รอแจ้งเตือนว่าพร้อมรับ</small></span></label>
+  <label class="rp"><input type="radio" name="role" value="porter" ${cur==='porter'?'checked':''}><span class="ri">🚶</span><span><b>คนงาน / ผู้รับสไลด์</b><small>มารับสไลด์ที่แลป สแกนบาร์โค้ดบนสไลด์ทุกแผ่น</small></span></label></div>`}
+function vRole(){
+  app.innerHTML=`<div class="col"><section class="panel"><div class="eyebrow">${ME.role?'บทบาทของฉัน':'ระบบใหม่: ไม่ใช้กระดาษ'}</div><h2>เลือกบทบาทของคุณ</h2>
+    <p class="small muted" style="margin:4px 0 10px">แต่ละบทบาทจะเห็นปุ่มไม่เหมือนกัน เปลี่ยนได้ภายหลังที่ เมนู → บทบาทของฉัน</p>
+    <form id="f" class="form" novalidate>${rolePick(ME.role||'')}<div id="err"></div>
+    <button class="btn btn-teal btn-block" type="submit">บันทึกบทบาท</button></form>
+    ${ME.role?'<button class="btn btn-soft btn-block" id="r-back" style="margin-top:8px">กลับหน้าแรก</button>':''}</section></div>`;
+  const bk=$('#r-back');if(bk)bk.onclick=()=>{view='home';render()};
+  $('#f').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button[type=submit]');
+    const rl=(document.querySelector('input[name=role]:checked')||{}).value||'';if(!rl)return $('#err').innerHTML=errBox('เลือกบทบาทก่อนครับ');
+    busy(b,true);try{const r=await run('apiSetRole',store.get(TOKEN_KEY),rl);ME=r.me;view='home';render();toast('ตั้งบทบาทเป็น '+ROLE_TH[rl]+' แล้ว')}
+    catch(err){$('#err').innerHTML=errBox(err.message);busy(b,false)}};
+}
+
+/* ---------- แจ้งเตือนเด้ง (Web Push) ผ่าน Edge Function "push" ---------- */
+const isSA=()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}};
+const pushOk=()=>'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
+const u8key=s=>{s=s.replace(/-/g,'+').replace(/_/g,'/');const b=atob(s+'==='.slice((s.length+3)%4));return Uint8Array.from(b,c=>c.charCodeAt(0))};
+function flushPush(){try{fetch(`${SUPA_URL}/functions/v1/push`,{method:'POST',headers:supaHead({'Content-Type':'application/json'}),body:'{}',keepalive:true}).catch(()=>{})}catch(e){}}
+async function vapidKey(){let k=store.get('cbcVapid');if(k)return k;
+  let d;try{const r=await fetch(`${SUPA_URL}/functions/v1/push`,{method:'POST',headers:supaHead({'Content-Type':'application/json'}),body:'{"op":"vapid"}'});d=await r.json()}catch(e){d={}}
+  if(!d.pub)throw new Error('ระบบแจ้งเตือนเด้งยังไม่พร้อม (ยังไม่ได้ติดตั้ง Edge Function "push") แจ้งผู้ดูแลระบบครับ');store.set('cbcVapid',d.pub);return d.pub}
+const swReady=()=>Promise.race([navigator.serviceWorker.ready,new Promise((_,no)=>setTimeout(()=>no(new Error('ระบบแจ้งเตือนยังไม่พร้อม ลองปิดแล้วเปิดแอปใหม่')),6000))]);
+async function pushSubscribe(kind,quiet){
+  if(!pushOk()){if(IOS&&!isSA())throw new Error('iPhone: ต้องติดตั้งแอปบนหน้าจอโฮมก่อน (ปุ่มแชร์ → เพิ่มไปยังหน้าจอโฮม) แล้วเปิดจากไอคอน จึงจะรับแจ้งเตือนได้ครับ');throw new Error('เบราว์เซอร์นี้ไม่รองรับการแจ้งเตือนเด้ง ใช้ Chrome หรือติดตั้งแอปบนหน้าจอครับ')}
+  if(Notification.permission!=='granted'){if(quiet)return false;const pm=await Notification.requestPermission();if(pm!=='granted')throw new Error('ยังไม่ได้อนุญาตการแจ้งเตือน เปิดได้ที่การตั้งค่าเบราว์เซอร์ครับ')}
+  const reg=await swReady();let sub=await reg.pushManager.getSubscription();
+  if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8key(await vapidKey())});
+  const j=sub.toJSON();if(kind==='lab')await run('apiLabPushSub',labPin,j,true);else await run('apiPushSub',store.get(TOKEN_KEY),j);return true}
+async function pushOff(kind){try{const reg=await swReady(),sub=await reg.pushManager.getSubscription();if(!sub)return;
+  if(kind==='lab')await run('apiLabPushSub',labPin,sub.toJSON(),false);else await run('apiPushUnsub',sub.endpoint)}catch(e){}}
+if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>{if(e.data&&e.data.type==='cbc-refresh'&&ME&&mode!=='lab'&&view==='home')render()});
+
 /* ---------- สแกนเร็ว (ปุ่มกลางแถบเมนูล่าง) ---------- */
 function openSheet(html){
   const ov=document.createElement('div');ov.className='sheet-ov';
@@ -1645,6 +1764,7 @@ function openSheet(html){
   return {el:ov,close,set(h){ov.querySelector('.sheet').innerHTML='<div class="grab"></div>'+h;ov.querySelectorAll('[data-close]').forEach(b=>b.onclick=close)}};
 }
 function quickScan(){
+  if(ME&&ME.role==='porter'&&mode!=='lab'&&mode!=='hemato')return openScanner(code=>{mode='ward';view='pick';render();setTimeout(()=>{const s=$('#p-sample');if(s){s.value=code;pickFind(code)}},0)},'สแกน Sample No. บนสไลด์');
   openScanner(async code=>{
     const sh=openSheet(`<div class="eyebrow">ผลการสแกน</div><h2 class="mono">${esc(code)}</h2><div class="sk sk-row"></div><div class="sk sk-row"></div>`);
     const goView=(v,set)=>{sh.close();mode='ward';set();view=v;render()};
@@ -1652,18 +1772,16 @@ function quickScan(){
     const open=rows.filter(r=>r.status==='in'&&!r.include),got=rows.find(r=>r.status==='out');
     const head=`<div class="eyebrow">ผลการสแกน Sample No.</div><h2 class="mono">${esc(code)}</h2>`;
     if(open.length){const r=open[0];
-      sh.set(`${head}<div class="pending"><h3>มีใบตามรอรับอยู่</h3><dl class="kv"><dt>HN</dt><dd class="mono">${esc(r.hn)}</dd><dt>วอร์ด</dt><dd>${esc(r.ward)}</dd><dt>ส่งใบตาม</dt><dd>${esc(r.reqName)} · ${esc(r.reqAt)}</dd></dl></div>
-        <button class="btn btn-blue btn-block" id="qs-out">บันทึกรับสไลด์นี้</button><button class="btn btn-soft btn-block" data-close>ปิด</button>`);
-      $('#qs-out').onclick=()=>goView('checkout',()=>{carryOut={sample:code,hn:r.hn}});return}
+      sh.set(`${head}<div class="pending"><h3>มีออร์เดอร์ตามสไลด์อยู่</h3><dl class="kv"><dt>HN</dt><dd class="mono">${esc(r.hn)}</dd><dt>วอร์ด</dt><dd>${esc(r.ward)}</dd><dt>สั่งตาม</dt><dd>${esc(r.reqName)} · ${esc(r.reqAt)}</dd><dt>สถานะ</dt><dd>${pill(r.status,r)}</dd></dl></div>
+        <button class="btn btn-soft btn-block" data-close>ปิด</button>`);return}
     if(got){sh.set(`${head}<div class="alert ok">สไลด์นี้ถูกรับไปแล้วครับ\nHN ${esc(got.hn)} · ${esc(got.ward)}\nรับโดย ${esc(got.recvName)} เมื่อ ${esc(got.recvAt)}</div>
         <button class="btn btn-ghost btn-block" id="qs-s">ดูรายละเอียด</button><button class="btn btn-soft btn-block" data-close>ปิด</button>`);
       $('#qs-s').onclick=()=>goView('search',()=>{searchQ=code});return}
-    sh.set(`${head}<div class="alert info">ยังไม่มีรายการของสไลด์นี้ในระบบ เลือกสิ่งที่จะทำครับ</div>
-      <button class="btn btn-violet btn-block" id="qs-inc">${icInc.replace('<svg ','<svg width="22" height="22" ')}รับเป็น Slide include</button>
-      <button class="btn btn-teal btn-block" id="qs-in">${icSend.replace('<svg ','<svg width="22" height="22" ')}ส่งใบตามสไลด์</button>
+    const nurse=ME&&ME.role==='nurse';
+    sh.set(`${head}<div class="alert info">ยังไม่มีรายการของสไลด์นี้ในระบบ</div>
+      ${nurse?`<button class="btn btn-teal btn-block" id="qs-in">${icSend.replace('<svg ','<svg width="22" height="22" ')}สั่งตามสไลด์นี้</button>`:''}
       <button class="btn btn-soft btn-block" data-close>ปิด</button>`);
-    $('#qs-inc').onclick=()=>goView('include',()=>{carry={sample:code,hn:''}});
-    $('#qs-in').onclick=()=>goView('checkin',()=>{carryIn={sample:code}});
+    const qi=sh.el.querySelector('#qs-in');if(qi)qi.onclick=()=>goView('checkin',()=>{carryIn={sample:code}});
   },'สแกน Sample No. จากสไลด์');
 }
 
@@ -1680,6 +1798,8 @@ function vPin(){
 }
 async function reloadLab(){try{labRows=await run('apiLabList',labPin);if(mode==='lab')renderLab()}catch(err){toast(err.message)}}
 function renderLab(){
+  if(labTab==='queue')return renderQueue();
+  if(labTab==='audit')return renderAudit();
   if(labTab==='stats')return renderStats();
   if(labTab==='staff')return renderStaff();
   if(labTab==='backup')return renderBackups();
@@ -1691,17 +1811,17 @@ function renderLab(){
   rows.sort((a,b)=>labFilter==='in'?a.reqTs-b.reqTs:b.recvTs-a.recvTs);
   const stat=(k,n,l)=>`<button class="stat" data-f="${k}" aria-pressed="${labFilter===k}"><div class="n">${n}</div><div class="l">${l}</div></button>`;
   app.innerHTML=`<div class="wide">${labTabs()}
-   <div class="stats">${stat('in',c('in'),'ส่งใบตามแล้ว ยังไม่รับ')}${stat('out',c('out'),'รับสไลด์แล้ว (3 วันล่าสุด)')}</div>
+   <div class="stats">${stat('in',c('in'),'สั่งตามแล้ว ยังไม่รับ')}${stat('out',c('out'),'รับสไลด์แล้ว (3 วันล่าสุด)')}${stat('nf',c('nf'),'หาไม่เจอ')}</div>
    <div class="toolbar"><input class="input" id="lab-q" placeholder="ค้นหา Sample No., HN, วอร์ด, ชื่อ" value="${esc(labQ)}">
      <button class="btn btn-ghost" id="lab-refresh">รีเฟรช</button>
-     <span class="small muted">${labFilter==='in'?`แดง = ส่งใบตามเกิน ${lateTxt()} แล้วยังไม่มารับ · `:''}รีเฟรชเองทุก 1 นาที</span></div>
-   <div class="tbl-wrap"><table><thead><tr><th>HN</th><th>Sample No.</th><th>วอร์ด</th><th>วันเวลาส่งตรวจ</th><th>ส่งใบตาม: ผู้ส่ง / เวลา</th><th>รับสไลด์: ผู้รับ / เวลา</th><th>${labFilter==='in'?'รอมาแล้ว':'ใช้เวลา'}</th><th>แก้ไข</th></tr></thead><tbody>
+     <span class="small muted">${labFilter==='in'?`แดง = สั่งตามเกิน ${lateTxt()} แล้วยังไม่มารับ · `:''}รีเฟรชเองทุก 1 นาที</span></div>
+   <div class="tbl-wrap"><table><thead><tr><th>HN</th><th>Sample No.</th><th>วอร์ด</th><th>วันเวลาส่งตรวจ</th><th>สั่งตาม: ผู้สั่ง / เวลา</th><th>รับสไลด์: ผู้รับ / เวลา</th><th>${labFilter==='in'?'รอมาแล้ว':'ใช้เวลา'}</th><th>แก้ไข</th></tr></thead><tbody>
    ${rows.length?rows.map(r=>{const m=r.reqTs?Math.round(((r.recvTs||Date.now())-r.reqTs)/60000):null;
      const late=r.status==='in'&&m>LATE_MIN;
      return `<tr><td class="mono">${esc(r.hn)}</td><td class="mono">${r.sample?esc(r.sample):'<span class="muted">–</span>'}</td><td>${esc(r.ward)}</td>
        <td>${esc(r.specAt||'–')}</td>
-       <td>${r.include?'<span class="tag-inc" style="margin:0">Include</span><br><span class="small muted">ไม่ได้ส่งใบตาม</span>':`${esc(r.reqName)}<br><span class="small muted">${esc(r.reqAt)}</span>${r.photo?`<br>${photoBtn(r,'lab')}<span class="small muted" title="ไฟล์ใน Supabase → Storage → evidence"> · ${esc(r.photo.split('/')[0])} / เลข ${r.row}</span>`:''}`}</td>
-       <td>${r.status==='out'?`${esc(r.recvName)}<br><span class="small muted">${esc(r.recvAt)}</span>`:'<span class="muted">–</span>'}</td>
+       <td>${r.include?'<span class="tag-inc" style="margin:0">Include</span><br><span class="small muted">ไม่มีออร์เดอร์</span>':`${esc(r.reqName)}<br><span class="small muted">${esc(r.reqAt)}</span>${r.photo?`<br>${photoBtn(r,'lab')}<span class="small muted" title="ไฟล์ใน Supabase → Storage → evidence"> · ${esc(r.photo.split('/')[0])} / เลข ${r.row}</span>`:''}`}</td>
+       <td>${r.status==='out'?`${esc(r.recvName)}<br><span class="small muted">${esc(r.recvAt)}</span>`:r.status==='nf'?`<span class="pill st-nf">❌ หาไม่เจอ</span><br><span class="small muted">${esc(r.nfReason)}</span>`:r.readyAt?`<span class="pill st-ready">✅ พร้อมรับ</span><br><span class="small muted">${esc(r.readyAt.slice(-5))} น. ${esc(r.readyBy)}</span>`:'<span class="muted">–</span>'}</td>
        <td class="${late?'late':''}">${m==null?'–':dur(m)}</td>
        <td><button class="btn btn-ghost" style="min-height:40px;padding:8px 12px;font-size:.88rem" data-fix="${r.row}">แก้ไข</button></td></tr>`}).join(''):'<tr><td colspan="8" class="muted" style="text-align:center;padding:28px">ไม่มีรายการในกลุ่มนี้</td></tr>'}
    </tbody></table></div></div>`;
@@ -1709,6 +1829,101 @@ function renderLab(){
   $('#lab-refresh').onclick=reloadLab;bindTabs();
   app.querySelectorAll('[data-fix]').forEach(b=>b.onclick=()=>fixSheet(labRows.find(r=>String(r.row)===b.dataset.fix)));
   const qi=$('#lab-q');qi.oninput=()=>{labQ=qi.value;const p=qi.selectionStart;renderLab();const n=$('#lab-q');n.focus();n.setSelectionRange(p,p)};
+}
+
+
+/* ---------- คิวงานแลป: ออร์เดอร์ใหม่ขึ้นเอง (ทุก 15 วินาที) มีเสียงเตือน, พบสไลด์ = สแกนบาร์โค้ดยืนยัน ---------- */
+const icBell='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>';
+const icHist='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg>';
+let qData=null,qKnown=null,qLoading=false;
+const labBy=()=>store.get('cbcLabBy')||'';
+async function loadQueue(){if(qLoading)return;qLoading=true;
+  try{const d=await run('apiLabQueue',labPin);const ids=d.wait.map(r=>r.row);
+    if(qKnown){const nw=d.wait.filter(r=>!qKnown.has(r.row));if(nw.length){beep();setTimeout(beep,350);if(navigator.vibrate)navigator.vibrate([200,100,200]);
+      toast(nw.length===1?`ออร์เดอร์ใหม่ HN ${nw[0].hn} · ${nw[0].ward}`:`ออร์เดอร์ใหม่ ${nw.length} รายการ`)}}
+    qKnown=new Set(ids);qData=d}
+  catch(err){if(!labPin)return;qData={__err:err.message}}finally{qLoading=false}
+  if(mode==='lab'&&labTab==='queue')drawQueue()}
+function renderQueue(){
+  const lp=store.get('cbcLabPush')==='1';
+  app.innerHTML=`<div class="wide">${labTabs()}
+   <div class="toolbar q-tools"><div class="field" style="margin:0;min-width:200px;flex:1"><label for="q-by">ชื่อผู้ปฏิบัติงาน (บันทึกในประวัติ)</label><input class="input" id="q-by" value="${esc(labBy())}" placeholder="เช่น ชื่อเล่น" maxlength="60"></div>
+     <button class="btn btn-ghost" id="q-push">${lp?'🔔 แจ้งเตือนเครื่องนี้: เปิด':'🔕 แจ้งเตือนเครื่องนี้: ปิด'}</button>
+     <button class="btn btn-ghost" id="q-re">รีเฟรช</button><span class="small muted">อัปเดตเองทุก 15 วินาที มีเสียงเมื่อมีออร์เดอร์ใหม่</span></div>
+   <div id="q-body"><div class="sk" style="height:140px"></div></div></div>`;
+  bindTabs();$('#q-re').onclick=loadQueue;$('#q-by').oninput=e=>{store.set('cbcLabBy',e.target.value.trim());e.target.classList.remove('need')};
+  $('#q-push').onclick=async e=>{const b=e.currentTarget;
+    if(store.get('cbcLabPush')==='1'){store.set('cbcLabPush','0');pushOff('lab');b.textContent='🔕 แจ้งเตือนเครื่องนี้: ปิด';return}
+    try{await pushSubscribe('lab');store.set('cbcLabPush','1');b.textContent='🔔 แจ้งเตือนเครื่องนี้: เปิด';toast('เครื่องนี้จะเด้งแจ้งเตือนเมื่อมีออร์เดอร์ใหม่')}catch(err){toast(err.message)}};
+  if(qData)drawQueue();loadQueue();timers.push(setInterval(loadQueue,15000));
+}
+function needBy(){if(labBy())return true;toast('กรอกชื่อผู้ปฏิบัติงานก่อนครับ');const i=$('#q-by');if(i){i.focus();i.classList.add('need')}return false}
+function qCard(r,kind){const m=mins(r.reqTs),late=kind==='wait'&&m>=30;
+  return `<div class="qc ${kind}"><div class="qh"><b class="mono">HN ${esc(r.hn)}</b>${kind==='wait'?`<span class="pill ${late?'st-nf':'st-in'}">รอ ${dur(m)}</span>`:kind==='ready'?`<span class="pill st-ready">พร้อม ${esc(String(r.readyAt).slice(-5))}</span>`:`<span class="pill st-nf">หาไม่เจอ</span>`}</div>
+    <div class="small"><b>${esc(r.ward)}</b> · ส่งตรวจ ${esc(r.specAt||'–')}</div>
+    <div class="small">Sample: <span class="mono">${r.sample?esc(r.sample):'<span class="muted">ไม่ระบุ (สแกนจากสไลด์ตอนพบ)</span>'}</span></div>
+    ${r.reason?`<div class="small q-why">เหตุผล: ${esc(r.reason)}</div>`:''}
+    <div class="small muted">สั่งโดย ${esc(r.reqName)} · ${esc(String(r.reqAt).slice(-5))} น.</div>
+    ${kind==='ready'?`<div class="small muted">ยืนยันโดย ${esc(r.readyBy)}</div>`:''}${kind==='nf'?`<div class="small nf-why">${esc(r.nfReason)} · ${esc(r.nfBy)}</div>`:''}
+    <div class="qa">${kind==='wait'?`<button class="btn btn-teal" data-qf="${r.row}">พบสไลด์ · สแกน</button><button class="btn btn-ghost" data-qn="${r.row}">หาไม่เจอ</button>`
+      :`<button class="btn btn-ghost" data-qb="${r.row}">${kind==='ready'?'ย้อนเป็นรอหา':'ย้อนเป็นรอหา'}</button>`}</div></div>`}
+function drawQueue(){const box=$('#q-body');if(!box)return;
+  if(!qData)return;if(qData.__err){box.innerHTML=errBox(qData.__err);return}
+  const d=qData,sec=(t,n,cls,html,empty)=>`<div class="section-h"><h3>${t} <span class="qbadge ${cls}">${n}</span></h3></div><div class="qgrid">${n?html:`<div class="small muted" style="padding:8px 2px">${empty}</div>`}</div>`;
+  box.innerHTML=sec('🔔 รอหาสไลด์',d.wait.length,'',d.wait.map(r=>qCard(r,'wait')).join(''),'ไม่มีออร์เดอร์ค้าง 👍')
+    +sec('✅ พร้อมรับ รอคนงานมารับ',d.ready.length,'ok',d.ready.map(r=>qCard(r,'ready')).join(''),'–')
+    +sec('🧪 Slide include พร้อมรับ (Hemato สแกนแล้ว)',d.inc.length,'inc',d.inc.map(x=>`<div class="qc inc"><div class="qh"><b class="mono">HN ${esc(x.hn)}</b><span class="pill st-inc">Include</span></div><div class="small mono">${esc(x.sample)}</div><div class="small muted">สแกน ${esc(x.readyAt)}${x.readyBy?' · '+esc(x.readyBy):''}</div></div>`).join(''),'–')
+    +(d.nf.length?sec('❌ หาไม่เจอ (24 ชม.)',d.nf.length,'bad',d.nf.map(r=>qCard(r,'nf')).join(''),''):'');
+  box.querySelectorAll('[data-qf]').forEach(b=>b.onclick=()=>{if(needBy())qFound(d.wait.find(r=>String(r.row)===b.dataset.qf))});
+  box.querySelectorAll('[data-qn]').forEach(b=>b.onclick=()=>{if(needBy())qNotFound(d.wait.find(r=>String(r.row)===b.dataset.qn))});
+  box.querySelectorAll('[data-qb]').forEach(b=>b.onclick=async()=>{if(!needBy())return;b.disabled=true;
+    try{await run('apiLabBack',labPin,+b.dataset.qb,{by:labBy()});toast('ย้อนเป็นรอหาแล้ว');loadQueue()}catch(err){b.disabled=false;toast(err.message)}});
+}
+function qFound(r){if(!r)return;
+  const sh=openSheet(`<div class="eyebrow">พบสไลด์ · ${esc(r.ward)}</div><h2 class="mono">HN ${esc(r.hn)}</h2>
+    <form id="qf" class="form" novalidate>${scanField('qf-s','Sample No. บนสไลด์ (สแกนบาร์โค้ด)')}
+    ${r.sample?`<div class="small muted" style="margin-top:-6px">ออร์เดอร์ระบุ Sample No. <b class="mono">${esc(r.sample)}</b> ต้องตรงกัน</div>`:''}
+    <label class="confirm-paper" id="qf-box"><input type="checkbox" id="qf-ok"><span>ตรวจแล้ว <b>HN บนสไลด์ = ${esc(r.hn)}</b></span></label>
+    <div id="qf-err"></div><button class="btn btn-teal btn-block" type="submit">ยืนยันพบสไลด์ · แจ้งวอร์ดว่าพร้อมรับ</button></form>
+    <button class="btn btn-soft btn-block" data-close>ยกเลิก</button>`);
+  const el=sh.el;bindScan('qf-s');setTimeout(()=>{const c=el.querySelector('#qf-s-cam');if(c)c.click()},150);
+  const go=async(force,b)=>{const er=el.querySelector('#qf-err'),x=el.querySelector('#qf-s').value.trim();er.innerHTML='';
+    if(!/^\d{10}$/.test(x))return er.innerHTML=errBox('สแกนหรือพิมพ์ Sample No. 10 หลักจากสไลด์');
+    if(!el.querySelector('#qf-ok').checked){el.querySelector('#qf-box').classList.add('need');return er.innerHTML=errBox('ตรวจ HN บนสไลด์ แล้วติ๊กยืนยันก่อน')}
+    busy(b,true,'กำลังบันทึก…');
+    try{const res=await run('apiLabReady',labPin,r.row,{sample:x,by:labBy(),force:!!force});
+      if(res.warn){busy(b,false);er.innerHTML=`<div class="alert warn">${esc(res.warn)}</div><button type="button" class="btn btn-ghost btn-block" id="qf-force">ตรวจแล้ว ถูกต้อง ยืนยันต่อ</button>`;
+        el.querySelector('#qf-force').onclick=e=>go(true,e.currentTarget);return}
+      sh.close();flushPush();toast(`HN ${r.hn} พร้อมรับแล้ว ✅ แจ้งวอร์ดแล้ว`);loadQueue()}
+    catch(err){busy(b,false);er.innerHTML=errBox(err.message)}};
+  el.querySelector('#qf').onsubmit=e=>{e.preventDefault();go(false,e.target.querySelector('button[type=submit]'))};
+}
+function qNotFound(r){if(!r)return;
+  const R=['ไม่พบสไลด์ในตะกร้า','ไม่ได้ทำสไลด์ไว้','เกินระยะเก็บสไลด์','ข้อมูลไม่ตรงกับสิ่งส่งตรวจ'];
+  const sh=openSheet(`<div class="eyebrow">หาสไลด์ไม่เจอ · ${esc(r.ward)}</div><h2 class="mono">HN ${esc(r.hn)}</h2>
+    <div class="chips" id="nf-chips">${R.map(x=>`<button type="button" class="chip" data-r="${esc(x)}">${esc(x)}</button>`).join('')}</div>
+    <div class="field"><label for="nf-t">เหตุผล (แจ้งวอร์ด)</label><textarea class="input" id="nf-t" rows="2" maxlength="200"></textarea></div>
+    <div id="nf-err"></div><button class="btn btn-block" id="nf-go" style="background:var(--bad);color:#fff">ยืนยัน หาไม่เจอ · แจ้งวอร์ด</button>
+    <button class="btn btn-soft btn-block" data-close>ยกเลิก</button>`);
+  const el=sh.el,t=el.querySelector('#nf-t');el.querySelectorAll('[data-r]').forEach(c=>c.onclick=()=>{t.value=c.dataset.r;t.focus()});
+  el.querySelector('#nf-go').onclick=async e=>{const b=e.currentTarget;if(!t.value.trim())return el.querySelector('#nf-err').innerHTML=errBox('เลือกหรือพิมพ์เหตุผล');
+    busy(b,true,'กำลังบันทึก…');try{await run('apiLabNf',labPin,r.row,{reason:t.value.trim(),by:labBy()});sh.close();flushPush();toast('บันทึกหาไม่เจอ และแจ้งวอร์ดแล้ว');loadQueue()}
+    catch(err){busy(b,false);el.querySelector('#nf-err').innerHTML=errBox(err.message)}};
+}
+
+/* ---------- ประวัติการใช้งาน (ทุกการกระทำ: ใคร ทำอะไร เมื่อไร) ---------- */
+let audQ='',audDays=7,audData=null;
+async function loadAudit(){audData=null;renderAudit(true);try{audData=(await run('apiLabAudit',labPin,audQ,audDays)).items}catch(err){audData={__err:err.message}}if(mode==='lab'&&labTab==='audit')renderAudit(true)}
+function renderAudit(noload){
+  if(!noload&&!audData)return loadAudit();
+  app.innerHTML=`<div class="wide">${labTabs()}<form class="toolbar" id="au-f"><input class="input" id="au-q" placeholder="ค้นหา HN, Sample No. หรือชื่อผู้ทำ" value="${esc(audQ)}" style="flex:1;min-width:200px">
+    <div class="rng" role="group" aria-label="ช่วงเวลา">${[1,7,30,90].map(n=>`<button type="button" data-d="${n}" aria-pressed="${audDays===n}">${n} วัน</button>`).join('')}</div>
+    <button class="btn btn-ghost" type="submit">ค้นหา</button></form>
+    <div class="tbl-wrap"><table><thead><tr><th>เวลา</th><th>ผู้ทำ</th><th>การกระทำ</th><th>HN</th><th>Sample No.</th><th>รายละเอียด</th></tr></thead><tbody>
+    ${!audData?'<tr><td colspan="6"><div class="sk sk-row"></div></td></tr>':audData.__err?`<tr><td colspan="6">${errBox(audData.__err)}</td></tr>`:audData.length?audData.map(a=>`<tr><td class="small">${esc(a.at)}</td><td>${esc(a.actor)}</td><td><b>${esc(a.action)}</b></td><td class="mono">${esc(a.hn||'')}</td><td class="mono">${esc(a.sample||'')}</td><td class="small">${esc(a.info||'')}</td></tr>`).join(''):'<tr><td colspan="6" class="muted" style="text-align:center;padding:24px">ไม่พบรายการ</td></tr>'}
+    </tbody></table></div><div class="small muted" style="margin-top:6px">แสดงสูงสุด 300 รายการล่าสุด · บันทึกอัตโนมัติทุกครั้งที่มีการสั่งตาม ยืนยันพบ หาไม่เจอ รับสไลด์ ยกเลิก แก้ไข และลงทะเบียน</div></div>`;
+  bindTabs();$('#au-f').onsubmit=e=>{e.preventDefault();audQ=$('#au-q').value.trim();loadAudit()};
+  app.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{audDays=+b.dataset.d;loadAudit()});
 }
 
 /* ---------- หน้าสถิติและกราฟ (ไม่มีข้อมูลผู้ป่วย: เซิร์ฟเวอร์ส่งมาแค่ตัวเลขสรุป) ---------- */
@@ -1720,7 +1935,7 @@ function fixSheet(r){
   const canReopen=r.status==='out'&&!r.include;
   const sh=openSheet(`<div class="eyebrow">แก้ไขรายการ</div><h2 class="mono">HN ${esc(r.hn)}</h2>
     <div class="receipt"><dl class="kv"><dt>Sample No.</dt><dd class="mono">${sampleTxt(r.sample)}</dd><dt>วอร์ด</dt><dd>${esc(r.ward)}</dd>
-      ${r.include?'<dt>ประเภท</dt><dd>Slide include</dd>':`<dt>ส่งใบตาม</dt><dd>${esc(r.reqName)} · ${esc(r.reqAt)}</dd>`}
+      ${r.include?'<dt>ประเภท</dt><dd>Slide include</dd>':`<dt>สั่งตาม</dt><dd>${esc(r.reqName)} · ${esc(r.reqAt)}</dd>`}
       ${r.status==='out'?`<dt>รับสไลด์</dt><dd>${esc(r.recvName)} · ${esc(r.recvAt)}</dd>`:''}</dl></div>
     <div class="field"><label for="fx-act">ต้องการทำอะไร</label><div class="seg3" style="grid-template-columns:repeat(${canReopen?2:1},1fr)" id="fx-act">
       ${canReopen?`<button data-a="reopen" aria-pressed="true">ย้อนเป็น "ยังไม่รับ"</button>`:''}
@@ -1731,7 +1946,7 @@ function fixSheet(r){
     <button class="btn btn-teal btn-block" id="fx-ok">ยืนยัน</button><button class="btn btn-soft btn-block" data-close>ปิด</button>`);
   let act=canReopen?'reopen':'cancel';
   const hint=()=>{sh.el.querySelector('#fx-hint').textContent=act==='reopen'
-      ?'สถานะกลับเป็น "ส่งใบตามแล้ว รอรับ" ผู้ที่มารับจริงจะบันทึกรับสไลด์ได้'
+      ?'สถานะกลับเป็น "รอแลปหาสไลด์" ผู้ที่มารับจริงจะบันทึกรับสไลด์ได้'
       :'รายการจะหายจากแอปทุกหน้า และไม่บล็อกการบันทึกใหม่ (ข้อมูลยังเก็บไว้ใน Supabase พร้อมเหตุผล)';
     sh.el.querySelectorAll('[data-a]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.a===act))};
   sh.el.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{act=b.dataset.a;hint()});hint();
@@ -1848,7 +2063,7 @@ async function wardDo(act,name,nw,btn){
   catch(err){if(btn)btn.disabled=false;toast(err.message);throw err}}
 function renderWards(){
   const head=`${labTabs()}<div class="toolbar"><button class="btn btn-ghost" id="wd-re">รีเฟรช</button>
-    <span class="small muted">วอร์ดที่เปิดใช้จะแสดงให้เลือกตอนส่งใบตาม Slide ตามลำดับนี้</span></div>`;
+    <span class="small muted">วอร์ดที่เปิดใช้จะแสดงให้เลือกตอนสั่งตาม Slide ตามลำดับนี้</span></div>`;
   if(!wdData){app.innerHTML=`<div class="wide" aria-busy="true">${head}<div class="sk sk-chart"></div></div>`;return bindWd()}
   if(wdData.__err){app.innerHTML=`<div class="wide">${head}${errBox(wdData.__err)}</div>`;return bindWd()}
   const on=wdData.filter(w=>w.active),off=wdData.filter(w=>!w.active);
@@ -1891,7 +2106,7 @@ function renameWard(w){
 }
 function offWard(w){
   const sh=openSheet(`<div class="eyebrow">ปิดใช้วอร์ด</div><h2>${esc(w.name)}</h2>
-    <p>วอร์ดนี้จะไม่แสดงให้เลือกตอนส่งใบตาม Slide${w.total?` รายการเก่า ${nf(w.total)} รายการยังอยู่ครบ`:''} เปิดใช้กลับได้ทุกเมื่อ</p>
+    <p>วอร์ดนี้จะไม่แสดงให้เลือกตอนสั่งตาม Slide${w.total?` รายการเก่า ${nf(w.total)} รายการยังอยู่ครบ`:''} เปิดใช้กลับได้ทุกเมื่อ</p>
     <div id="wd-off-err"></div>
     <button class="btn btn-block" id="wd-off-ok">ปิดใช้วอร์ดนี้</button><button class="btn btn-soft btn-block" data-close>ยกเลิก</button>`);
   const ok=sh.el.querySelector('#wd-off-ok');
@@ -1900,8 +2115,8 @@ function offWard(w){
     catch(err){ok.disabled=false;sh.el.querySelector('#wd-off-err').innerHTML=errBox(err.message)}};
 }
 
-function lockLab(msg){labPin='';adminPin='';labRows=[];statData=null;statCache={};try{sessionStorage.removeItem('cbcLabPin')}catch(e){}
-  labTab='list';if(mode==='lab')render();toast(msg||'ล็อกหน้าแลปแล้ว')}
+function lockLab(msg){labPin='';adminPin='';labRows=[];qData=null;qKnown=null;audData=null;statData=null;statCache={};try{sessionStorage.removeItem('cbcLabPin')}catch(e){}
+  labTab='queue';if(mode==='lab')render();toast(msg||'ล็อกหน้าแลปแล้ว')}
 /* ---------- เลือกธีมเทศกาล (PIN แลป) — มีผลกับทุกเครื่อง ---------- */
 function festSheet(){
   const auto=festByDate(),y=new Date().getFullYear();
@@ -1951,10 +2166,12 @@ async function photoSheet(row,who,hn){
 }
 
 const labTabs=()=>`<div class="lab-top"><div class="ltabs" role="tablist" aria-label="มุมมองของห้องปฏิบัติการ">
+  <button role="tab" data-tab="queue" aria-selected="${labTab==='queue'}">${icBell}คิวงาน${qData&&!qData.__err&&qData.wait.length?` <span class="qbadge">${qData.wait.length}</span>`:''}</button>
   <button role="tab" data-tab="list" aria-selected="${labTab==='list'}">${icList}รายการสไลด์</button>
   <button role="tab" data-tab="stats" aria-selected="${labTab==='stats'}">${icChart}สถิติและกราฟ</button>
   <button role="tab" data-tab="staff" aria-selected="${labTab==='staff'}">${icUsers}ผู้ใช้งาน</button>
   <button role="tab" data-tab="wards" aria-selected="${labTab==='wards'}">${icBed}วอร์ด</button>
+  <button role="tab" data-tab="audit" aria-selected="${labTab==='audit'}">${icHist}ประวัติการใช้งาน</button>
   <button role="tab" data-tab="backup" aria-selected="${labTab==='backup'}">${icArchive}สำรองข้อมูล</button></div>
   <button class="btn btn-soft lab-lock" id="lab-fest" type="button" aria-label="เลือกธีมเทศกาล">🎨<span>ธีม</span></button>
   <button class="btn btn-soft lab-lock" id="lab-lock" type="button" aria-label="ล็อกหน้าแลป (ต้องใส่ PIN ใหม่)">${icLock}<span>ล็อก</span></button></div>`;
@@ -2006,31 +2223,31 @@ function renderStats(){
   const empty=!k.req&&!k.inc;
   app.innerHTML=`<div class="wide">${head}
    <div class="kpis">
-    <div class="kpi"><span class="l"><i class="sw" style="background:${C1}"></i>ส่งใบตามสไลด์</span><span class="n">${nf(k.req)}<small>ใบ</small></span><span class="s">รับไปแล้ว ${nf(k.reqDone)} ใบ</span></div>
+    <div class="kpi"><span class="l"><i class="sw" style="background:${C1}"></i>สั่งตามสไลด์</span><span class="n">${nf(k.req)}<small>ใบ</small></span><span class="s">รับไปแล้ว ${nf(k.reqDone)} ใบ</span></div>
     <div class="kpi"><span class="l"><i class="sw" style="background:${C2}"></i>รับ Slide include</span><span class="n">${nf(k.inc)}<small>สไลด์</small></span><span class="s">ไม่ต้องส่งใบตาม</span></div>
     <div class="kpi"><span class="l">เวลารอ (ค่ากลาง)</span><span class="n">${k.waitMed==null?'–':dur(k.waitMed)}</span><span class="s">${pct==null?'ยังไม่มีรายการที่รับแล้ว':`รับภายใน ${d.lateMin%60===0?d.lateMin/60+' ชั่วโมง':d.lateMin+' นาที'} ${pct}%`}</span></div>
     <div class="kpi ${k.pendingOld?'warn':''}"><span class="l">ค้างอยู่ตอนนี้</span><span class="n">${nf(k.pendingNow)}<small>ใบ</small></span><span class="s">${k.pendingOld?`รอเกิน ${dur(d.lateMin||60)} ${nf(k.pendingOld)} ใบ`:`ไม่มีรายการรอเกิน ${dur(d.lateMin||60)}`}</span></div>
    </div>
    ${empty?`<div class="ccard"><div class="empty"><div class="art">${artSearch}</div><b>ยังไม่มีข้อมูลในช่วง ${d.days} วันนี้</b><span class="small muted">เมื่อมีการบันทึก กราฟจะแสดงที่นี่</span></div></div>`:`
-   <div class="ccard full"><h3>จำนวนต่อวัน</h3><div class="sub">ใบตามนับตามเวลาที่ส่งใบตาม · Include นับตามเวลาที่รับ</div>
-     <div class="legend"><span><i style="background:${C1}"></i>ส่งใบตาม</span><span><i style="background:${C2}"></i>Include</span></div>
+   <div class="ccard full"><h3>จำนวนต่อวัน</h3><div class="sub">ออร์เดอร์นับตามเวลาที่สั่งตาม · Include นับตามเวลาที่รับ</div>
+     <div class="legend"><span><i style="background:${C1}"></i>สั่งตาม</span><span><i style="background:${C2}"></i>Include</span></div>
      <div class="plot" id="pl-day"></div>
      <details class="tbl"><summary>ดูเป็นตาราง</summary><div style="overflow-x:auto"><table><thead><tr><th>วันที่</th><th>ส่งใบตาม</th><th>Include</th><th>รวม</th></tr></thead><tbody>
        ${d.daily.slice().reverse().map(r=>`<tr><td>${dLong(r.d)}</td><td>${r.req}</td><td>${r.inc}</td><td><b>${r.req+r.inc}</b></td></tr>`).join('')}</tbody></table></div></details></div>
    <div class="charts">
-    <div class="ccard"><h3>ช่วงเวลาที่ส่งใบตาม</h3><div class="sub">ใช้ดูว่าช่วงไหนงานเข้ามาก ตัวเลขบนแท่ง = ช่วงที่มากที่สุด</div><div class="plot" id="pl-hour"></div></div>
-    <div class="ccard"><h3>เวลาตั้งแต่ส่งใบตามจนรับสไลด์</h3><div class="sub">เฉพาะใบตามที่รับแล้ว ${nf(k.reqDone)} ใบ</div>
+    <div class="ccard"><h3>ช่วงเวลาที่สั่งตาม</h3><div class="sub">ใช้ดูว่าช่วงไหนงานเข้ามาก ตัวเลขบนแท่ง = ช่วงที่มากที่สุด</div><div class="plot" id="pl-hour"></div></div>
+    <div class="ccard"><h3>เวลาตั้งแต่สั่งตามจนรับสไลด์</h3><div class="sub">เฉพาะใบตามที่รับแล้ว ${nf(k.reqDone)} ใบ</div>
       ${k.reqDone?hbars(d.waitDist.map(b=>({name:b.label,parts:[{v:b.n,c:'var(--c-wait)'}],right:`${nf(b.n)} <span class="small muted">(${Math.round(b.n/k.reqDone*100)}%)</span>`,tip:`${b.label}\n${nf(b.n)} ใบ`})),Math.max(1,...d.waitDist.map(b=>b.n))):'<div class="small muted">ยังไม่มีรายการที่รับแล้ว</div>'}</div>
     <div class="ccard full"><h3>วอร์ดที่ตามสไลด์มากที่สุด</h3>
-      <div class="legend"><span><i style="background:${C1}"></i>ส่งใบตาม</span><span><i style="background:${C2}"></i>Include</span></div>
-      ${hbars(d.wards.map(w=>({name:w.ward,parts:[{v:w.req,c:C1},{v:w.inc,c:C2}],right:nf(w.req+w.inc),tip:`${w.ward}\nส่งใบตาม ${nf(w.req)} · Include ${nf(w.inc)}`})),Math.max(1,...d.wards.map(w=>w.req+w.inc)))}</div>
+      <div class="legend"><span><i style="background:${C1}"></i>สั่งตาม</span><span><i style="background:${C2}"></i>Include</span></div>
+      ${hbars(d.wards.map(w=>({name:w.ward,parts:[{v:w.req,c:C1},{v:w.inc,c:C2}],right:nf(w.req+w.inc),tip:`${w.ward}\nสั่งตาม ${nf(w.req)} · Include ${nf(w.inc)}`})),Math.max(1,...d.wards.map(w=>w.req+w.inc)))}</div>
    </div>`}</div>`;
   bindStats();
   if(empty)return;
   const n=d.daily.length;
-  vbars($('#pl-day'),d.daily.map(r=>({label:n<=7?DOW[dParse(r.d).getDay()]+'\n'+dShort(r.d):dShort(r.d),tip:`${dLong(r.d)}\nส่งใบตาม ${nf(r.req)} · Include ${nf(r.inc)}`,parts:[{v:r.req,c:C1},{v:r.inc,c:C2}]})),
+  vbars($('#pl-day'),d.daily.map(r=>({label:n<=7?DOW[dParse(r.d).getDay()]+'\n'+dShort(r.d):dShort(r.d),tip:`${dLong(r.d)}\nสั่งตาม ${nf(r.req)} · Include ${nf(r.inc)}`,parts:[{v:r.req,c:C1},{v:r.inc,c:C2}]})),
     {every:n<=7?1:n<=30?5:15,last:true,aria:'จำนวนส่งใบตามและ Include ต่อวัน',h:220});
-  vbars($('#pl-hour'),d.hourly.map((v,h)=>({label:String(h).padStart(2,'0')+'น.',tip:`${String(h).padStart(2,'0')}.00–${String(h).padStart(2,'0')}.59 น.\nส่งใบตาม ${nf(v)} ใบ`,parts:[{v,c:C1}]})),
+  vbars($('#pl-hour'),d.hourly.map((v,h)=>({label:String(h).padStart(2,'0')+'น.',tip:`${String(h).padStart(2,'0')}.00–${String(h).padStart(2,'0')}.59 น.\nสั่งตาม ${nf(v)} ใบ`,parts:[{v,c:C1}]})),
     {every:3,narrowEvery:2,peak:true,aria:'จำนวนส่งใบตามแยกตามชั่วโมง',h:190});
 }
 function bindStats(){
@@ -2117,6 +2334,8 @@ function openMenu(){
     <div class="menu-list">
       <button class="menu-it" id="m-snd">${icSound}เสียงเมื่อสแกนติด<span class="r"><span class="switch" aria-hidden="true" aria-checked="${snd}"></span></span></button>
       ${isStandalone()?'':`<button class="menu-it" id="m-install">${icInstall}ติดตั้งแอปลงหน้าจอมือถือ</button>`}
+      ${ME?`<button class="menu-it" id="m-role">👤&nbsp; บทบาทของฉัน: ${esc(ROLE_TH[ME.role]||'ยังไม่เลือก')}</button>`:''}
+      <button class="menu-it" id="m-hemato">🔬&nbsp; ห้อง Hemato: แจ้งสไลด์พร้อมรับ</button>
       <button class="menu-it" id="m-cam">📷&nbsp; อนุญาตกล้อง / แก้กล้องไม่ทำงาน</button>
       <button class="menu-it" id="m-guide">${icBook}วิธีการตาม Slide</button>
       <button class="menu-it" id="m-help">${icHelp}วิธีใช้งานแอป</button>
@@ -2130,6 +2349,8 @@ function openMenu(){
   el.querySelector('#m-snd').onclick=()=>{const on=store.get(SND_KEY)==='0';store.set(SND_KEY,on?'1':'0');el.querySelector('#m-snd .switch').setAttribute('aria-checked',on);if(on)beep()};
   const mi=el.querySelector('#m-install');if(mi)mi.onclick=()=>{sh.close();doInstall()};
   el.querySelector('#m-guide').onclick=()=>{sh.close();showGuide()};
+  el.querySelector('#m-hemato').onclick=()=>{sh.close();openHemato()};
+  const mr=el.querySelector('#m-role');if(mr)mr.onclick=()=>{sh.close();mode='ward';view='role';render()};
   el.querySelector('#m-cam').onclick=async()=>{sh.close();const st=await camState();st==='denied'?camHelp('denied'):askCamera()};
   el.querySelector('#m-help').onclick=()=>{sh.close();showHelp()};
   el.querySelector('#m-bot').onclick=()=>{sh.close();openAssistant()};
@@ -2180,8 +2401,130 @@ async function camCard(){const c=$('#cam-card');if(!c)return;const st=await camS
   if(st==='granted'||(st==='prompt'&&store.get('cbcCamOk')==='1')||!$('#cam-card'))return;
   c.hidden=false;c.querySelector('.cam-t').textContent=st==='denied'?'เครื่องนี้ยังไม่อนุญาตกล้อง กดเพื่อดูวิธีเปิด':'อนุญาตให้แอปใช้กล้องครั้งเดียว แล้วสแกนบาร์โค้ดได้ทันที';
   c.querySelector('button').onclick=()=>st==='denied'?camHelp('denied'):askCamera()}
+
+/* ================= ห้อง Hemato: แจ้ง "สไลด์พร้อมรับ" =================
+   ถ่ายรูปสติกเกอร์สไลด์ → อ่านบาร์โค้ด (Sample No.) + อ่านตัวเลขจากรูป (HN, วันเวลาส่งตรวจ) ในเครื่อง → ตรวจแล้วกดยืนยัน
+   ใช้ PIN Hemato (แยกจาก PIN แลป) · เปิดตรงได้ด้วยลิงก์ ?hemato */
+let hematoPin='',hemaItems=null;
+try{hematoPin=sessionStorage.getItem('cbcHemaPin')||''}catch(e){}
+function openHemato(){mode='hemato';render()}
+function lockHemato(msg){hematoPin='';hemaItems=null;try{sessionStorage.removeItem('cbcHemaPin')}catch(e){}if(mode==='hemato')render();if(msg)toast(msg)}
+const hemaErr=err=>{if(/PIN Hemato|ใส่ PIN ผิด/.test(err.message)){lockHemato(err.message);return true}return false};
+async function loadHema(){try{const d=await run('apiHematoList',hematoPin);hemaItems=d.items}catch(err){if(hemaErr(err))return;hemaItems={__err:err.message}}if(mode==='hemato')drawHemaList()}
+function vHemato(){
+  $('#tabbar').hidden=false;document.querySelectorAll('[data-tab-nav]').forEach(b=>b.removeAttribute('aria-current'));
+  if(!hematoPin){
+    app.innerHTML=`<div class="col"><section class="panel"><div class="eyebrow">ห้อง Hemato</div><h2>แจ้งสไลด์พร้อมรับ</h2>
+      <form id="f" class="form" novalidate><div class="field"><label for="hpin">PIN ห้อง Hemato</label>
+      <input class="input mono" id="hpin" type="password" inputmode="numeric" autocomplete="off"></div>
+      <div id="err"></div><button class="btn btn-teal btn-block" type="submit">เข้าใช้งาน</button></form>
+      <button class="btn btn-soft btn-block" id="h-back" style="margin-top:8px">กลับหน้าแรก</button></section></div>`;
+    $('#hpin').focus();$('#h-back').onclick=()=>{mode='ward';view=ME?'home':'register';render()};
+    $('#f').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button[type=submit]');busy(b,true,'กำลังตรวจสอบ…');
+      try{const d=await run('apiHematoList',$('#hpin').value);hematoPin=$('#hpin').value;hemaItems=d.items;try{sessionStorage.setItem('cbcHemaPin',hematoPin)}catch(x){}render()}
+      catch(err){$('#err').innerHTML=errBox(err.message);busy(b,false)}};
+    return}
+  const by=store.get('cbcHemaBy')||'';
+  app.innerHTML=`<div class="col"><section class="panel hema">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><div><div class="eyebrow">ห้อง Hemato</div><h2 style="margin:2px 0 0">แจ้งสไลด์พร้อมรับ</h2></div>
+      <button class="btn btn-soft lab-lock" id="h-lock" type="button">${icLock}<span>ล็อก</span></button></div>
+    <div class="field" style="margin-top:10px"><label for="h-by">ชื่อผู้แจ้ง <span class="opt">(จำไว้ในเครื่องนี้)</span></label><input class="input" id="h-by" value="${esc(by)}" placeholder="เช่น ชื่อเล่น" maxlength="60"></div>
+    <button class="btn btn-teal btn-block hema-shot" id="h-shot">${icCam}ถ่ายรูปสติกเกอร์สไลด์</button>
+    <button class="btn btn-ghost btn-block" id="h-manual">สแกนบาร์โค้ด / กรอกเอง</button>
+    <div class="small muted" style="margin-top:6px">ถ่ายให้สติกเกอร์เต็มกรอบ ตัวหนังสือชัด ไม่สะท้อนแสงจากถุง · ระบบอ่านเฉพาะตัวเลข และอ่านในเครื่องนี้เท่านั้น</div></section>
+    <div class="section-h"><h3>แจ้งพร้อมแล้ว (2 วันล่าสุด)</h3><button class="linkbtn" id="h-ref">รีเฟรช</button></div>
+    <section class="panel" id="h-list"><div class="sk" style="height:80px"></div></section></div>`;
+  $('#h-by').oninput=e=>store.set('cbcHemaBy',e.target.value.trim());
+  $('#h-lock').onclick=()=>lockHemato('ล็อกหน้า Hemato แล้ว');
+  $('#h-shot').onclick=hemaShoot;$('#h-manual').onclick=()=>hemaConfirm({});$('#h-ref').onclick=loadHema;
+  if(hemaItems)drawHemaList();loadHema();
+}
+function drawHemaList(){const box=$('#h-list');if(!box)return;
+  if(!hemaItems){box.innerHTML='<div class="sk" style="height:80px"></div>';return}
+  if(hemaItems.__err){box.innerHTML=errBox(hemaItems.__err);return}
+  box.innerHTML=hemaItems.length?`<div class="mylist">${hemaItems.map(x=>`<div class="it ${x.status==='picked'?'out':'in'}"><div style="min-width:0">
+      <div class="mono" style="font-weight:600">HN ${esc(x.hn)} · ${esc(x.sample)}</div>
+      <div class="small muted">ส่งตรวจ ${esc(x.specAt||'–')} · แจ้งพร้อม ${esc(x.readyAt.slice(-5))}${x.readyBy?' โดย '+esc(x.readyBy):''}</div>
+      <div class="small">${x.status==='picked'?'✅ รับสไลด์ไปแล้ว':x.matched?`🔔 แจ้งใบตามแล้ว ${x.matched} ใบ${x.wards?' ('+esc(x.wards)+')':''}`:'⏳ ยังไม่มีใบตาม · ถ้ามีคนส่งใบตามภายหลัง จะขึ้น "พร้อมรับ" ให้เอง'}</div></div>
+      ${x.status==='ready'?`<button class="linkbtn" data-hundo="${x.id}" style="font-size:.82rem">ยกเลิก</button>`:''}</div>`).join('')}</div>`
+    :'<div class="small muted" style="text-align:center;padding:14px">ยังไม่มีรายการ</div>';
+  box.querySelectorAll('[data-hundo]').forEach(b=>b.onclick=async()=>{b.disabled=true;
+    try{await run('apiHematoUndo',hematoPin,+b.dataset.hundo);toast('ยกเลิกการแจ้งพร้อมแล้ว');loadHema()}catch(err){b.disabled=false;if(!hemaErr(err))toast(err.message)}});
+}
+function hemaShoot(){
+  if(camEnv()==='inapp')return camHelp('inapp');
+  openShot(f=>hemaRead(f),()=>{const i=document.createElement('input');i.type='file';i.accept='image/*';i.capture='environment';i.onchange=()=>{if(i.files[0])hemaRead(i.files[0])};i.click()});
+}
+// ---- อ่านสติกเกอร์ ----
+let ocrWorker=null;
+function loadScript(src){return new Promise((ok,no)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>no(new Error('โหลดตัวอ่านตัวหนังสือไม่สำเร็จ ตรวจอินเทอร์เน็ต'));document.head.appendChild(s)})}
+async function getOcr(onMsg){
+  if(ocrWorker)return ocrWorker;
+  if(!window.Tesseract){onMsg('กำลังโหลดตัวอ่านตัวหนังสือ (ครั้งแรกประมาณ 5 MB)…');await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js')}
+  onMsg('กำลังเตรียมตัวอ่าน…');
+  ocrWorker=await Tesseract.createWorker('eng',1);
+  await ocrWorker.setParameters({tessedit_char_whitelist:'0123456789HN/:. ',preserve_interword_spaces:'1'});
+  return ocrWorker;
+}
+async function imgCanvas(file,maxW){const img=await new Promise((ok,no)=>{const u=URL.createObjectURL(file),i=new Image();i.onload=()=>{URL.revokeObjectURL(u);ok(i)};i.onerror=no;i.src=u});
+  const sc=Math.min(1,maxW/img.naturalWidth),c=document.createElement('canvas');c.width=Math.round(img.naturalWidth*sc);c.height=Math.round(img.naturalHeight*sc);
+  const g=c.getContext('2d');g.filter='grayscale(1) contrast(1.35)';g.drawImage(img,0,0,c.width,c.height);return c}
+// แยกค่าออกจากข้อความที่อ่านได้ (ใช้ทดสอบได้)
+function parseLabel(text){
+  const t=String(text||'').replace(/[Oo]/g,'0');
+  let hn='';const m1=t.match(/H\s*N\s*[:.]?\s*(\d{6,10})(?![0-9A-Za-z])/);if(m1)hn=m1[1];
+  let spec='';const m2=t.match(/(\d{1,2})\s*\/\s*(\d{1,2})\s*\/\s*(\d{2,4})\s+(\d{1,2})\s*[:.]\s*(\d{2})/);
+  if(m2){let y=+m2[3];if(y<100)y+=2500;if(y>2400)y-=543;const d=+m2[1],mo=+m2[2],H=+m2[4],M=+m2[5];
+    if(d>=1&&d<=31&&mo>=1&&mo<=12&&H<24&&M<60)spec=`${y}-${p2(mo)}-${p2(d)}T${p2(H)}:${p2(M)}`}
+  let sample='';const ms=t.match(/(?<!\d)(\d{10})(?!\d)/g)||[];sample=ms.find(x=>dateFromSample(x))||'';
+  return {hn,spec,sample};
+}
+async function hemaRead(file){
+  const sh=openSheet(`<div class="eyebrow">ห้อง Hemato</div><h2>กำลังอ่านสติกเกอร์…</h2><div class="sk" style="height:120px"></div><div class="small muted" id="hr-msg" style="margin-top:8px">อ่านบาร์โค้ด…</div>`);
+  const msg=t=>{const e=sh.el.querySelector('#hr-msg');if(e)e.textContent=t};
+  let sample='',hn='',spec='',why=[];
+  try{const r=newReader();for(const x of [file,...await photoCrops(file)]){try{const c=String(await r.scanFile(x,false)).trim();if(/^\d{10}$/.test(c)){sample=c;break}}catch(e){}}}catch(e){}
+  try{const w=await getOcr(msg);msg('กำลังอ่าน HN และเวลาส่งตรวจ…');
+    const c=await imgCanvas(file,1800);const {data}=await w.recognize(c);const p=parseLabel(data.text);
+    hn=p.hn;spec=p.spec;if(!sample)sample=p.sample}
+  catch(e){why.push(e.message||'อ่านตัวหนังสือไม่สำเร็จ')}
+  sh.close();hemaConfirm({sample,hn,spec,photo:file,why});
+}
+function hemaConfirm(v){
+  const [dd,tt]=(v.spec||'').split('T');
+  const flag=(ok,t)=>ok?'':`<div class="flag warn" style="margin-top:4px">${t}</div>`;
+  const sh=openSheet(`<div class="eyebrow">ตรวจให้ตรงกับสติกเกอร์ แล้วกดยืนยัน</div><h2>สไลด์พร้อมรับ</h2>
+    ${v.photo?`<img class="hr-img" id="hr-img" alt="รูปสติกเกอร์">`:''}
+    ${v.why&&v.why.length?`<div class="alert warn">${esc(v.why.join(' · '))} กรอกเองได้ครับ</div>`:''}
+    <form id="hf" class="form" novalidate>
+      ${scanField('h-sample','Sample No.')}${v.photo?flag(v.sample,'อ่านบาร์โค้ดไม่ได้ สแกนหรือพิมพ์เอง'):''}
+      <div class="field"><label for="h-hn">HN</label><input class="input mono" id="h-hn" inputmode="numeric" autocomplete="off" value="${esc(v.hn||'')}">${v.photo?flag(v.hn,'อ่าน HN ไม่ได้ พิมพ์จากสติกเกอร์'):''}</div>
+      <div class="row2"><div class="field"><label for="h-d">วันที่ส่งตรวจ</label><input class="input" id="h-d" type="date" max="${isoDate(new Date())}" value="${esc(dd||'')}"></div>
+      <div class="field"><label for="h-t">เวลา</label><input class="input mono" id="h-t" inputmode="numeric" maxlength="5" placeholder="0646" value="${esc(tt||'')}"></div></div>
+      <div class="small muted" style="margin-top:-4px">วันเวลาส่งตรวจไม่บังคับ แต่ช่วยจับคู่ใบตามที่ไม่มี Sample No. ได้แม่นขึ้น</div>
+      <div id="h-warn"></div><div id="h-err"></div>
+      <button class="btn btn-teal btn-block" type="submit">ยืนยัน สไลด์พร้อมรับ</button></form>
+    <button class="btn btn-soft btn-block" data-close>ยกเลิก</button>`);
+  const el=sh.el;
+  if(v.photo){const u=URL.createObjectURL(v.photo);const im=el.querySelector('#hr-img');im.onload=()=>URL.revokeObjectURL(u);im.src=u}
+  el.querySelector('#h-sample').value=v.sample||'';bindScan('h-sample');
+  const tIn=el.querySelector('#h-t');tIn.oninput=()=>{const d=tIn.value.replace(/\D/g,'').slice(0,4);tIn.value=d.length>2?d.slice(0,2)+':'+d.slice(2):d};
+  const chk=()=>{const sd=dateFromSample(el.querySelector('#h-sample').value.trim()),d=el.querySelector('#h-d').value;
+    el.querySelector('#h-warn').innerHTML=sd&&d&&sd!==d&&isoPrev(sd)!==d?`<div class="flag warn">วันที่ใน Sample No. (${thDate(sd)}) ห่างจากวันส่งตรวจเกิน 1 วัน ตรวจอีกครั้ง</div>`:''};
+  ['h-sample','h-d'].forEach(id=>{const x=el.querySelector('#'+id);x.addEventListener('input',chk);x.addEventListener('change',chk)});chk();
+  el.querySelector('#hf').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button[type=submit]');el.querySelector('#h-err').innerHTML='';
+    const sample=el.querySelector('#h-sample').value.trim(),hn=el.querySelector('#h-hn').value.trim(),d=el.querySelector('#h-d').value,t=tIn.value;
+    if(!/^\d{10}$/.test(sample))return el.querySelector('#h-err').innerHTML=errBox('Sample No. ต้องเป็นตัวเลข 10 หลัก');
+    if(!/^\d{6,10}$/.test(hn))return el.querySelector('#h-err').innerHTML=errBox('HN ต้องเป็นตัวเลข 6–10 หลัก');
+    if((d&&!/^([01]\d|2[0-3]):[0-5]\d$/.test(t))||(!d&&t))return el.querySelector('#h-err').innerHTML=errBox('กรอกวันที่และเวลาส่งตรวจให้ครบ หรือเว้นว่างทั้งคู่');
+    busy(b,true,'กำลังบันทึก…');
+    try{const r=await run('apiHematoReady',hematoPin,{sample,hn,specAt:d?`${d}T${t}`:'',by:store.get('cbcHemaBy')||''});sh.close();
+      const n=r.ready.matched;toast(n?`แจ้งพร้อมแล้ว · ตรงกับใบตาม ${n} ใบ`:'แจ้งพร้อมแล้ว · ยังไม่มีใบตาม (ถ้ามีภายหลังจะขึ้นพร้อมรับเอง)');
+      if(navigator.vibrate)navigator.vibrate(60);if(r.newly)flushPush();loadHema()}
+    catch(err){busy(b,false);if(hemaErr(err)){sh.close();return}el.querySelector('#h-err').innerHTML=errBox(err.message)}};
+}
 /* แถบเมนูล่าง */
-async function navTo(t){adminPin='';
+async function navTo(t){adminPin='';if(mode==='hemato'&&t!=='menu'){mode='ward'}
   if(t==='menu')return openMenu();
   if(t==='scan'){if(!ME){mode='ward';view='register';render();toast('ลงทะเบียนก่อนใช้งานสแกนครับ');return}return quickScan()}
   if(t==='lab'){mode='lab';if(!labPin){try{labPin=sessionStorage.getItem('cbcLabPin')||''}catch(e){}}
@@ -2192,7 +2535,9 @@ async function navTo(t){adminPin='';
 document.querySelectorAll('[data-tab-nav]').forEach(b=>b.onclick=()=>navTo(b.dataset.tabNav));
 setInterval(()=>{if(mode==='lab'&&labPin&&labTab==='list'&&document.activeElement&&document.activeElement.id!=='lab-q')reloadLab()},60000);
 
-run('apiInit',store.get(TOKEN_KEY)).then(d=>{WARDS=d.wards;ME=d.me;LATE_MIN=d.lateMin;if(d.fest){store.set('cbcFest',d.fest);applyFest(d.fest)}view=ME?'home':'register';render()})
+run('apiInit',store.get(TOKEN_KEY)).then(d=>{WARDS=d.wards;ME=d.me;LATE_MIN=d.lateMin;if(d.fest){store.set('cbcFest',d.fest);applyFest(d.fest)}view=ME?'home':'register';
+  try{if(new URLSearchParams(location.search).has('hemato'))mode='hemato'}catch(e){}render();
+  if(ME&&store.get(NOTIF_KEY)==='1')pushSubscribe('me',true).catch(()=>{});if(labPin&&store.get('cbcLabPush')==='1')pushSubscribe('lab',true).catch(()=>{})})
   .catch(err=>{app.innerHTML=`<div class="col"><div class="alert bad">โหลดไม่สำเร็จ: ${esc(err.message)}</div></div>`});
 })();
 </script>
