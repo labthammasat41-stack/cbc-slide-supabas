@@ -1402,7 +1402,7 @@ function render(){
 /* ---------- โปรไฟล์กลาง "Laboratory": ใส่ PIN แลปในช่องรหัสพนักงาน (เว้นช่องอื่นว่าง) แล้วเข้าได้เลย
    เครื่องจะจำไว้จนกว่าจะกดออกจากระบบ · พยาบาล/เจ้าหน้าที่รับสไลด์จะไม่เห็นเมนูแลป */
 const LABDEV_KEY='cbcLabDev',LABWHO_KEY='cbcLabWho';
-const PROF_TH={ipd:'IPD',hemato:'HEMATO'};const labWho=()=>store.get(LABWHO_KEY)==='hemato'?'hemato':'ipd';const profName=()=>PROF_TH[labWho()];
+const PROF_TH={ipd:'IPD',hemato:'HEMATO'};const labWho=()=>'hemato';const profName=()=>PROF_TH[labWho()];
 const isLabDev=()=>!!store.get(LABDEV_KEY);
 const labName=t=>{t=String(t||'').trim().toLowerCase().replace(/\s+/g,'');return t===''||['ipd','opd','hemato','hema','lab','แลป','ห้องแลป','เคาน์เตอร์opd'].includes(t)||/^lab+o*ratory$/.test(t)};
 async function tryLabLogin(code,errEl,btn){
@@ -1540,7 +1540,7 @@ function vLogin(){
     if($('#l-id').value.trim()&&labName($('#l-first').value)&&await tryLabLogin($('#l-id').value,$('#err'),b))return;
     busy(b,true,'กำลังตรวจสอบ…');
     try{const r=await run('apiLogin',$('#l-id').value,$('#l-first').value);store.set(TOKEN_KEY,r.token);ME=r.me;view='home';render();toast('สวัสดี '+ME.nick)}
-    catch(err){$('#err').innerHTML=errBox(labName($('#l-first').value)?'รหัส IPD / HEMATO / OPD ไม่ถูกต้อง':err.message);busy(b,false)}};
+    catch(err){$('#err').innerHTML=errBox(labName($('#l-first').value)?'รหัส HEMATO / OPD ไม่ถูกต้อง':err.message);busy(b,false)}};
 }
 let homeRows=[],timers=[];
 function stopTimers(){timers.forEach(clearInterval);timers=[]}
@@ -2025,7 +2025,7 @@ function quickScan(){
 
 /* ---------- lab overview ---------- */
 function vPin(){
-  app.innerHTML=`<div class="col"><section class="panel"><div class="art sm">${artScope}</div><h2>IPD / HEMATO</h2><p class="small muted" style="margin:0">ใส่รหัสของโปรไฟล์ IPD หรือ HEMATO</p>
+  app.innerHTML=`<div class="col"><section class="panel"><div class="art sm">${artScope}</div><h2>HEMATO</h2><p class="small muted" style="margin:0">ใส่รหัส HEMATO (ในเวลา Hemato · นอกเวลา N4)</p>
     <form id="f" class="form" novalidate><div class="field"><label for="pin">PIN ของห้องปฏิบัติการ</label>
     <input class="input mono" id="pin" type="password" inputmode="numeric" autocomplete="off"></div>
     <div id="err"></div><button class="btn btn-blue btn-block" type="submit">เข้าดูภาพรวม</button></form></section></div>`;
@@ -2079,7 +2079,7 @@ let qData=null,qKnown=null,qLoading=false;
 const labBy=()=>store.get('cbcLabBy')||'';
 async function loadQueue(){if(qLoading)return;qLoading=true;
   try{const d=await run('apiLabQueue',labPin);const ids=d.wait.map(r=>r.row);
-    const mine=r=>(d.who==='hemato')===(r.queue==='hema');
+    const mine=r=>true;
     if(qKnown){const nw=d.wait.filter(r=>!qKnown.has(r.row)&&mine(r));if(nw.length){alarm();
       toast(nw.length===1?`ออร์เดอร์ใหม่ HN ${nw[0].hn} · ${nw[0].ward}`:`ออร์เดอร์ใหม่ ${nw.length} รายการ`)}}
     qKnown=new Set(ids);qData=d;if(d.who&&d.who!==store.get(LABWHO_KEY)){store.set(LABWHO_KEY,d.who)}}
@@ -2112,14 +2112,14 @@ function qCard(r,kind){const m=mins(r.reqTs),late=kind==='wait'&&m>=30;
 function drawQueue(){const box=$('#q-body');if(!box)return;
   if(!qData)return;if(qData.__err){box.innerHTML=errBox(qData.__err);return}
   const d=qData,sec=(t,n,cls,html,empty)=>`<div class="section-h"><h3>${t} <span class="qbadge ${cls}">${n}</span></h3></div><div class="qgrid">${n?html:`<div class="small muted" style="padding:8px 2px">${empty}</div>`}</div>`;
-  const hem=d.who==='hemato',wl=d.wait.filter(r=>r.queue!=='hema'),wh=d.wait.filter(r=>r.queue==='hema'),mine=hem?wh:wl,other=hem?wl:wh;
-  box.innerHTML=`<div class="qcol qmain">${sec(hem?'🔬 รอหาสไลด์ · HEMATO (Slide OPD)':'🔔 รอหาสไลด์ · IPD',mine.length,'',mine.map(r=>qCard(r,'wait')).join(''),'ไม่มีออร์เดอร์ค้าง 👍')}
-      ${other.length?`<div class="small muted">${hem?'คิว IPD':'คิว HEMATO (Slide OPD)'} มีอีก ${other.length} รายการ</div>`:''}</div>
-    <div class="qcol">${hem?sec('🚀 ส่งกระสวยไป OPD แล้ว (ยังไม่ถึง)',d.sent.length,'',d.sent.map(r=>qCard(r,'sent')).join(''),'–')
-        +(d.readyOpd?`<div class="small muted">ถึงเคาน์เตอร์ OPD แล้ว รอมารับ ${d.readyOpd} รายการ</div>`:'')
-      :sec('✅ พร้อมรับที่แลป IPD',d.ready.length,'ok',d.ready.map(r=>qCard(r,'ready')).join(''),'–')}</div>
+  const wl=d.wait.filter(r=>r.queue!=='hema'),wh=d.wait.filter(r=>r.queue==='hema'),mine=d.wait;
+  box.innerHTML=`<div class="qcol qmain">${sec('🔔 รอหาสไลด์ · รับที่แลป IPD',wl.length,'',wl.map(r=>qCard(r,'wait')).join(''),'ไม่มีออร์เดอร์ค้าง 👍')}
+      ${sec('🚀 รอหาสไลด์ · Slide OPD ส่งกระสวย',wh.length,'',wh.map(r=>qCard(r,'wait')).join(''),'ไม่มี')}</div>
+    <div class="qcol">${sec('✅ พร้อมรับที่แลป IPD',d.ready.length,'ok',d.ready.map(r=>qCard(r,'ready')).join(''),'–')}
+      ${sec('🚀 ส่งกระสวยไป OPD แล้ว (ยังไม่ถึง)',d.sent.length,'',d.sent.map(r=>qCard(r,'sent')).join(''),'–')}
+      ${d.readyOpd?`<div class="small muted">ถึงเคาน์เตอร์ OPD แล้ว รอมารับ ${d.readyOpd} รายการ</div>`:''}</div>
     <div class="qcol">${sec('🧪 Include พร้อมรับ',d.inc.length,'inc',d.inc.map(x=>`<div class="qc inc"><div class="qh"><b class="mono">${x.hn?'HN '+esc(x.hn):esc(x.sample)}</b><span class="pill st-inc">Include</span></div><div class="small mono">${x.hn?esc(x.sample)+' · ':''}ส่งตรวจ ${esc(x.specDate||'–')}</div><div class="small muted">สแกน ${esc(x.readyAt)}${x.readyBy?' · '+esc(x.readyBy):''}</div></div>`).join(''),'–')}
-    ${(()=>{const nf=d.nf.filter(r=>(r.queue==='hema')===hem);return nf.length?sec('❌ หาไม่เจอ (24 ชม.)',nf.length,'bad',nf.map(r=>qCard(r,'nf')).join(''),''):''})()}</div>`;
+    ${(()=>{const nf=d.nf;return nf.length?sec('❌ หาไม่เจอ (24 ชม.)',nf.length,'bad',nf.map(r=>qCard(r,'nf')).join(''),''):''})()}</div>`;
   box.querySelectorAll('[data-qf]').forEach(b=>b.onclick=()=>{if(needBy())qFound(d.wait.find(r=>String(r.row)===b.dataset.qf))});
   const qb=app.querySelector('.ltabs [data-tab="queue"] .qbadge');if(qb)qb.textContent=mine.length;
   box.querySelectorAll('[data-qn]').forEach(b=>b.onclick=()=>{if(needBy())qNotFound(d.wait.find(r=>String(r.row)===b.dataset.qn))});
@@ -2440,7 +2440,7 @@ async function photoSheet(row,who,hn){
 }
 
 const labTabs=()=>`<div class="lab-top"><div class="ltabs" role="tablist" aria-label="มุมมองของห้องปฏิบัติการ">
-  <button role="tab" data-tab="queue" aria-selected="${labTab==='queue'}">${icBell}คิวงาน${qData&&!qData.__err&&qData.wait.length?` <span class="qbadge">${qData.wait.filter(r=>(qData.who==='hemato')===(r.queue==='hema')).length}</span>`:''}</button>
+  <button role="tab" data-tab="queue" aria-selected="${labTab==='queue'}">${icBell}คิวงาน${qData&&!qData.__err&&qData.wait.length?` <span class="qbadge">${qData.wait.length}</span>`:''}</button>
   <button role="tab" data-tab="hema" aria-selected="${labTab==='hema'}">${icMicro}Include / Hemato</button>
   <button role="tab" data-tab="list" aria-selected="${labTab==='list'}">${icList}รายการสไลด์</button>
   <button role="tab" data-tab="stats" aria-selected="${labTab==='stats'}">${icChart}สถิติและกราฟ</button>
