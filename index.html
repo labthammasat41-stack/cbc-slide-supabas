@@ -584,7 +584,9 @@ details.tbl th,details.tbl td{padding:6px 10px}
 @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
 
 @media (min-width:900px){ .tabbar-in{max-width:620px} }
-.pw-card{gap:10px}.pw-h{display:flex;justify-content:space-between;align-items:center;gap:10px}.pw-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.pw-card{gap:10px;min-width:0}.pw-h{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.pw-h>div{min-width:0;flex:1}.pw-h .btn{flex:none}
+.pw-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;min-width:0}.pw-chips .pill{white-space:normal;text-align:left;max-width:100%;overflow-wrap:anywhere}
+.pk-wh b{min-width:0;overflow-wrap:anywhere}main{overflow-x:clip}
 .pw-chips .pill{border:0;cursor:pointer;font-size:.82rem}.pw-list{max-height:46vh;overflow:auto;display:grid;gap:4px;border:1px solid var(--line);border-radius:var(--r-m);padding:6px}
 .pw-it{display:flex;gap:10px;align-items:center;text-align:left;border:0;background:none;padding:10px;border-radius:10px;font-size:.95rem;cursor:pointer;color:var(--ink)}
 .pw-it[aria-pressed="true"]{background:var(--blue-soft);font-weight:700}.pw-it .ck{width:22px;height:22px;border-radius:6px;border:2px solid var(--line);display:grid;place-items:center;flex:none;color:#fff;font-size:.8rem}
@@ -1492,10 +1494,10 @@ function vHome(){
 let pickData=null,pickAll=false,pwAsked=false;
 const myW=()=>ME&&ME.pwards||[];
 function pwCardHtml(){const w=myW();
-  return w.length?`<div class="pw-h"><div><div class="eyebrow">วอร์ดที่เดินส่งงานวันนี้</div><div class="pw-chips">${w.map(x=>`<span class="pill st-ready">${esc(x)}</span>`).join('')}</div></div><button class="btn btn-ghost" id="pw-edit" type="button">เปลี่ยน</button></div>
+  return w.length?`<div class="pw-h"><div><div class="eyebrow">วอร์ดที่เดินส่งงานวันนี้</div><div class="pw-chips">${w.slice(0,4).map(x=>`<span class="pill st-ready">${esc(x)}</span>`).join('')}${w.length>4?`<button type="button" class="pill st-in" id="pw-more">+ อีก ${w.length-4} วอร์ด</button>`:''}</div></div><button class="btn btn-ghost" id="pw-edit" type="button">เปลี่ยน</button></div>
     <div class="notif" style="margin:0"><button class="switch" id="pn-sw" role="switch" aria-checked="${notifOn()}" aria-label="แจ้งเตือนเด้ง"></button>แจ้งเตือนเด้งเมื่อมีสไลด์ของวอร์ดนี้พร้อมรับ</div>`
    :`<div class="eyebrow">เริ่มงานวันนี้</div><b>เลือกวอร์ดที่คุณเดินส่งงานวันนี้</b><span class="small muted">เลือกได้หลายวอร์ด ออร์เดอร์ของวอร์ดนั้นจะส่งถึงคุณอัตโนมัติ</span><button class="btn btn-blue btn-block" id="pw-edit" type="button">เลือกวอร์ด</button>`}
-function bindPwCard(){const c=$('#pw-card');if(!c)return;c.innerHTML=pwCardHtml();const e=$('#pw-edit');if(e)e.onclick=pwSheet;
+function bindPwCard(){const c=$('#pw-card');if(!c)return;c.innerHTML=pwCardHtml();const e=$('#pw-edit');if(e)e.onclick=pwSheet;const mo=$('#pw-more');if(mo)mo.onclick=pwSheet;
   const sw=$('#pn-sw');if(sw)sw.onclick=async()=>{if(notifOn()){store.set(NOTIF_KEY,'0');pushOff('me');toast('ปิดแจ้งเตือนเด้งแล้ว');return bindPwCard()}
     try{await pushSubscribe('me');store.set(NOTIF_KEY,'1');toast('เปิดแจ้งเตือนเด้งแล้ว ✅')}catch(err){if('Notification' in window&&Notification.permission==='granted')store.set(NOTIF_KEY,'1');toast(err.message)}bindPwCard()}}
 function pwSheet(){let sel=new Set(myW());
@@ -1518,10 +1520,11 @@ function pwSheet(){let sel=new Set(myW());
 function drawPick(){const box=$('#pk-list');if(!box||!pickData)return;const d=pickData,mine=new Set(myW());
   const sel=pickAll||!mine.size?null:mine,g={},wt={};
   d.ready.forEach(r=>{if(!sel||sel.has(r.ward))(g[r.ward]=g[r.ward]||[]).push(r)});d.wait.forEach(r=>{if(!sel||sel.has(r.ward))wt[r.ward]=(wt[r.ward]||0)+1});
-  const ws=[...new Set([...(sel?[...sel]:[]),...Object.keys(g),...Object.keys(wt)])];
+  const all=[...new Set([...(sel?[...sel]:[]),...Object.keys(g),...Object.keys(wt)])],ws=all.filter(k=>g[k]||wt[k]),idle=all.filter(k=>!g[k]&&!wt[k]);
   box.innerHTML=(ws.length?ws.map(k=>`<div class="pk-w"><div class="pk-wh"><b>${esc(k)}</b>${g[k]?`<span class="pill st-ready">พร้อมรับ ${g[k].length} ใบ</span>`:''}${wt[k]?`<span class="pill st-in">รอแลปหา ${wt[k]}</span>`:''}${!g[k]&&!wt[k]?'<span class="small muted">ไม่มีงาน</span>':''}</div>
       ${g[k]?`<div class="small muted mono">${g[k].map(r=>'HN '+esc(r.hn)+(r.sample?' · '+esc(r.sample):'')).join('<br>')}</div>`:''}</div>`).join('')
-    :'<div class="small muted" style="padding:6px 0">ยังไม่มีงาน</div>')
+    :'<div class="small muted" style="padding:6px 0">ยังไม่มีงาน ✨</div>')
+   +(idle.length&&ws.length?`<div class="small muted" style="padding-top:6px">ไม่มีงาน: ${idle.map(esc).join(', ')}</div>`:'')
    +(mine.size?`<button class="linkbtn" id="pk-all" style="margin-top:6px">${pickAll?'ดูเฉพาะวอร์ดของฉัน':'ดูทุกวอร์ด'}</button>`:'');
   const a=$('#pk-all');if(a)a.onclick=()=>{pickAll=!pickAll;drawPick()};
 }
