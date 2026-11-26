@@ -584,6 +584,11 @@ details.tbl th,details.tbl td{padding:6px 10px}
 @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
 
 @media (min-width:900px){ .tabbar-in{max-width:620px} }
+.pw-card{gap:10px}.pw-h{display:flex;justify-content:space-between;align-items:center;gap:10px}.pw-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.pw-chips .pill{border:0;cursor:pointer;font-size:.82rem}.pw-list{max-height:46vh;overflow:auto;display:grid;gap:4px;border:1px solid var(--line);border-radius:var(--r-m);padding:6px}
+.pw-it{display:flex;gap:10px;align-items:center;text-align:left;border:0;background:none;padding:10px;border-radius:10px;font-size:.95rem;cursor:pointer;color:var(--ink)}
+.pw-it[aria-pressed="true"]{background:var(--blue-soft);font-weight:700}.pw-it .ck{width:22px;height:22px;border-radius:6px;border:2px solid var(--line);display:grid;place-items:center;flex:none;color:#fff;font-size:.8rem}
+.pw-it[aria-pressed="true"] .ck{background:var(--blue);border-color:var(--blue)}.pk-wh{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .hema-grid{display:grid;gap:16px}.hd-chips{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:6px}
 .hd-chips .daychip{background:var(--surface-3);display:flex;flex-direction:column;align-items:center;padding:8px 4px;min-height:54px}.hd-chips small{font-size:.72rem;font-weight:400;opacity:.8}
 .hd-chips .daychip[aria-pressed="true"]{background:var(--teal);color:#fff;border-color:var(--teal)}.hema-side{display:flex;flex-direction:column;gap:12px}
@@ -707,7 +712,7 @@ const RPC={apiInit:['api_init','p_token'],apiRegister:['api_register','d'],apiLo
   apiIncludeCheck:['api_include_check','p_token','d'],apiInclude:['api_include','p_token','d'],apiSearch:['api_search','p_token','q'],
   apiLabList:['api_lab_list','p_pin'],apiLabStats:['api_lab_stats','p_pin','p_days'],apiSetPhoto:['api_set_photo','p_token','p_id','p_path'],apiUndo:['api_undo','p_token','p_id','p_kind'],
   apiLabFix:['api_lab_fix','p_pin','p_id','p_action','p_reason'],apiLabStaff:['api_lab_staff','p_pin'],apiLabStaffSet:['api_lab_staff_set','p_pin','p_staff','p_state'],
-  apiLabBackups:['api_lab_backups','p_pin'],apiAdminWards:['api_admin_wards','p_pin'],apiLabFestSet:['api_lab_fest_set','p_pin','p_fest'],apiHematoReady:['api_hemato_ready','p_pin','d'],apiHematoList:['api_hemato_list','p_pin'],apiHematoUndo:['api_hemato_undo','p_pin','p_ready'],apiSetRole:['api_set_role','p_token','p_role'],apiPushSub:['api_push_sub','p_token','sub'],apiLabPushSub:['api_lab_push_sub','p_pin','sub','p_on'],apiPushUnsub:['api_push_unsub','p_endpoint'],apiLabQueue:['api_lab_queue','p_pin'],apiLabReady:['api_lab_ready','p_pin','p_row','d'],apiLabNf:['api_lab_nf','p_pin','p_row','d'],apiLabBack:['api_lab_back','p_pin','p_row','d'],apiPickFind:['api_pick_find','p_token','p_sample'],apiPickList:['api_pick_list','p_token'],apiLabAudit:['api_lab_audit','p_pin','q','p_days'],apiAdminWardSave:['api_admin_ward_save','p_pin','p_action','p_name','p_new'],apiLabPurge:['api_lab_purge','p_pin','p_month','p_confirm']};
+  apiLabBackups:['api_lab_backups','p_pin'],apiAdminWards:['api_admin_wards','p_pin'],apiLabFestSet:['api_lab_fest_set','p_pin','p_fest'],apiHematoReady:['api_hemato_ready','p_pin','d'],apiHematoList:['api_hemato_list','p_pin'],apiHematoUndo:['api_hemato_undo','p_pin','p_ready'],apiSetRole:['api_set_role','p_token','p_role'],apiSetWard:['api_set_ward','p_token','p_ward'],apiSetPwards:['api_set_pwards','p_token','p_wards'],apiPushSub:['api_push_sub','p_token','sub'],apiLabPushSub:['api_lab_push_sub','p_pin','sub','p_on'],apiPushUnsub:['api_push_unsub','p_endpoint'],apiLabQueue:['api_lab_queue','p_pin'],apiLabReady:['api_lab_ready','p_pin','p_row','d'],apiLabNf:['api_lab_nf','p_pin','p_row','d'],apiLabBack:['api_lab_back','p_pin','p_row','d'],apiPickFind:['api_pick_find','p_token','p_sample'],apiPickList:['api_pick_list','p_token'],apiLabAudit:['api_lab_audit','p_pin','q','p_days'],apiAdminWardSave:['api_admin_ward_save','p_pin','p_action','p_name','p_new'],apiLabPurge:['api_lab_purge','p_pin','p_month','p_confirm']};
 /* คีย์แบบใหม่ (sb_publishable_…) ส่งใน apikey อย่างเดียว คีย์ anon แบบเดิม (eyJ…) ส่งใน Authorization ด้วย */
 const supaHead=extra=>Object.assign({apikey:SUPA_KEY},/^eyJ/.test(SUPA_KEY)?{Authorization:'Bearer '+SUPA_KEY}:{},extra||{});
 async function rpc(fn,args){
@@ -832,6 +837,13 @@ function gotCode(text){
 }
 const newReader=()=>new Html5Qrcode('reader',{formatsToSupport:FORMATS(),verbose:false,
   experimentalFeatures:{useBarCodeDetectorIfSupported:true}});   // ใช้ตัวอ่านบาร์โค้ดของมือถือเองถ้ามี (แม่นและเร็วกว่า)
+// เสียงแจ้งเตือน (ออร์เดอร์ใหม่ / สไลด์พร้อม): ดัง ยาว 3 จังหวะ × 2 รอบ
+function alarm(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume();
+  const t0=actx.currentTime,mk=(t,f,d)=>{const o=actx.createOscillator(),g=actx.createGain();o.type='square';o.frequency.setValueAtTime(f,t);
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.5,t+.02);g.gain.setValueAtTime(.5,t+d-.05);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(actx.destination);o.start(t);o.stop(t+d+.02)};
+  for(let k=0;k<2;k++){const b=t0+k*1.1;mk(b,880,.22);mk(b+.28,1175,.22);mk(b+.56,1568,.38)}}catch(e){}
+  if(navigator.vibrate)navigator.vibrate([400,150,400,150,700])}
+document.addEventListener('pointerdown',()=>{try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume()}catch(e){}},{once:true});
 function errBeep(){if(store.get(SND_KEY)==='0')return;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();
   const t=actx.currentTime,o=actx.createOscillator(),g=actx.createGain();o.type='square';o.frequency.setValueAtTime(320,t);o.frequency.setValueAtTime(220,t+.15);
   g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.18,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+.34);o.connect(g).connect(actx.destination);o.start(t);o.stop(t+.35)}catch(e){}}
@@ -1227,7 +1239,8 @@ function showHelp(){
       <li>เปิดสวิตช์ <b>แจ้งเตือนเด้ง</b> ที่หน้าแรกไว้ เมื่อแลปพบสไลด์จะเด้งบอก แล้วให้คนงานไปรับ</li></ol>
       <div class="small muted">ถ้าแลปหาไม่เจอ จะขึ้น ❌ พร้อมเหตุผล สอบถามได้ที่ 8133 · iPhone ต้องติดตั้งแอปบนหน้าจอโฮมก่อนจึงจะได้แจ้งเตือนเด้ง</div></section>
     <section class="help-sec"><h3><span class="dot" style="background:var(--blue)"></span>2. คนงาน: สแกนรับสไลด์ที่แลป</h3>
-      <ol><li>หน้าแรกจะบอกว่ามีสไลด์ <b>พร้อมให้มารับ</b> กี่ใบ ของวอร์ดไหน</li>
+      <ol><li>เริ่มงานแต่ละวัน เลือก<b>วอร์ดที่เดินส่งงานวันนี้</b> (เลือกได้หลายวอร์ด เปลี่ยนได้ที่ เมนู)</li>
+      <li>เมื่อแลปพบสไลด์ของวอร์ดนั้น แอปจะ<b>ดังและเด้งแจ้งเตือน</b> หน้าแรกบอกว่าพร้อมรับกี่ใบ</li>
       <li>กดปุ่มสีน้ำเงิน <b>สแกนรับสไลด์ที่แลป</b> แล้ว<b>สแกนบาร์โค้ดบนสไลด์ทุกแผ่น</b></li>
       <li>ดูว่า <b>HN บนสไลด์ตรงกับ HN ในแอป</b> แล้วกด <b>รับสไลด์ใบนี้</b></li>
       <li>สแกนแผ่นถัดไปต่อได้เลย รายการที่รับแล้วจะขึ้นด้านล่าง</li></ol>
@@ -1376,17 +1389,19 @@ function vRegister(){
       <div class="field"><label for="r-last">นามสกุล</label><input class="input" id="r-last"></div></div>
       <div class="field"><label for="r-nick">ชื่อเล่น</label><input class="input" id="r-nick"></div>
       <div class="field"><span class="lab">บทบาท</span>${rolePick('')}</div>
+      <div id="r-wbox" hidden>${wardCombo('r-ward','','วอร์ดของคุณ')}</div>
       <div id="err"></div>
       <button class="btn btn-teal btn-block" type="submit">ลงทะเบียนและเริ่มใช้งาน</button>
     </form>
     <button class="linkbtn" id="to-login">เคยลงทะเบียนแล้ว แต่เปลี่ยนเครื่อง</button></section></div>`;
-  $('#to-login').onclick=()=>{view='login';render()};
+  $('#to-login').onclick=()=>{view='login';render()};bindRoleWard('r-wbox','r-ward');
   $('#f').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button[type=submit]');
     const v=k=>document.getElementById('r-'+k).value.trim();
     busy(b,true);
     const rl=(document.querySelector('input[name=role]:checked')||{}).value||'';
     if(!rl){$('#err').innerHTML=errBox('เลือกบทบาท: พยาบาล หรือ คนงาน');busy(b,false);return}
-    try{const r=await run('apiRegister',{id:v('id'),first:v('first'),last:v('last'),nick:v('nick'),role:rl});
+    const wd=$('#r-ward').value.trim();if(rl==='nurse'&&!WARDS.includes(wd)){$('#err').innerHTML=errBox('พยาบาล: เลือกวอร์ดของคุณจากรายการ');busy(b,false);return}
+    try{const r=await run('apiRegister',{id:v('id'),first:v('first'),last:v('last'),nick:v('nick'),role:rl,ward:rl==='nurse'?wd:''});
       store.set(TOKEN_KEY,r.token);ME=r.me;view='home';render();toast('ลงทะเบียนแล้ว ยินดีต้อนรับ '+ME.nick)}
     catch(err){$('#err').innerHTML=errBox(err.message);busy(b,false)}};
 }
@@ -1436,13 +1451,13 @@ function drawLive(){
   store.set(SEEN_KEY,JSON.stringify(seen));
   if(ch.length&&!first){const rd=ch.filter(r=>r.state==='ready'),nf=ch.filter(r=>r.state==='nf');
     const m=rd.length?(rd.length===1?`สไลด์ HN ${rd[0].hn} พร้อมรับแล้วครับ ✅`:`สไลด์พร้อมรับ ${rd.length} รายการครับ ✅`):`แลปหาสไลด์ HN ${nf[0].hn} ไม่เจอ ❌`;
-    beep();if(navigator.vibrate)navigator.vibrate([120,60,120,60,240]);toast(m)}
+    alarm();toast(m)}
 }
 function vHome(){
   const nurse=ME.role==='nurse';
   app.innerHTML=`<div class="col">
    <section class="panel hero">${festScene()}<div class="hero-t"><span class="hi">${FEST?FEST.greet:greet()}</span><span class="nm">คุณ${esc(ME.nick)}</span>
-     <span class="small muted">${thToday()} · ${ROLE_TH[ME.role]||''}</span>${FEST&&FEST.chip?`<span class="fest-chip">${FEST.chip}</span>`:''}</div></section>
+     <span class="small muted">${thToday()} · ${ROLE_TH[ME.role]||''}${nurse&&ME.ward?' · '+esc(ME.ward):''}</span>${FEST&&FEST.chip?`<span class="fest-chip">${FEST.chip}</span>`:''}</div></section>
    <section class="panel live" id="live" hidden></section>
    <div class="cam-card ins-card" id="ins-card" hidden><div class="cam-i">📲</div><div class="cam-b"><b>ติดตั้งแอปไว้บนหน้าจอ</b><span class="small">ครั้งต่อไปกดไอคอนเปิดได้เลย${IOS?' และ iPhone จะรับแจ้งเตือนเด้งได้':''}</span>
      <button type="button" class="linkbtn" data-ins-skip style="align-self:flex-start;font-size:.82rem;margin-top:2px">ไว้ทีหลัง</button></div>
@@ -1453,7 +1468,8 @@ function vHome(){
      ${nurse?`<button class="big send" id="go-in">${icSend}<b>สั่งตามสไลด์</b><span>ส่งออร์เดอร์จากวอร์ดถึงแลปทันที ไม่ต้องใช้กระดาษ</span></button>`
       :`<button class="big recv" id="go-pick">${icRecv}<b>สแกนรับสไลด์ที่แลป</b><span>สแกนบาร์โค้ดบนสไลด์ทุกแผ่น ระบบเทียบกับออร์เดอร์ให้</span></button>`}
    </div>
-   ${nurse?'':`<div class="section-h"><h3>พร้อมให้มารับที่แลป</h3><button class="linkbtn" id="pk-re">รีเฟรช</button></div><section class="panel" id="pk-list"><div class="sk sk-row"></div></section>`}
+   ${nurse?'':`<section class="panel pw-card" id="pw-card">${pwCardHtml()}</section>
+     <div class="section-h"><h3>งานของฉันวันนี้</h3><button class="linkbtn" id="pk-re">รีเฟรช</button></div><section class="panel" id="pk-list"><div class="sk sk-row"></div></section>`}
    <div class="tools"><button class="help-btn" id="go-search">${icSearch}ค้นหาสถานะสไลด์</button>
    <button class="help-btn" id="go-help">${icHelp}วิธีใช้งานแอป</button></div>
    <div class="section-h"><h3>รายการล่าสุดของฉัน</h3><button class="linkbtn" id="refresh">รีเฟรช</button></div>
@@ -1468,17 +1484,51 @@ function vHome(){
       <div class="small muted">${r.sample?'Sample '+esc(r.sample)+' · ':''}${esc(r.ward)}</div>
       <div class="small muted">${r.status==='out'?'รับสไลด์ '+esc(r.recvAt):'สั่งตาม '+esc(r.reqAt)}</div>${photoBtn(r,'user')}</div>${pill(r.status,r)}</div>`).join(''):'<div class="empty"><div class="art sm">'+artSearch+'</div><div class="muted small">ยังไม่มีรายการ</div></div>'}
     catch(err){if($('#mylist'))$('#mylist').innerHTML=errBox(err.message)}};
-  const loadPick=async()=>{const box=$('#pk-list');if(!box)return;try{const d=await run('apiPickList',store.get(TOKEN_KEY));if(!$('#pk-list'))return;box.innerHTML=pickListHtml(d)}catch(err){box.innerHTML=errBox(err.message)}};
+  const loadPick=async()=>{const box=$('#pk-list');if(!box)return;try{const d=await run('apiPickList',store.get(TOKEN_KEY));if(!$('#pk-list'))return;pickData=d;drawPick();porterAlert(d)}catch(err){box.innerHTML=errBox(err.message)}};
+  if(!nurse){bindPwCard();if(!(ME.pwards||[]).length&&!pwAsked){pwAsked=true;setTimeout(()=>{if(view==='home'&&!document.querySelector('.sheet-ov'))pwSheet()},400)}}
   $('#refresh').onclick=load;load();const pr=$('#pk-re');if(pr)pr.onclick=loadPick;loadPick();camCard().then(installCard);
   timers.push(setInterval(load,30000));if(!nurse)timers.push(setInterval(loadPick,30000));
 }
-function pickListHtml(d){
-  const g={};d.ready.forEach(r=>{(g[r.ward]=g[r.ward]||[]).push(r)});const w=Object.keys(g);
-  return (w.length?w.map(k=>`<div class="pk-w"><b>${esc(k)}</b> <span class="pill st-ready">${g[k].length} ใบ</span>
-      <div class="small muted mono">${g[k].map(r=>'HN '+esc(r.hn)+(r.sample?' · '+esc(r.sample):'')).join('<br>')}</div></div>`).join('')
-    :'<div class="small muted" style="padding:6px 0">ยังไม่มีออร์เดอร์ที่แลปยืนยันพร้อม</div>')
-   +(d.inc.length?`<div class="pk-w inc"><b>Slide include พร้อมรับ</b> <span class="pill st-inc">${d.inc.length} ใบ</span><div class="small muted mono">${d.inc.map(x=>(x.hn?'HN '+esc(x.hn)+' · ':'')+esc(x.sample)).join('<br>')}</div></div>`:'');
+let pickData=null,pickAll=false,pwAsked=false;
+const myW=()=>ME&&ME.pwards||[];
+function pwCardHtml(){const w=myW();
+  return w.length?`<div class="pw-h"><div><div class="eyebrow">วอร์ดที่เดินส่งงานวันนี้</div><div class="pw-chips">${w.map(x=>`<span class="pill st-ready">${esc(x)}</span>`).join('')}</div></div><button class="btn btn-ghost" id="pw-edit" type="button">เปลี่ยน</button></div>
+    <div class="notif" style="margin:0"><button class="switch" id="pn-sw" role="switch" aria-checked="${notifOn()}" aria-label="แจ้งเตือนเด้ง"></button>แจ้งเตือนเด้งเมื่อมีสไลด์ของวอร์ดนี้พร้อมรับ</div>`
+   :`<div class="eyebrow">เริ่มงานวันนี้</div><b>เลือกวอร์ดที่คุณเดินส่งงานวันนี้</b><span class="small muted">เลือกได้หลายวอร์ด ออร์เดอร์ของวอร์ดนั้นจะส่งถึงคุณอัตโนมัติ</span><button class="btn btn-blue btn-block" id="pw-edit" type="button">เลือกวอร์ด</button>`}
+function bindPwCard(){const c=$('#pw-card');if(!c)return;c.innerHTML=pwCardHtml();const e=$('#pw-edit');if(e)e.onclick=pwSheet;
+  const sw=$('#pn-sw');if(sw)sw.onclick=async()=>{if(notifOn()){store.set(NOTIF_KEY,'0');pushOff('me');toast('ปิดแจ้งเตือนเด้งแล้ว');return bindPwCard()}
+    try{await pushSubscribe('me');store.set(NOTIF_KEY,'1');toast('เปิดแจ้งเตือนเด้งแล้ว ✅')}catch(err){if('Notification' in window&&Notification.permission==='granted')store.set(NOTIF_KEY,'1');toast(err.message)}bindPwCard()}}
+function pwSheet(){let sel=new Set(myW());
+  const sh=openSheet(`<div class="eyebrow">คนงาน</div><h2>วอร์ดที่เดินส่งงานวันนี้</h2><p class="small muted" style="margin:0">เลือกได้หลายวอร์ด · ขึ้นวันใหม่จะให้เลือกใหม่</p>
+    <div class="pw-chips" id="pw-sel"></div><input class="input" id="pw-q" placeholder="พิมพ์ค้นหาวอร์ด" autocomplete="off">
+    <div class="pw-list" id="pw-list"></div><div id="pw-err"></div>
+    <button class="btn btn-blue btn-block" id="pw-save">บันทึก</button><button class="btn btn-soft btn-block" data-close>ยกเลิก</button>`);
+  const el=sh.el,q=el.querySelector('#pw-q');
+  const draw=()=>{const k=wNorm(q.value.trim()),ks=k.split(' ').filter(Boolean);
+    el.querySelector('#pw-sel').innerHTML=sel.size?[...sel].map(w=>`<button type="button" class="pill st-ready" data-un="${esc(w)}">${esc(w)} ✕</button>`).join(''):'<span class="small muted">ยังไม่ได้เลือก</span>';
+    const list=WARDS.filter(w=>!ks.length||ks.every(t=>wNorm(w).includes(t)||wNorm(w).replace(/ /g,'').includes(t))).slice(0,80);
+    el.querySelector('#pw-list').innerHTML=list.map(w=>`<button type="button" class="pw-it" data-w="${esc(w)}" aria-pressed="${sel.has(w)}"><span class="ck">${sel.has(w)?'✓':''}</span>${esc(w)}</button>`).join('')||'<div class="small muted">ไม่พบวอร์ด</div>';
+    el.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{const w=b.dataset.w;sel.has(w)?sel.delete(w):sel.add(w);draw()});
+    el.querySelectorAll('[data-un]').forEach(b=>b.onclick=()=>{sel.delete(b.dataset.un);draw()})};
+  q.oninput=draw;draw();
+  el.querySelector('#pw-save').onclick=async e=>{const b=e.currentTarget;if(!sel.size)return el.querySelector('#pw-err').innerHTML=errBox('เลือกอย่างน้อย 1 วอร์ด');
+    busy(b,true);try{const r=await run('apiSetPwards',store.get(TOKEN_KEY),[...sel]);ME=r.me;sh.close();toast('บันทึกวอร์ดวันนี้แล้ว');if(view==='home')render()}
+    catch(err){busy(b,false);el.querySelector('#pw-err').innerHTML=errBox(err.message)}};
 }
+function drawPick(){const box=$('#pk-list');if(!box||!pickData)return;const d=pickData,mine=new Set(myW());
+  const sel=pickAll||!mine.size?null:mine,g={},wt={};
+  d.ready.forEach(r=>{if(!sel||sel.has(r.ward))(g[r.ward]=g[r.ward]||[]).push(r)});d.wait.forEach(r=>{if(!sel||sel.has(r.ward))wt[r.ward]=(wt[r.ward]||0)+1});
+  const ws=[...new Set([...(sel?[...sel]:[]),...Object.keys(g),...Object.keys(wt)])];
+  box.innerHTML=(ws.length?ws.map(k=>`<div class="pk-w"><div class="pk-wh"><b>${esc(k)}</b>${g[k]?`<span class="pill st-ready">พร้อมรับ ${g[k].length} ใบ</span>`:''}${wt[k]?`<span class="pill st-in">รอแลปหา ${wt[k]}</span>`:''}${!g[k]&&!wt[k]?'<span class="small muted">ไม่มีงาน</span>':''}</div>
+      ${g[k]?`<div class="small muted mono">${g[k].map(r=>'HN '+esc(r.hn)+(r.sample?' · '+esc(r.sample):'')).join('<br>')}</div>`:''}</div>`).join('')
+    :'<div class="small muted" style="padding:6px 0">ยังไม่มีงาน</div>')
+   +(mine.size?`<button class="linkbtn" id="pk-all" style="margin-top:6px">${pickAll?'ดูเฉพาะวอร์ดของฉัน':'ดูทุกวอร์ด'}</button>`:'');
+  const a=$('#pk-all');if(a)a.onclick=()=>{pickAll=!pickAll;drawPick()};
+}
+function porterAlert(d){const mine=new Set(myW());if(!mine.size)return;let seen=[];try{seen=JSON.parse(store.get('cbcPorterSeen')||'[]')}catch(e){}
+  const first=!store.get('cbcPorterSeen'),nw=d.ready.filter(r=>mine.has(r.ward)&&!seen.includes(r.row));
+  store.set('cbcPorterSeen',JSON.stringify(seen.concat(nw.map(r=>r.row)).slice(-100)));
+  if(nw.length&&!first){alarm();toast(nw.length===1?`มีสไลด์ให้ไปรับ: ${nw[0].ward} · HN ${nw[0].hn}`:`มีสไลด์ให้ไปรับ ${nw.length} ใบ`)}}
 
 /* ส่งใบตามสไลด์: บังคับ HN + วันเวลาส่งตรวจ + วอร์ด, Sample No. ไม่บังคับ */
 function hardCard(r){
@@ -1505,7 +1555,7 @@ function vIn(){
       ${dtField('q','2. วันที่ส่งตรวจ')}
       ${scanField('q-sample','3. Sample No. <span class="opt">(ถ้ามี)</span>')}
       <div id="dup"></div>
-      ${wardCombo('q-ward',store.get(WARD_KEY)||'','4. วอร์ด')}
+      ${wardCombo('q-ward',ME.ward||store.get(WARD_KEY)||'','4. วอร์ด')}
       <div id="q-rule"></div>
       <div class="field"><label for="q-reason">5. เหตุผลที่ตามสไลด์</label><textarea class="input" id="q-reason" rows="2" maxlength="200" placeholder="เช่น แพทย์ขอดูสไลด์"></textarea></div>
       ${meBox('ผู้สั่งตาม')}
@@ -1758,16 +1808,19 @@ const ROLE_TH={nurse:'พยาบาล',porter:'คนงาน'};
 function rolePick(cur){return `<div class="role-pick">
   <label class="rp"><input type="radio" name="role" value="nurse" ${cur==='nurse'?'checked':''}><span class="ri">👩‍⚕️</span><span><b>พยาบาล / วอร์ด</b><small>สั่งตามสไลด์จากวอร์ด รอแจ้งเตือนว่าพร้อมรับ</small></span></label>
   <label class="rp"><input type="radio" name="role" value="porter" ${cur==='porter'?'checked':''}><span class="ri">🚶</span><span><b>คนงาน / ผู้รับสไลด์</b><small>มารับสไลด์ที่แลป สแกนบาร์โค้ดบนสไลด์ทุกแผ่น</small></span></label></div>`}
+function bindRoleWard(box,id){bindCombo(id);const t=()=>{const r=(document.querySelector('input[name=role]:checked')||{}).value;document.getElementById(box).hidden=r!=='nurse'};
+  document.querySelectorAll('input[name=role]').forEach(x=>x.addEventListener('change',t));t()}
 function vRole(){
   app.innerHTML=`<div class="col"><section class="panel"><div class="eyebrow">${ME.role?'บทบาทของฉัน':'ระบบใหม่: ไม่ใช้กระดาษ'}</div><h2>เลือกบทบาทของคุณ</h2>
     <p class="small muted" style="margin:4px 0 10px">แต่ละบทบาทจะเห็นปุ่มไม่เหมือนกัน เปลี่ยนได้ภายหลังที่ เมนู → บทบาทของฉัน</p>
-    <form id="f" class="form" novalidate>${rolePick(ME.role||'')}<div id="err"></div>
+    <form id="f" class="form" novalidate>${rolePick(ME.role||'')}<div id="v-wbox" ${ME.role==='nurse'?'':'hidden'}>${wardCombo('v-ward',ME.ward||'','วอร์ดของคุณ')}</div><div id="err"></div>
     <button class="btn btn-teal btn-block" type="submit">บันทึกบทบาท</button></form>
     ${ME.role?'<button class="btn btn-soft btn-block" id="r-back" style="margin-top:8px">กลับหน้าแรก</button>':''}</section></div>`;
-  const bk=$('#r-back');if(bk)bk.onclick=()=>{view='home';render()};
+  const bk=$('#r-back');if(bk)bk.onclick=()=>{view='home';render()};bindRoleWard('v-wbox','v-ward');
   $('#f').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button[type=submit]');
     const rl=(document.querySelector('input[name=role]:checked')||{}).value||'';if(!rl)return $('#err').innerHTML=errBox('เลือกบทบาทก่อนครับ');
-    busy(b,true);try{const r=await run('apiSetRole',store.get(TOKEN_KEY),rl);ME=r.me;view='home';render();toast('ตั้งบทบาทเป็น '+ROLE_TH[rl]+' แล้ว')}
+    const wd=$('#v-ward').value.trim();if(rl==='nurse'&&!WARDS.includes(wd))return $('#err').innerHTML=errBox('เลือกวอร์ดของคุณจากรายการ');
+    busy(b,true);try{let r=await run('apiSetRole',store.get(TOKEN_KEY),rl);if(rl==='nurse'&&wd!==r.me.ward)r=await run('apiSetWard',store.get(TOKEN_KEY),wd);ME=r.me;view='home';render();toast('บันทึกแล้ว: '+ROLE_TH[rl]+(rl==='nurse'?' · '+wd:''))}
     catch(err){$('#err').innerHTML=errBox(err.message);busy(b,false)}};
 }
 
@@ -1877,7 +1930,7 @@ let qData=null,qKnown=null,qLoading=false;
 const labBy=()=>store.get('cbcLabBy')||'';
 async function loadQueue(){if(qLoading)return;qLoading=true;
   try{const d=await run('apiLabQueue',labPin);const ids=d.wait.map(r=>r.row);
-    if(qKnown){const nw=d.wait.filter(r=>!qKnown.has(r.row));if(nw.length){beep();setTimeout(beep,350);if(navigator.vibrate)navigator.vibrate([200,100,200]);
+    if(qKnown){const nw=d.wait.filter(r=>!qKnown.has(r.row));if(nw.length){alarm();
       toast(nw.length===1?`ออร์เดอร์ใหม่ HN ${nw[0].hn} · ${nw[0].ward}`:`ออร์เดอร์ใหม่ ${nw.length} รายการ`)}}
     qKnown=new Set(ids);qData=d}
   catch(err){if(!labPin)return;qData={__err:err.message}}finally{qLoading=false}
@@ -2374,7 +2427,8 @@ function openMenu(){
     <div class="menu-list">
       <button class="menu-it" id="m-snd">${icSound}เสียงเมื่อสแกนติด<span class="r"><span class="switch" aria-hidden="true" aria-checked="${snd}"></span></span></button>
       ${isStandalone()?'':`<button class="menu-it" id="m-install">${icInstall}ติดตั้งแอปลงหน้าจอมือถือ</button>`}
-      ${ME?`<button class="menu-it" id="m-role">👤&nbsp; บทบาทของฉัน: ${esc(ROLE_TH[ME.role]||'ยังไม่เลือก')}</button>`:''}
+      ${ME?`<button class="menu-it" id="m-role">👤&nbsp; บทบาทของฉัน: ${esc(ROLE_TH[ME.role]||'ยังไม่เลือก')}${ME.role==='nurse'&&ME.ward?' · '+esc(ME.ward):''}</button>`:''}
+      ${ME&&ME.role==='porter'?`<button class="menu-it" id="m-pw">🚶&nbsp; วอร์ดที่เดินวันนี้${myW().length?': '+esc(myW().join(', ')):''}</button>`:''}
       <button class="menu-it" id="m-cam">📷&nbsp; อนุญาตกล้อง / แก้กล้องไม่ทำงาน</button>
       <button class="menu-it" id="m-guide">${icBook}วิธีการตาม Slide</button>
       <button class="menu-it" id="m-help">${icHelp}วิธีใช้งานแอป</button>
@@ -2389,6 +2443,7 @@ function openMenu(){
   const mi=el.querySelector('#m-install');if(mi)mi.onclick=()=>{sh.close();doInstall()};
   el.querySelector('#m-guide').onclick=()=>{sh.close();showGuide()};
   const mr=el.querySelector('#m-role');if(mr)mr.onclick=()=>{sh.close();mode='ward';view='role';render()};
+  const mp=el.querySelector('#m-pw');if(mp)mp.onclick=()=>{sh.close();pwSheet()};
   el.querySelector('#m-cam').onclick=async()=>{sh.close();const st=await camState();st==='denied'?camHelp('denied'):askCamera()};
   el.querySelector('#m-help').onclick=()=>{sh.close();showHelp()};
   el.querySelector('#m-bot').onclick=()=>{sh.close();openAssistant()};
