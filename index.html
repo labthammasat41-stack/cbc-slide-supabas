@@ -595,6 +595,13 @@ details.tbl th,details.tbl td{padding:6px 10px}
 .logout-btn{background:var(--bad-soft);color:var(--bad);border:1.5px solid color-mix(in srgb,var(--bad) 40%,transparent);gap:8px}.logout-btn svg{width:20px;height:20px}
 @media (max-width:760px){.lab-prof{display:none}}
 .lab-prof{align-self:center;font-weight:700;font-size:.85rem;color:var(--teal);background:var(--teal-soft);border-radius:999px;padding:6px 12px;white-space:nowrap}
+.site-pick{display:grid;grid-template-columns:1fr 1fr;gap:8px}.site-pick button{border:1.5px solid var(--line);background:var(--field);border-radius:var(--r-m);padding:12px 8px;cursor:pointer;color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:2px}
+.site-pick button b{font-size:1.05rem}.site-pick button small{font-size:.74rem;color:var(--muted)}.site-pick.sm button{padding:8px}
+.site-pick button[aria-pressed="true"]{border-color:var(--teal);background:var(--teal-soft);box-shadow:inset 0 0 0 1px var(--teal)}.site-pick button[data-site="opd"][aria-pressed="true"],.site-pick button[data-at="opd"][aria-pressed="true"],.site-pick button[data-hs="opd"][aria-pressed="true"]{border-color:var(--violet);background:var(--violet-soft);box-shadow:inset 0 0 0 1px var(--violet)}
+.site-tag{display:inline-block;font-family:var(--font, inherit);font-size:.68rem;font-weight:700;padding:1px 6px;border-radius:6px;vertical-align:middle;letter-spacing:.02em}
+.site-ipd{background:var(--teal-soft);color:var(--teal)}.site-opd{background:var(--violet-soft);color:var(--violet)}
+.qc.hema{background:color-mix(in srgb,var(--violet) 5%,var(--surface))}.qgrid.one{grid-template-columns:1fr}
+.opd-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px}
 .hema-grid{display:grid;gap:16px}.hd-chips{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:6px}
 .hd-chips .daychip{background:var(--surface-3);display:flex;flex-direction:column;align-items:center;padding:8px 4px;min-height:54px}.hd-chips small{font-size:.72rem;font-weight:400;opacity:.8}
 .hd-chips .daychip[aria-pressed="true"]{background:var(--teal);color:#fff;border-color:var(--teal)}.hema-side{display:flex;flex-direction:column;gap:12px}
@@ -718,7 +725,7 @@ const RPC={apiInit:['api_init','p_token'],apiRegister:['api_register','d'],apiLo
   apiIncludeCheck:['api_include_check','p_token','d'],apiInclude:['api_include','p_token','d'],apiSearch:['api_search','p_token','q'],
   apiLabList:['api_lab_list','p_pin'],apiLabStats:['api_lab_stats','p_pin','p_days'],apiSetPhoto:['api_set_photo','p_token','p_id','p_path'],apiUndo:['api_undo','p_token','p_id','p_kind'],
   apiLabFix:['api_lab_fix','p_pin','p_id','p_action','p_reason'],apiLabStaff:['api_lab_staff','p_pin'],apiLabStaffSet:['api_lab_staff_set','p_pin','p_staff','p_state'],
-  apiLabBackups:['api_lab_backups','p_pin'],apiAdminWards:['api_admin_wards','p_pin'],apiLabFestSet:['api_lab_fest_set','p_pin','p_fest'],apiLabMaintSet:['api_lab_maint_set','p_pin','p_on'],apiHematoReady:['api_hemato_ready','p_pin','d'],apiHematoList:['api_hemato_list','p_pin'],apiHematoUndo:['api_hemato_undo','p_pin','p_ready'],apiSetRole:['api_set_role','p_token','p_role'],apiSetWard:['api_set_ward','p_token','p_ward'],apiSetPwards:['api_set_pwards','p_token','p_wards'],apiPushSub:['api_push_sub','p_token','sub'],apiLabPushSub:['api_lab_push_sub','p_pin','sub','p_on'],apiPushUnsub:['api_push_unsub','p_endpoint'],apiLabQueue:['api_lab_queue','p_pin'],apiLabReady:['api_lab_ready','p_pin','p_row','d'],apiLabNf:['api_lab_nf','p_pin','p_row','d'],apiLabBack:['api_lab_back','p_pin','p_row','d'],apiPickFind:['api_pick_find','p_token','p_sample'],apiPickList:['api_pick_list','p_token'],apiLabAudit:['api_lab_audit','p_pin','q','p_days'],apiAdminWardSave:['api_admin_ward_save','p_pin','p_action','p_name','p_new'],apiLabPurge:['api_lab_purge','p_pin','p_month','p_confirm']};
+  apiLabBackups:['api_lab_backups','p_pin'],apiAdminWards:['api_admin_wards','p_pin'],apiLabFestSet:['api_lab_fest_set','p_pin','p_fest'],apiLabMaintSet:['api_lab_maint_set','p_pin','p_on'],apiHematoReady:['api_hemato_ready','p_pin','d'],apiHematoList:['api_hemato_list','p_pin'],apiHematoUndo:['api_hemato_undo','p_pin','p_ready'],apiSetRole:['api_set_role','p_token','p_role'],apiSetWard:['api_set_ward','p_token','p_ward'],apiSetPwards:['api_set_pwards','p_token','p_wards'],apiPushSub:['api_push_sub','p_token','sub'],apiLabPushSub:['api_lab_push_sub','p_pin','sub','p_on'],apiPushUnsub:['api_push_unsub','p_endpoint'],apiLabQueue:['api_lab_queue','p_pin'],apiLabReady:['api_lab_ready','p_pin','p_row','d'],apiLabNf:['api_lab_nf','p_pin','p_row','d'],apiLabBack:['api_lab_back','p_pin','p_row','d'],apiPickFind:['api_pick_find','p_token','p_sample','p_at'],apiOpdList:['api_opd_list','p_pin'],apiOpdArrive:['api_opd_arrive','p_pin','d'],apiAdminOpd:['api_admin_opd','p_pin','p_data'],apiPickList:['api_pick_list','p_token'],apiLabAudit:['api_lab_audit','p_pin','q','p_days'],apiAdminWardSave:['api_admin_ward_save','p_pin','p_action','p_name','p_new'],apiLabPurge:['api_lab_purge','p_pin','p_month','p_confirm']};
 /* คีย์แบบใหม่ (sb_publishable_…) ส่งใน apikey อย่างเดียว คีย์ anon แบบเดิม (eyJ…) ส่งใน Authorization ด้วย */
 const supaHead=extra=>Object.assign({apikey:SUPA_KEY},/^eyJ/.test(SUPA_KEY)?{Authorization:'Bearer '+SUPA_KEY}:{},extra||{});
 async function rpc(fn,args){
@@ -767,7 +774,7 @@ const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},se
 const $=s=>document.querySelector(s);
 const app=$('#app');
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const pill=(st,r)=>{const k=r&&r.state?r.state:st;return k==='ready'?'<span class="pill st-ready">✅ พร้อมรับ</span>':k==='nf'?'<span class="pill st-nf">❌ หาไม่เจอ</span>':k==='wait'?'<span class="pill st-in">⏳ รอแลปหา</span>':`<span class="pill st-${st}">${STATUS[st]||st}</span>`};
+const pill=(st,r)=>{const k=r&&r.state?r.state:st;return k==='sent'?'<span class="pill st-in">🚀 ส่งกระสวยไป OPD</span>':k==='ready'?`<span class="pill st-ready">✅ พร้อมรับ${r&&r.pickup==='opd'?' (OPD)':''}</span>`:k==='nf'?'<span class="pill st-nf">❌ หาไม่เจอ</span>':k==='wait'?'<span class="pill st-in">⏳ รอแลปหา</span>':`<span class="pill st-${st}">${STATUS[st]||st}</span>`};
 const dur=m=>m<60?`${m} นาที`:`${Math.floor(m/60)} ชม.${m%60?` ${m%60} นาที`:''}`;
 const ago=ts=>dur(Math.max(0,Math.round((Date.now()-ts)/60000)));
 function toast(msg){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
@@ -1238,6 +1245,7 @@ function showHelp(){
   <div class="modal-body">
     <section class="help-sec"><h3><span class="dot" style="background:var(--teal)"></span>1. พยาบาล: สั่งตามสไลด์</h3>
       <ol><li>กดปุ่มสีเขียว <b>สั่งตามสไลด์</b> (สั่งจากวอร์ดได้เลย ไม่ใช้กระดาษ)</li>
+      <li>เลือก <b>Slide IPD</b> หรือ <b>Slide OPD</b> · Slide OPD ในเวลาเปิดเคาน์เตอร์ OPD จะรับที่<b>เคาน์เตอร์ OPD</b> นอกเวลารับที่<b>แลป IPD</b> (แอปบอกให้ทุกครั้ง)</li>
       <li>กรอก <b>HN</b> และ<b>วันที่ เวลาส่งตรวจ</b> (บังคับ)</li>
       <li><b>Sample No.</b> ถ้ามี กดปุ่มกล้องสแกนบาร์โค้ด (ถ้าไม่มี เว้นว่างได้ แลปจะสแกนจากสไลด์ให้)</li>
       <li>เลือก<b>วอร์ด</b> ระบบจะบอกว่าตามได้ถึงเมื่อไหร่ แล้วกรอก<b>เหตุผล</b>ที่ตาม</li>
@@ -1375,6 +1383,7 @@ function bindPhoto(id,onChange){
 function render(){
   stopTimers();navFor();
   if(isLabDev()){mode='lab';if(!labPin)labPin=hematoPin=store.get(LABDEV_KEY)}
+  else if(isOpdDev()){mode='opd';if(!opdPin)opdPin=store.get(OPDDEV_KEY);$('#fab').hidden=true;window.scrollTo(0,0);return vOpd()}
   $('#tabbar').hidden=false;
   const cur=mode==='lab'?'lab':view==='search'?'search':'home';
   document.querySelectorAll('[data-tab-nav]').forEach(b=>{if(b.dataset.tabNav===cur)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
@@ -1394,19 +1403,77 @@ function render(){
    เครื่องจะจำไว้จนกว่าจะกดออกจากระบบ · พยาบาล/เจ้าหน้าที่รับสไลด์จะไม่เห็นเมนูแลป */
 const LABDEV_KEY='cbcLabDev';
 const isLabDev=()=>!!store.get(LABDEV_KEY);
-const labName=t=>{t=String(t||'').trim().toLowerCase().replace(/\s+/g,'');return t===''||/^lab+o*ratory$/.test(t)||t==='lab'||t==='แลป'||t==='ห้องแลป'};
+const labName=t=>{t=String(t||'').trim().toLowerCase().replace(/\s+/g,'');return t===''||/^lab+o*ratory$/.test(t)||t==='lab'||t==='แลป'||t==='ห้องแลป'||t==='opd'||t==='เคาน์เตอร์opd'};
 async function tryLabLogin(code,errEl,btn){
   code=String(code||'').trim();if(!/^\d{4,8}$/.test(code))return false;
   busy(btn,true,'กำลังตรวจสอบ…');
-  try{labRows=await run('apiLabList',code)}catch(err){busy(btn,false);return false}
+  try{labRows=await run('apiLabList',code)}catch(err){const ok=await tryOpdLogin(code,btn);if(!ok)busy(btn,false);return ok}
   labPin=code;hematoPin=code;store.set(LABDEV_KEY,code);try{sessionStorage.setItem('cbcLabPin',code)}catch(e){}
   ME=null;mode='lab';labTab='queue';render();toast('เข้าใช้ในชื่อ Laboratory');return true}
 function labLogout(){store.del(LABDEV_KEY);try{sessionStorage.removeItem('cbcLabPin');sessionStorage.removeItem('cbcHemaPin')}catch(e){}
   labPin='';hematoPin='';hemaItems=null;adminPin='';labRows=[];qData=null;qKnown=null;audData=null;statData=null;statCache={};
   mode='ward';view=store.get(TOKEN_KEY)?'home':'register';render();toast('ออกจากโปรไฟล์ Laboratory แล้ว')}
 function navFor(){ // แถบเมนู: เครื่องแลปเห็นแค่ แลป + เมนู, พยาบาล/เจ้าหน้าที่รับสไลด์ไม่เห็นแลป
-  const lab=isLabDev();document.querySelectorAll('[data-tab-nav]').forEach(b=>{const t=b.dataset.tabNav;b.hidden=lab?!(t==='lab'||t==='menu'):t==='lab'});
-  document.querySelector('.tabbar-in').style.setProperty('--tabs',lab?2:4)}
+  const lab=isLabDev(),opd=isOpdDev();document.querySelectorAll('[data-tab-nav]').forEach(b=>{const t=b.dataset.tabNav;b.hidden=opd?t!=='menu':lab?!(t==='lab'||t==='menu'):t==='lab'});
+  document.querySelector('.tabbar-in').style.setProperty('--tabs',opd?1:lab?2:4)}
+
+/* ---------- Slide IPD / OPD ---------- */
+let OPD_OPEN=false,OPD_HOURS=null;
+const SITE_TH={ipd:'IPD',opd:'OPD'},PICK_TH={ipd:'แลป IPD',opd:'เคาน์เตอร์ OPD'};
+const siteTag=s=>`<span class="site-tag site-${s==='opd'?'opd':'ipd'}">${s==='opd'?'OPD':'IPD'}</span>`;
+const opdHoursTxt=()=>OPD_HOURS?`จ–ศ ${OPD_HOURS.wd[0]}–${OPD_HOURS.wd[1]} · ส–อา/วันหยุด ${OPD_HOURS.hd[0]}–${OPD_HOURS.hd[1]}`:'';
+async function refreshOpd(){try{const d=await run('apiInit','');OPD_OPEN=!!d.opdOpen;OPD_HOURS=d.opdHours||OPD_HOURS}catch(e){}}
+
+/* ---------- โปรไฟล์กลาง "เคาน์เตอร์ OPD": ใส่รหัสเคาน์เตอร์ OPD ในช่องรหัสพนักงาน ---------- */
+const OPDDEV_KEY='cbcOpdDev';
+const isOpdDev=()=>!!store.get(OPDDEV_KEY);
+let opdPin='',opdData=null,opdKnown=null,opdSess=[];
+async function tryOpdLogin(code,btn){
+  try{opdData=await run('apiOpdList',code)}catch(err){return false}
+  opdPin=code;store.set(OPDDEV_KEY,code);ME=null;mode='opd';render();toast('เข้าใช้ในชื่อ เคาน์เตอร์ OPD');return true}
+function opdLogout(){store.del(OPDDEV_KEY);opdPin='';opdData=null;opdKnown=null;mode='ward';view=store.get(TOKEN_KEY)?'home':'register';render();toast('ออกจากโปรไฟล์เคาน์เตอร์ OPD แล้ว')}
+const opdBy=()=>store.get('cbcOpdBy')||'';
+async function loadOpd(){if(!opdPin)return;
+  try{const d=await run('apiOpdList',opdPin);
+    if(opdKnown){const nw=d.sent.filter(r=>!opdKnown.has(r.row));if(nw.length){alarm();toast(nw.length===1?`Hemato ส่งกระสวยมา: HN ${nw[0].hn}`:`Hemato ส่งกระสวยมา ${nw.length} สไลด์`)}}
+    opdKnown=new Set(d.sent.map(r=>r.row));opdData=d;OPD_OPEN=!!d.opdOpen}
+  catch(err){if(/รหัสเคาน์เตอร์ OPD|ใส่ PIN ผิด|ยังไม่ได้ตั้งรหัส/.test(err.message)){opdLogout();toast(err.message);return}opdData={__err:err.message}}
+  if(mode==='opd')drawOpd()}
+function vOpd(){
+  app.innerHTML=`<div class="wide"><div class="opd-top"><div><div class="eyebrow">โปรไฟล์กลาง</div><h2 style="margin:2px 0 0">เคาน์เตอร์ OPD</h2>
+      <span class="small" id="opd-st"></span></div><button class="btn btn-soft lab-lock" id="opd-out" type="button">${icLock}<span>ออกจากระบบ</span></button></div>
+    <div class="hema-grid"><section class="panel"><div class="eyebrow">สไลด์มาถึงทางกระสวย</div><h3 style="margin:0">สแกนรับเข้าเคาน์เตอร์</h3>
+      <div class="field"><label for="opd-by">ชื่อผู้รับที่เคาน์เตอร์</label><input class="input" id="opd-by" value="${esc(opdBy())}" placeholder="เช่น ชื่อเล่น" maxlength="60"></div>
+      <button class="btn btn-teal btn-block hema-shot" id="opd-cam">${icCam}สแกนต่อเนื่องด้วยกล้อง</button>
+      <div class="field" style="margin:0"><label for="opd-usb">หรือใช้เครื่องสแกน / พิมพ์ แล้วกด Enter</label><input class="input mono" id="opd-usb" inputmode="numeric" maxlength="10" autocomplete="off" placeholder="คลิกช่องนี้ แล้วยิงบาร์โค้ด"></div>
+      <div class="small muted">สแกนแล้ว ระบบแจ้งพยาบาลผู้สั่งและเจ้าหน้าที่รับสไลด์ของวอร์ดนั้นทันทีว่า "พร้อมรับที่เคาน์เตอร์ OPD"</div>
+      <div id="opd-sess"></div></section>
+    <div class="hema-side" id="opd-body"><div class="sk" style="height:120px"></div></div></div></div>`;
+  $('#opd-out').onclick=opdLogout;$('#opd-by').oninput=e=>store.set('cbcOpdBy',e.target.value.trim());
+  const need=()=>{if(!$('#opd-by').value.trim()){toast('กรอกชื่อผู้รับที่เคาน์เตอร์ก่อน');$('#opd-by').focus();return false}return true};
+  $('#opd-cam').onclick=()=>{if(need())openScanner(opdOne,'สแกนสไลด์ที่มาถึง (เคาน์เตอร์ OPD)',{keep:true})};
+  const u=$('#opd-usb');u.oninput=()=>{u.value=u.value.replace(/\D/g,'')};
+  u.onkeydown=async e=>{if(e.key!=='Enter')return;e.preventDefault();const v=u.value;u.value='';if(!v||!need())return;const r=await opdOne(v);r.ok?beep():errBeep()};
+  drawOpdSess();if(opdData)drawOpd();loadOpd();timers.push(setInterval(loadOpd,15000));
+}
+async function opdOne(code){const t=new Date(),time=p2(t.getHours())+':'+p2(t.getMinutes());
+  if(!/^\d{10}$/.test(code)){opdSess.unshift({s:code,ok:false,m:'ไม่ใช่ Sample No. 10 หลัก',time});drawOpdSess();return {ok:false}}
+  try{const r=await run('apiOpdArrive',opdPin,{sample:code,by:opdBy()});const m=r.n?`รับเข้าแล้ว · HN ${r.hn} · ${r.ward} (แจ้งแล้ว)`:(r.msg||'');
+    opdSess.unshift({s:code,ok:true,m,time});drawOpdSess();flushPush();loadOpd();return {ok:true,msg:m}}
+  catch(err){opdSess.unshift({s:code,ok:false,m:err.message,time});drawOpdSess();return {ok:false,msg:err.message}}}
+function drawOpdSess(){const b=$('#opd-sess');if(!b)return;b.innerHTML=opdSess.length?`<div class="mylist">${opdSess.slice(0,20).map(x=>`<div class="it ${x.ok?'out':'in'}"><div><div class="mono" style="font-weight:600">${esc(x.s)}</div><div class="small ${x.ok?'muted':'nf-why'}">${esc(x.m)} · ${esc(x.time)}</div></div></div>`).join('')}</div>`:''}
+function drawOpd(){const box=$('#opd-body');if(!box||!opdData)return;
+  const st=$('#opd-st');if(st)st.innerHTML=OPD_OPEN?'<span class="pill st-ready">เปิดอยู่</span>':'<span class="pill st-nf">ปิด (นอกเวลา)</span>';
+  if(opdData.__err){box.innerHTML=errBox(opdData.__err);return}const d=opdData;
+  const card=(r,k)=>`<div class="qc ${k}"><div class="qh"><b class="mono">HN ${esc(r.hn)}</b><span class="mono small">${esc(r.sample)}</span></div><div class="small"><b>${esc(r.ward)}</b> · สั่งโดย ${esc(r.reqName)}</div>
+    <div class="small muted">${k==='sent'?'ส่งกระสวย '+esc(String(r.sentAt).slice(-5))+' น. · '+esc(r.sentBy):k==='ready'?'ถึงเคาน์เตอร์ '+esc(String(r.readyAt).slice(-5))+' น. · รอมารับ':'รับโดย '+esc(r.recvName)+' '+esc(String(r.recvAt).slice(-5))+' น.'}</div></div>`;
+  const sec=(t,n,cls,html,empty)=>`<div class="section-h" style="margin-top:0"><h3>${t} <span class="qbadge ${cls}">${n}</span></h3></div><div class="qgrid one">${n?html:`<div class="small muted" style="padding:6px 2px">${empty}</div>`}</div>`;
+  box.innerHTML=sec('🚀 กำลังส่งมาทางกระสวย',d.sent.length,'',d.sent.map(r=>card(r,'sent')).join(''),'ไม่มี')
+    +sec('✅ พร้อมรับที่เคาน์เตอร์ OPD',d.ready.length,'ok',d.ready.map(r=>card(r,'ready')).join(''),'ไม่มี')
+    +sec('🧪 Slide include OPD',d.inc.length,'inc',d.inc.map(x=>`<div class="qc inc"><div class="qh"><b class="mono">${x.hn?'HN '+esc(x.hn):esc(x.sample)}</b></div><div class="small muted">ส่งตรวจ ${esc(x.specDate||'–')}</div></div>`).join(''),'ไม่มี')
+    +`<div class="small muted">ห้อง Hemato กำลังหาสไลด์ OPD อีก ${d.wait} รายการ</div>`
+    +(d.done.length?sec('📦 รับไปแล้ว (12 ชม.)',d.done.length,'',d.done.slice(0,10).map(r=>card(r,'done')).join(''),''):'');
+}
 
 /* ---------- แอปอยู่ระหว่างการพัฒนา (แลปเปิด/ปิดได้ที่หน้าแลป ปุ่ม 🚧) ---------- */
 let MAINT=false;
@@ -1483,14 +1550,14 @@ const NOTIF_KEY='cbcNotif',SEEN_KEY='cbcSeenState';
 const notifOn=()=>store.get(NOTIF_KEY)==='1'&&'Notification' in window&&Notification.permission==='granted';
 const mins=ts=>Math.max(0,Math.round((Date.now()-ts)/60000));
 function liveHtml(rows){
-  const open=rows.filter(r=>!r.include&&(r.state==='wait'||r.state==='ready'||(r.state==='nf'&&r.reqTs>Date.now()-86400000)));if(!open.length)return '';
-  const ord={ready:0,nf:1,wait:2};
+  const open=rows.filter(r=>!r.include&&(r.state==='wait'||r.state==='sent'||r.state==='ready'||(r.state==='nf'&&r.reqTs>Date.now()-86400000)));if(!open.length)return '';
+  const ord={ready:0,nf:1,sent:2,wait:3};
   return `<div class="live-h"><div class="ttl"><span class="pulse"></span><h3>ออร์เดอร์ตามสไลด์ของฉัน · ${open.length} รายการ</h3></div></div>
   ${open.sort((a,b)=>ord[a.state]-ord[b.state]||b.reqTs-a.reqTs).map(r=>`<div class="lr ${r.state==='ready'?'ready':r.state==='nf'?'nf':''}">
-      <span class="ring2 st-${r.state}" style="--p:100"><span>${r.state==='ready'?'✓':r.state==='nf'?'✕':mins(r.reqTs)+'<small>นาที</small>'}</span></span>
-      <span class="meta"><b>HN ${esc(r.hn)}</b><span class="small muted">${esc(r.ward)} · สั่ง ${esc(String(r.reqAt).slice(-5))} น.${r.reason?' · '+esc(r.reason):''}</span>
+      <span class="ring2 st-${r.state}" style="--p:100"><span>${r.state==='ready'?'✓':r.state==='nf'?'✕':r.state==='sent'?'🚀':mins(r.reqTs)+'<small>นาที</small>'}</span></span>
+      <span class="meta"><b>HN ${esc(r.hn)} ${siteTag(r.site)}</b><span class="small muted">${esc(r.ward)} · สั่ง ${esc(String(r.reqAt).slice(-5))} น.${r.reason?' · '+esc(r.reason):''}</span>
       ${r.state==='nf'?`<span class="small nf-why">เหตุผล: ${esc(r.nfReason)}</span>`:''}</span>
-      <span class="state">${r.state==='ready'?'<b class="hema-ok">✅ พร้อมรับ</b><small class="muted">ให้เจ้าหน้าที่รับสไลด์ไปรับที่แลป</small>':r.state==='nf'?'<b class="nf-t">❌ หาไม่เจอ</b><small class="muted">โทร 8133</small>':'แลปกำลังหา'}</span></div>`).join('')}
+      <span class="state">${r.state==='ready'?`<b class="hema-ok">✅ พร้อมรับ</b><small class="muted">รับที่${PICK_TH[r.pickup]||'แลป IPD'}</small>`:r.state==='sent'?'<b>🚀 อยู่ในกระสวย</b><small class="muted">กำลังส่งไป OPD</small>':r.state==='nf'?'<b class="nf-t">❌ หาไม่เจอ</b><small class="muted">โทร 8133</small>':'แลปกำลังหา'}</span></div>`).join('')}
   <div class="notif"><button class="switch" id="nt-sw" role="switch" aria-checked="${notifOn()}" aria-label="แจ้งเตือนเด้งบนมือถือ"></button>แจ้งเตือนเด้งเมื่อแลปพบสไลด์ (แม้ปิดแอปอยู่)</div>`;
 }
 function drawLive(){
@@ -1506,7 +1573,7 @@ function drawLive(){
   homeRows.forEach(r=>{if(r.state)seen[r.row]=r.state});const keys=Object.keys(seen);if(keys.length>80)keys.slice(0,keys.length-80).forEach(k=>delete seen[k]);
   store.set(SEEN_KEY,JSON.stringify(seen));
   if(ch.length&&!first){const rd=ch.filter(r=>r.state==='ready'),nf=ch.filter(r=>r.state==='nf');
-    const m=rd.length?(rd.length===1?`สไลด์ HN ${rd[0].hn} พร้อมรับแล้วครับ ✅`:`สไลด์พร้อมรับ ${rd.length} รายการครับ ✅`):`แลปหาสไลด์ HN ${nf[0].hn} ไม่เจอ ❌`;
+    const m=rd.length?(rd.length===1?`สไลด์ HN ${rd[0].hn} พร้อมรับที่${PICK_TH[rd[0].pickup]||'แลป'} แล้วครับ ✅`:`สไลด์พร้อมรับ ${rd.length} รายการครับ ✅`):`แลปหาสไลด์ HN ${nf[0].hn} ไม่เจอ ❌`;
     alarm();toast(m)}
 }
 function vHome(){
@@ -1573,10 +1640,10 @@ function pwSheet(){let sel=new Set(myW());
 }
 function drawPick(){const box=$('#pk-list');if(!box||!pickData)return;const d=pickData,mine=new Set(myW());
   const sel=pickAll||!mine.size?null:mine,g={},wt={};
-  d.ready.forEach(r=>{if(!sel||sel.has(r.ward))(g[r.ward]=g[r.ward]||[]).push(r)});d.wait.forEach(r=>{if(!sel||sel.has(r.ward))wt[r.ward]=(wt[r.ward]||0)+1});
+  d.ready.forEach(r=>{if(!sel||sel.has(r.ward))(g[r.ward]=g[r.ward]||[]).push(r)});const loc=a=>{const o=a.filter(r=>r.pickup==='opd').length,i=a.length-o;return [i?`แลป IPD ${i}`:'',o?`OPD ${o}`:''].filter(Boolean).join(' · ')};d.wait.forEach(r=>{if(!sel||sel.has(r.ward))wt[r.ward]=(wt[r.ward]||0)+1});
   const all=[...new Set([...(sel?[...sel]:[]),...Object.keys(g),...Object.keys(wt)])],ws=all.filter(k=>g[k]||wt[k]),idle=all.filter(k=>!g[k]&&!wt[k]);
-  box.innerHTML=(ws.length?ws.map(k=>`<div class="pk-w"><div class="pk-wh"><b>${esc(k)}</b>${g[k]?`<span class="pill st-ready">พร้อมรับ ${g[k].length} ใบ</span>`:''}${wt[k]?`<span class="pill st-in">รอแลปหา ${wt[k]}</span>`:''}${!g[k]&&!wt[k]?'<span class="small muted">ไม่มีงาน</span>':''}</div>
-      ${g[k]?`<div class="small muted mono">${g[k].map(r=>'HN '+esc(r.hn)+(r.sample?' · '+esc(r.sample):'')).join('<br>')}</div>`:''}</div>`).join('')
+  box.innerHTML=(ws.length?ws.map(k=>`<div class="pk-w"><div class="pk-wh"><b>${esc(k)}</b>${g[k]?`<span class="pill st-ready">พร้อมรับ ${g[k].length} ใบ · ${loc(g[k])}</span>`:''}${wt[k]?`<span class="pill st-in">รอแลปหา ${wt[k]}</span>`:''}${!g[k]&&!wt[k]?'<span class="small muted">ไม่มีงาน</span>':''}</div>
+      ${g[k]?`<div class="small muted mono">${g[k].map(r=>'HN '+esc(r.hn)+(r.sample?' · '+esc(r.sample):'')+' → '+esc(PICK_TH[r.pickup]||'')).join('<br>')}</div>`:''}</div>`).join('')
     :'<div class="small muted" style="padding:6px 0">ยังไม่มีงาน ✨</div>')
    +(idle.length&&ws.length?`<div class="small muted" style="padding-top:6px">ไม่มีงาน: ${idle.map(esc).join(', ')}</div>`:'')
    +(mine.size?`<button class="linkbtn" id="pk-all" style="margin-top:6px">${pickAll?'ดูเฉพาะวอร์ดของฉัน':'ดูทุกวอร์ด'}</button>`:'');
@@ -1585,7 +1652,7 @@ function drawPick(){const box=$('#pk-list');if(!box||!pickData)return;const d=pi
 function porterAlert(d){const mine=new Set(myW());if(!mine.size)return;let seen=[];try{seen=JSON.parse(store.get('cbcPorterSeen')||'[]')}catch(e){}
   const first=!store.get('cbcPorterSeen'),nw=d.ready.filter(r=>mine.has(r.ward)&&!seen.includes(r.row));
   store.set('cbcPorterSeen',JSON.stringify(seen.concat(nw.map(r=>r.row)).slice(-100)));
-  if(nw.length&&!first){alarm();toast(nw.length===1?`มีสไลด์ให้ไปรับ: ${nw[0].ward} · HN ${nw[0].hn}`:`มีสไลด์ให้ไปรับ ${nw.length} ใบ`)}}
+  if(nw.length&&!first){alarm();toast(nw.length===1?`มีสไลด์ให้ไปรับที่${PICK_TH[nw[0].pickup]||'แลป'}: ${nw[0].ward} · HN ${nw[0].hn}`:`มีสไลด์ให้ไปรับ ${nw.length} ใบ`)}}
 
 /* ส่งใบตามสไลด์: บังคับ HN + วันเวลาส่งตรวจ + วอร์ด, Sample No. ไม่บังคับ */
 function hardCard(r){
@@ -1606,8 +1673,11 @@ function softCard(recs,withBtn){
 const icPaper='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>';
 function vIn(){
   app.innerHTML=`<div class="col"><section class="panel accent-teal">${backHead('สั่งตามสไลด์')}
-    <div class="alert info" style="margin-bottom:10px">ออร์เดอร์จะขึ้นที่หน้าจอแลปทันที เมื่อแลปพบสไลด์ แอปจะแจ้ง "พร้อมรับ" แล้วให้เจ้าหน้าที่รับสไลด์ไปรับที่แลป</div>
     <form id="f" class="form" novalidate>
+      <div class="field"><span class="lab">สไลด์ของ</span><div class="site-pick" role="group" aria-label="Slide IPD หรือ OPD">
+        <button type="button" data-site="ipd" aria-pressed="false"><b>Slide IPD</b><small>รับที่แลป IPD</small></button>
+        <button type="button" data-site="opd" aria-pressed="false"><b>Slide OPD</b><small>${OPD_OPEN?'ตอนนี้รับที่เคาน์เตอร์ OPD':'OPD ปิด · รับที่แลป IPD'}</small></button></div>
+        <div id="q-site-msg"></div></div>
       ${hnField('q-hn','1. HN')}
       ${dtField('q','2. วันที่ส่งตรวจ')}
       ${scanField('q-sample','3. Sample No. <span class="opt">(ถ้ามี)</span>')}
@@ -1624,10 +1694,16 @@ function vIn(){
   if(carryIn){const c=carryIn;carryIn=null;setTimeout(()=>{const el=$('#q-sample');if(!el)return;el.value=c.sample||'';el.dispatchEvent(new Event('input',{bubbles:true}));if(c.hn)$('#q-hn').value=c.hn;$('#q-hn').focus()},0)}
   $('#back').onclick=()=>{view='home';render()};
   const sIn=$('#q-sample'),hIn=$('#q-hn');let seq=0,timer=null;
-  const data=force=>({hn:hIn.value.trim(),sample:sIn.value.trim(),specAt:getSpec('q'),ward:$('#q-ward').value.trim(),reason:$('#q-reason').value.trim(),force:!!force});
+  let site='';
+  const siteMsg=()=>{$('#q-site-msg').innerHTML=site==='opd'?(OPD_OPEN?`<div class="alert info" style="margin-top:6px">เคาน์เตอร์ OPD เปิดอยู่: ห้อง Hemato หาสไลด์แล้วส่งกระสวยไป OPD · แจ้งเตือนเมื่อสไลด์ถึง แล้วไป<b>รับที่เคาน์เตอร์ OPD</b></div>`
+      :`<div class="alert warn" style="margin-top:6px">ตอนนี้เคาน์เตอร์ OPD ปิด (${esc(opdHoursTxt())}) ออร์เดอร์ไปที่แลป IPD แล้วไป<b>รับที่แลป IPD</b></div>`)
+    :site==='ipd'?'<div class="small muted" style="margin-top:6px">ออร์เดอร์ขึ้นที่แลป IPD ทันที แจ้งเตือนเมื่อพร้อม แล้วไปรับที่แลป IPD</div>':''};
+  app.querySelectorAll('[data-site]').forEach(b=>b.onclick=()=>{site=b.dataset.site;app.querySelectorAll('[data-site]').forEach(x=>x.setAttribute('aria-pressed',x===b));siteMsg();later()});
+  refreshOpd().then(()=>{const o=app.querySelector('[data-site="opd"] small');if(o)o.textContent=OPD_OPEN?'ตอนนี้รับที่เคาน์เตอร์ OPD':'OPD ปิด · รับที่แลป IPD';siteMsg()});
+  const data=force=>({site,hn:hIn.value.trim(),sample:sIn.value.trim(),specAt:getSpec('q'),ward:$('#q-ward').value.trim(),reason:$('#q-reason').value.trim(),force:!!force});
   const check=async()=>{if(!document.getElementById('q-hn'))return;const d=data(),box=$('#dup');
     if(!d.hn||(!d.sample&&!d.specAt)){box.innerHTML='';return}
-    const my=++seq;let r;try{r=await run('apiPrecheck',store.get(TOKEN_KEY),{hn:d.hn,sample:d.sample,specAt:d.specAt})}catch(e){return}
+    const my=++seq;let r;try{r=await run('apiPrecheck',store.get(TOKEN_KEY),{site:d.site,hn:d.hn,sample:d.sample,specAt:d.specAt})}catch(e){return}
     if(my!==seq)return;
     box.innerHTML=r.hard?hardCard(r.hard):r.soft.length?softCard(r.soft,false):'';
     if((r.hard||r.soft.length)&&navigator.vibrate)navigator.vibrate([120,80,120]);};
@@ -1637,6 +1713,7 @@ function vIn(){
   ['q-date','q-time','q-ward','q-sample'].forEach(id=>{const el=document.getElementById(id);el.addEventListener('input',showRule);el.addEventListener('change',showRule)});
   sIn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#q-ward').focus()}});
   const submit=async(force,b)=>{$('#err').innerHTML='';
+    if(!site){$('#err').innerHTML=errBox('เลือกว่าเป็น Slide IPD หรือ Slide OPD');app.querySelector('.site-pick').scrollIntoView({behavior:'smooth',block:'center'});return}
     if(!$('#q-reason').value.trim()){$('#err').innerHTML=errBox('กรอกเหตุผลที่ตามสไลด์');$('#q-reason').focus();return}
     busy(b,true);
     try{const r=await run('apiCheckIn',store.get(TOKEN_KEY),data(force));
@@ -1792,7 +1869,8 @@ function vDone(){
     <div class="receipt"><dl class="kv"><dt>HN</dt><dd class="mono" style="font-weight:600">${esc(r.hn)}</dd><dt>Sample No.</dt><dd class="mono">${sampleTxt(r.sample)}</dd>
     ${r.specAt?`<dt>วันเวลาส่งตรวจ</dt><dd>${esc(r.specAt)}</dd>`:''}<dt>วอร์ด</dt><dd>${esc(r.ward)}</dd></dl></div>
     ${kind==='in'&&r.readyAt?`<div class="alert ok" style="width:100%;text-align:left">✅ สไลด์นี้พร้อมรับอยู่แล้ว ให้เจ้าหน้าที่รับสไลด์ไปรับที่แลปได้เลยครับ</div>`:''}
-    ${kind==='in'&&!r.readyAt?`<div class="alert info" style="width:100%;text-align:left">ออร์เดอร์ขึ้นที่แลปแล้ว เมื่อแลปพบสไลด์ หน้าแรกจะขึ้น "✅ พร้อมรับ"${notifOn()?' และเด้งแจ้งเตือนบนมือถือ':''} จากนั้นให้เจ้าหน้าที่รับสไลด์ไปรับที่แลปครับ</div>`:''}
+    ${kind==='in'&&r.site?`<div class="alert ${r.pickup==='opd'?'info':'ok'}" style="width:100%;text-align:left"><b>Slide ${esc(SITE_TH[r.site])} · รับที่${esc(PICK_TH[r.pickup])}</b>\n${r.queue==='hema'?'ห้อง Hemato จะหาสไลด์แล้วส่งกระสวยไปเคาน์เตอร์ OPD':'ออร์เดอร์ขึ้นที่แลป IPD แล้ว'}</div>`:''}
+    ${kind==='in'&&!r.readyAt?`<div class="alert info" style="width:100%;text-align:left">เมื่อสไลด์พร้อม หน้าแรกจะขึ้น "✅ พร้อมรับ"${notifOn()?' และเด้งแจ้งเตือนบนมือถือ':''} ครับ</div>`:''}
     ${r.id?`<div class="undo" id="undo" role="status"><span>บันทึกผิด? ยกเลิกได้ภายใน <b id="undo-n">10</b> วินาที</span><button id="undo-b">ยกเลิก</button><i class="bar"></i></div>`:''}
     <div class="next-row"><button class="btn btn-ghost" id="again">${T[1]}</button><button class="btn ${T[3]}" id="home">กลับหน้าแรก</button></div>
     ${kind!=='in'?`<button class="btn btn-soft btn-block" id="scan-next">${camIcon.replace('<svg ','<svg width="22" height="22" ')}สแกนสไลด์ถัดไปเลย</button>`:''}
@@ -1809,8 +1887,11 @@ function vDone(){
 
 /* ---------- การรับสไลด์: สแกนบาร์โค้ดบนสไลด์ทีละแผ่น ระบบเทียบกับออร์เดอร์ที่แลปยืนยันแล้ว ---------- */
 let pickDone=[];
+let pickAt=store.get('cbcPickAt')||'';
 function vPick(){
   app.innerHTML=`<div class="col"><section class="panel accent-blue">${backHead('สแกนรับสไลด์')}
+    <div class="field" style="margin:0"><span class="lab">รับที่</span><div class="site-pick" role="group">
+      <button type="button" data-at="ipd" aria-pressed="${pickAt==='ipd'}"><b>แลป IPD</b></button><button type="button" data-at="opd" aria-pressed="${pickAt==='opd'}"><b>เคาน์เตอร์ OPD</b></button></div></div>
     <button class="btn btn-blue btn-block hema-shot" id="pk-scan">${camIcon.replace('<svg ','<svg width="26" height="26" ')}สแกนบาร์โค้ดบนสไลด์</button>
     <form id="f" class="form" novalidate style="margin-top:8px">${scanField('p-sample','หรือพิมพ์ Sample No.')}
       <button class="btn btn-ghost btn-block" type="submit">ค้นหา</button></form>
@@ -1818,6 +1899,7 @@ function vPick(){
     <div class="section-h"><h3>รับแล้วรอบนี้ · <span id="pk-n">${pickDone.length}</span> ใบ</h3></div>
     <section class="panel" id="pk-done">${pickDoneHtml()}</section></div>`;
   bindScan('p-sample');$('#back').onclick=()=>{view='home';render()};
+  app.querySelectorAll('[data-at]').forEach(b=>b.onclick=()=>{pickAt=b.dataset.at;store.set('cbcPickAt',pickAt);app.querySelectorAll('[data-at]').forEach(x=>x.setAttribute('aria-pressed',x===b));const v=$('#p-sample').value.trim();if(/^\d{10}$/.test(v))pickFind(v)});
   const sIn=$('#p-sample');
   $('#pk-scan').onclick=()=>openScanner(code=>{sIn.value=code;pickFind(code)},'สแกน Sample No. บนสไลด์');
   sIn.addEventListener('input',()=>{const v=sIn.value.trim();if(/^\d{10}$/.test(v))pickFind(v)});
@@ -1828,34 +1910,42 @@ let pickSeq=0;
 async function pickFind(code){
   const box=$('#pk-res');if(!box)return;
   if(!/^\d{10}$/.test(code)){box.innerHTML=errBox('Sample No. ต้องเป็นตัวเลข 10 หลัก');return}
+  if(!pickAt){box.innerHTML=errBox('เลือกก่อนว่ากำลังรับที่ แลป IPD หรือ เคาน์เตอร์ OPD');return}
   const my=++pickSeq;box.innerHTML='<div class="sk sk-row"></div><div class="sk sk-row"></div>';
-  let d;try{d=await run('apiPickFind',store.get(TOKEN_KEY),code)}catch(err){box.innerHTML=errBox(err.message);return}
+  let d;try{d=await run('apiPickFind',store.get(TOKEN_KEY),code,pickAt)}catch(err){box.innerHTML=errBox(err.message);return}
   if(my!==pickSeq||!$('#pk-res'))return;
-  const ready=d.orders.filter(r=>r.state==='ready'),wait=d.orders.filter(r=>r.state!=='ready');
+  const here=r=>r.pickup===pickAt,ready=d.orders.filter(r=>r.state==='ready'&&here(r)),
+    other=d.orders.filter(r=>r.state==='ready'&&!here(r)),wait=d.orders.filter(r=>r.state!=='ready');
+  const incHere=d.inc.filter(x=>x.site===pickAt),incOther=d.inc.filter(x=>x.site!==pickAt);
   let h=`<div class="eyebrow">Sample No.</div><h2 class="mono" style="margin:0 0 8px">${esc(code)}</h2>`;
   if(ready.length>1)h+=`<div class="alert warn">Sample No. นี้มีออร์เดอร์ ${ready.length} รายการ ดู HN บนสไลด์แล้วเลือกให้ตรง</div>`;
-  h+=ready.map(r=>`<div class="pk-c ok"><div class="pk-hn mono">HN ${esc(r.hn)}</div><div class="small">${esc(r.ward)} · สั่งโดย ${esc(r.reqName)}</div>
+  h+=ready.map(r=>`<div class="pk-c ok"><div class="pk-hn mono">HN ${esc(r.hn)} ${siteTag(r.site)}</div><div class="small">${esc(r.ward)} · สั่งโดย ${esc(r.reqName)}</div>
     <div class="small muted">แลปยืนยันพบ ${esc(String(r.readyAt).slice(-5))} น. ${esc(r.readyBy||'')}</div>
     <div class="small"><b>ตรวจว่า HN บนสไลด์ตรงกับ HN นี้</b></div>
     <button class="btn btn-blue btn-block" data-pk-out="${r.row}" data-hn="${esc(r.hn)}">รับสไลด์ใบนี้</button></div>`).join('');
-  h+=wait.map(r=>`<div class="pk-c warn"><div class="pk-hn mono">HN ${esc(r.hn)}</div><div class="small">${esc(r.ward)}</div>
-    <div class="small"><b>แลปยังไม่ได้ยืนยันว่าพบสไลด์นี้</b> ให้เจ้าหน้าที่แลปกด "พบสไลด์" ในคิวงานก่อน แล้วสแกนใหม่</div></div>`).join('');
-  h+=d.inc.map(x=>`<div class="pk-c inc"><div class="pk-hn mono">${x.hn?'HN '+esc(x.hn):esc(x.sample)} <span class="tag-inc">Include</span></div>
+  h+=other.map(r=>`<div class="pk-c warn"><div class="pk-hn mono">HN ${esc(r.hn)} ${siteTag(r.site)}</div><div class="small">${esc(r.ward)}</div>
+    <div class="small"><b>สไลด์นี้ต้องรับที่${esc(PICK_TH[r.pickup])}</b> ไม่ใช่ที่นี่ ถ้าอยู่ผิดที่ แจ้งเจ้าหน้าที่</div></div>`).join('');
+  h+=wait.map(r=>`<div class="pk-c warn"><div class="pk-hn mono">HN ${esc(r.hn)} ${siteTag(r.site)}</div><div class="small">${esc(r.ward)}</div>
+    <div class="small">${r.state==='sent'?'<b>🚀 สไลด์อยู่ในกระสวย กำลังส่งไปเคาน์เตอร์ OPD</b> รอเคาน์เตอร์สแกนรับก่อน':'<b>แลปยังไม่ได้ยืนยันว่าพบสไลด์นี้</b> ให้เจ้าหน้าที่แลปกด "พบสไลด์" ในคิวงานก่อน แล้วสแกนใหม่'}</div></div>`).join('');
+  h+=incOther.map(x=>`<div class="pk-c warn"><div class="pk-hn mono">${x.hn?'HN '+esc(x.hn):esc(x.sample)} ${siteTag(x.site)} <span class="tag-inc">Include</span></div>
+    <div class="small"><b>Slide include ${esc(SITE_TH[x.site])} ต้องรับที่${esc(PICK_TH[x.site])}</b></div></div>`).join('');
+  h+=incHere.map(x=>x.site==='opd'&&!d.opdOpen?`<div class="pk-c warn"><div class="pk-hn mono">${esc(x.sample)} ${siteTag('opd')} <span class="tag-inc">Include</span></div><div class="small"><b>Slide include OPD รับได้เฉพาะเวลาที่เคาน์เตอร์ OPD เปิด</b></div></div>`
+    :`<div class="pk-c inc"><div class="pk-hn mono">${x.hn?'HN '+esc(x.hn):esc(x.sample)} ${siteTag(x.site)} <span class="tag-inc">Include</span></div>
     <div class="small muted">ส่งตรวจ ${esc(x.specDate||'–')} · สแกนพร้อม ${esc(x.readyAt)}${x.readyBy?' โดย '+esc(x.readyBy):''}</div>
     ${wardCombo('pw-'+x.id,'','วอร์ดที่จะนำสไลด์ไป')}<div id="pe-${x.id}"></div>
-    <button class="btn btn-violet btn-block" data-pk-inc="${x.id}" data-hn="${esc(x.hn)}">รับ Slide include</button></div>`).join('');
-  if(!ready.length&&!wait.length&&!d.inc.length){
+    <button class="btn btn-violet btn-block" data-pk-inc="${x.id}" data-hn="${esc(x.hn)}" data-site="${esc(x.site)}">รับ Slide include</button></div>`).join('');
+  if(!d.orders.length&&!d.inc.length){
     h+=d.done.length?`<div class="alert ok">สไลด์นี้ถูกรับไปแล้ว\nHN ${esc(d.done[0].hn)} · ${esc(d.done[0].ward)}\nรับโดย ${esc(d.done[0].recvName)} เมื่อ ${esc(d.done[0].recvAt)}</div>`
       :`<div class="alert warn">ไม่พบออร์เดอร์หรือ Slide include ที่พร้อมรับของ Sample No. นี้ ตรวจเลขอีกครั้ง หรือสอบถามเจ้าหน้าที่แลป</div>`}
   box.innerHTML=h;if(navigator.vibrate)navigator.vibrate(ready.length||d.inc.length?60:[120,80,120]);
-  d.inc.forEach(x=>bindCombo('pw-'+x.id));
+  incHere.forEach(x=>{if(document.getElementById('pw-'+x.id))bindCombo('pw-'+x.id)});
   const ok=(rec,inc)=>{pickDone.unshift({hn:rec.hn||'–',sample:rec.sample,ward:rec.ward,time:rec.time,inc});beep();if(navigator.vibrate)navigator.vibrate([60,40,60]);
     toast(`รับสไลด์ ${rec.hn?'HN '+rec.hn:rec.sample} แล้ว ✅ สแกนแผ่นถัดไปได้เลย`);box.innerHTML='';const s=$('#p-sample');if(s)s.value='';$('#pk-n').textContent=pickDone.length;$('#pk-done').innerHTML=pickDoneHtml();window.scrollTo({top:0,behavior:'smooth'})};
   box.querySelectorAll('[data-pk-out]').forEach(b=>b.onclick=async()=>{busy(b,true,'กำลังบันทึก…');
-    try{const r=await run('apiCheckOut',store.get(TOKEN_KEY),{sample:code,hn:b.dataset.hn,row:+b.dataset.pkOut});ok(r,false)}catch(err){busy(b,false);toast(err.message)}});
+    try{const r=await run('apiCheckOut',store.get(TOKEN_KEY),{sample:code,hn:b.dataset.hn,row:+b.dataset.pkOut,at:pickAt});ok(r,false)}catch(err){busy(b,false);toast(err.message)}});
   box.querySelectorAll('[data-pk-inc]').forEach(b=>b.onclick=async()=>{const id=b.dataset.pkInc,w=$('#pw-'+id).value.trim(),er=$('#pe-'+id);er.innerHTML='';
     if(!w){er.innerHTML=errBox('เลือกวอร์ดก่อน');return}busy(b,true,'กำลังบันทึก…');
-    try{const r=await run('apiInclude',store.get(TOKEN_KEY),{sample:code,hn:b.dataset.hn,ward:w});
+    try{const r=await run('apiInclude',store.get(TOKEN_KEY),{sample:code,hn:b.dataset.hn,ward:w,site:b.dataset.site});
       if(r.pending){busy(b,false);er.innerHTML=errBox('HN นี้มีออร์เดอร์ตามสไลด์ค้างอยู่ ให้รับผ่านออร์เดอร์แทน');return}ok(r,true)}
     catch(err){busy(b,false);er.innerHTML=errBox(err.message)}});
 }
@@ -1965,7 +2055,7 @@ function renderLab(){
    <div class="tbl-wrap"><table><thead><tr><th>HN</th><th>Sample No.</th><th>วอร์ด</th><th>วันเวลาส่งตรวจ</th><th>สั่งตาม: ผู้สั่ง / เวลา</th><th>รับสไลด์: ผู้รับ / เวลา</th><th>${labFilter==='in'?'รอมาแล้ว':'ใช้เวลา'}</th><th>แก้ไข</th></tr></thead><tbody>
    ${rows.length?rows.map(r=>{const m=r.reqTs?Math.round(((r.recvTs||Date.now())-r.reqTs)/60000):null;
      const late=r.status==='in'&&m>LATE_MIN;
-     return `<tr><td class="mono">${esc(r.hn)}</td><td class="mono">${r.sample?esc(r.sample):'<span class="muted">–</span>'}</td><td>${esc(r.ward)}</td>
+     return `<tr><td class="mono">${esc(r.hn)} ${siteTag(r.site)}</td><td class="mono">${r.sample?esc(r.sample):'<span class="muted">–</span>'}</td><td>${esc(r.ward)}</td>
        <td>${esc(r.specAt||'–')}</td>
        <td>${r.include?'<span class="tag-inc" style="margin:0">Include</span><br><span class="small muted">ไม่มีออร์เดอร์</span>':`${esc(r.reqName)}<br><span class="small muted">${esc(r.reqAt)}</span>${r.photo?`<br>${photoBtn(r,'lab')}<span class="small muted" title="ไฟล์ใน Supabase → Storage → evidence"> · ${esc(r.photo.split('/')[0])} / เลข ${r.row}</span>`:''}`}</td>
        <td>${r.status==='out'?`${esc(r.recvName)}<br><span class="small muted">${esc(r.recvAt)}</span>`:r.status==='nf'?`<span class="pill st-nf">❌ หาไม่เจอ</span><br><span class="small muted">${esc(r.nfReason)}</span>`:r.readyAt?`<span class="pill st-ready">✅ พร้อมรับ</span><br><span class="small muted">${esc(r.readyAt.slice(-5))} น. ${esc(r.readyBy)}</span>`:'<span class="muted">–</span>'}</td>
@@ -1995,7 +2085,7 @@ async function loadQueue(){if(qLoading)return;qLoading=true;
 function renderQueue(){
   const lp=store.get('cbcLabPush')==='1';
   app.innerHTML=`<div class="wide">${labTabs()}
-   <div class="toolbar q-tools"><div class="field" style="margin:0;min-width:200px;flex:1"><label for="q-by">ชื่อผู้ปฏิบัติงาน (บันทึกในประวัติ)</label><input class="input" id="q-by" value="${esc(labBy())}" placeholder="เช่น ชื่อเล่น" maxlength="60"></div>
+   <div class="toolbar q-tools"><div class="field" style="margin:0;min-width:260px;flex:1"><label for="q-by">ชื่อผู้ปฏิบัติงาน (บันทึกในประวัติ)</label><input class="input" id="q-by" value="${esc(labBy())}" placeholder="เช่น ชื่อเล่น" maxlength="60"></div>
      <button class="btn btn-ghost" id="q-push">${lp?'🔔 แจ้งเตือนเครื่องนี้: เปิด':'🔕 แจ้งเตือนเครื่องนี้: ปิด'}</button>
      <button class="btn btn-ghost" id="q-hema">🔬 สแกน include พร้อมรับ</button>
      <button class="btn btn-ghost" id="q-re">รีเฟรช</button><span class="small muted">อัปเดตเองทุก 15 วินาที มีเสียงเมื่อมีออร์เดอร์ใหม่</span></div>
@@ -2008,19 +2098,23 @@ function renderQueue(){
 }
 function needBy(){if(labBy())return true;toast('กรอกชื่อผู้ปฏิบัติงานก่อนครับ');const i=$('#q-by');if(i){i.focus();i.classList.add('need')}return false}
 function qCard(r,kind){const m=mins(r.reqTs),late=kind==='wait'&&m>=30;
-  return `<div class="qc ${kind}"><div class="qh"><b class="mono">HN ${esc(r.hn)}</b>${kind==='wait'?`<span class="pill ${late?'st-nf':'st-in'}">รอ ${dur(m)}</span>`:kind==='ready'?`<span class="pill st-ready">พร้อม ${esc(String(r.readyAt).slice(-5))}</span>`:`<span class="pill st-nf">หาไม่เจอ</span>`}</div>
+  return `<div class="qc ${kind==='sent'?'ready':kind}${r.queue==='hema'?' hema':''}"><div class="qh"><b class="mono">HN ${esc(r.hn)} ${siteTag(r.site)}</b>${kind==='sent'?`<span class="pill st-in">ส่ง ${esc(String(r.sentAt).slice(-5))}</span>`:kind==='wait'?`<span class="pill ${late?'st-nf':'st-in'}">รอ ${dur(m)}</span>`:kind==='ready'?`<span class="pill st-ready">พร้อม ${esc(String(r.readyAt).slice(-5))}</span>`:`<span class="pill st-nf">หาไม่เจอ</span>`}</div>
     <div class="small"><b>${esc(r.ward)}</b> · ส่งตรวจ ${esc(r.specAt||'–')}</div>
     <div class="small">Sample: <span class="mono">${r.sample?esc(r.sample):'<span class="muted">ไม่ระบุ (สแกนจากสไลด์ตอนพบ)</span>'}</span></div>
     ${r.reason?`<div class="small q-why">เหตุผล: ${esc(r.reason)}</div>`:''}
     <div class="small muted">สั่งโดย ${esc(r.reqName)} · ${esc(String(r.reqAt).slice(-5))} น.</div>
-    ${kind==='ready'?`<div class="small muted">ยืนยันโดย ${esc(r.readyBy)}</div>`:''}${kind==='nf'?`<div class="small nf-why">${esc(r.nfReason)} · ${esc(r.nfBy)}</div>`:''}
-    <div class="qa">${kind==='wait'?`<button class="btn btn-teal" data-qf="${r.row}">พบสไลด์ · สแกน</button><button class="btn btn-ghost" data-qn="${r.row}">หาไม่เจอ</button>`
-      :`<button class="btn btn-ghost" data-qb="${r.row}">${kind==='ready'?'ย้อนเป็นรอหา':'ย้อนเป็นรอหา'}</button>`}</div></div>`}
+    ${kind==='ready'?`<div class="small muted">ยืนยันโดย ${esc(r.readyBy)}</div>`:''}${kind==='sent'?`<div class="small muted">ส่งโดย ${esc(r.sentBy)} · รอเคาน์เตอร์ OPD สแกนรับ</div>`:''}${kind==='nf'?`<div class="small nf-why">${esc(r.nfReason)} · ${esc(r.nfBy)}</div>`:''}
+    <div class="qa">${kind==='wait'?`<button class="btn btn-teal" data-qf="${r.row}">${r.queue==='hema'?'พบสไลด์ · ส่ง':'พบสไลด์ · สแกน'}</button><button class="btn btn-ghost" data-qn="${r.row}">หาไม่เจอ</button>`
+      :`<button class="btn btn-ghost" data-qb="${r.row}">ย้อนเป็นรอหา</button>`}</div></div>`}
 function drawQueue(){const box=$('#q-body');if(!box)return;
   if(!qData)return;if(qData.__err){box.innerHTML=errBox(qData.__err);return}
   const d=qData,sec=(t,n,cls,html,empty)=>`<div class="section-h"><h3>${t} <span class="qbadge ${cls}">${n}</span></h3></div><div class="qgrid">${n?html:`<div class="small muted" style="padding:8px 2px">${empty}</div>`}</div>`;
-  box.innerHTML=`<div class="qcol qmain">${sec('🔔 รอหาสไลด์',d.wait.length,'',d.wait.map(r=>qCard(r,'wait')).join(''),'ไม่มีออร์เดอร์ค้าง 👍')}</div>
-    <div class="qcol">${sec('✅ พร้อมรับ รอมารับ',d.ready.length,'ok',d.ready.map(r=>qCard(r,'ready')).join(''),'–')}</div>
+  const wl=d.wait.filter(r=>r.queue!=='hema'),wh=d.wait.filter(r=>r.queue==='hema');
+  box.innerHTML=`<div class="qcol qmain">${sec('🔔 รอหาสไลด์ · แลป IPD',wl.length,'',wl.map(r=>qCard(r,'wait')).join(''),'ไม่มีออร์เดอร์ค้าง 👍')}
+      ${sec('🔬 รอหาสไลด์ · Hemato (Slide OPD)',wh.length,'',wh.map(r=>qCard(r,'wait')).join(''),'ไม่มี')}</div>
+    <div class="qcol">${sec('✅ พร้อมรับที่แลป IPD',d.ready.length,'ok',d.ready.map(r=>qCard(r,'ready')).join(''),'–')}
+      ${sec('🚀 ส่งกระสวยไป OPD แล้ว (ยังไม่ถึง)',d.sent.length,'',d.sent.map(r=>qCard(r,'sent')).join(''),'–')}
+      ${d.readyOpd?`<div class="small muted">ถึงเคาน์เตอร์ OPD แล้ว รอมารับ ${d.readyOpd} รายการ</div>`:''}</div>
     <div class="qcol">${sec('🧪 Include พร้อมรับ',d.inc.length,'inc',d.inc.map(x=>`<div class="qc inc"><div class="qh"><b class="mono">${x.hn?'HN '+esc(x.hn):esc(x.sample)}</b><span class="pill st-inc">Include</span></div><div class="small mono">${x.hn?esc(x.sample)+' · ':''}ส่งตรวจ ${esc(x.specDate||'–')}</div><div class="small muted">สแกน ${esc(x.readyAt)}${x.readyBy?' · '+esc(x.readyBy):''}</div></div>`).join(''),'–')}
     ${d.nf.length?sec('❌ หาไม่เจอ (24 ชม.)',d.nf.length,'bad',d.nf.map(r=>qCard(r,'nf')).join(''),''):''}</div>`;
   box.querySelectorAll('[data-qf]').forEach(b=>b.onclick=()=>{if(needBy())qFound(d.wait.find(r=>String(r.row)===b.dataset.qf))});
@@ -2033,19 +2127,24 @@ function qFound(r){if(!r)return;
     <form id="qf" class="form" novalidate>${scanField('qf-s','Sample No. บนสไลด์ (สแกนบาร์โค้ด)')}
     ${r.sample?`<div class="small muted" style="margin-top:-6px">ออร์เดอร์ระบุ Sample No. <b class="mono">${esc(r.sample)}</b> ต้องตรงกัน</div>`:''}
     <label class="confirm-paper" id="qf-box"><input type="checkbox" id="qf-ok"><span>ตรวจแล้ว <b>HN บนสไลด์ = ${esc(r.hn)}</b></span></label>
-    <div id="qf-err"></div><button class="btn btn-teal btn-block" type="submit">ยืนยันพบสไลด์ · แจ้งวอร์ดว่าพร้อมรับ</button></form>
+    <div id="qf-err"></div>${r.queue==='hema'?`<button class="btn btn-teal btn-block" type="submit" data-mode="tube" ${qData&&!qData.opdOpen?'aria-disabled="true"':''}>🚀 ส่งกระสวยไปเคาน์เตอร์ OPD</button>
+      ${qData&&!qData.opdOpen?'<div class="small nf-why">เคาน์เตอร์ OPD ปิดแล้ว ใช้ปุ่มด้านล่างแทน</div>':''}
+      <button class="btn btn-ghost btn-block" type="button" id="qf-ipd">ให้มารับที่แลป IPD แทน</button>`
+      :`<button class="btn btn-teal btn-block" type="submit">ยืนยันพบสไลด์ · แจ้งวอร์ดว่าพร้อมรับ</button>`}</form>
     <button class="btn btn-soft btn-block" data-close>ยกเลิก</button>`);
   const el=sh.el;bindScan('qf-s');setTimeout(()=>{const c=el.querySelector('#qf-s-cam');if(c)c.click()},150);
-  const go=async(force,b)=>{const er=el.querySelector('#qf-err'),x=el.querySelector('#qf-s').value.trim();er.innerHTML='';
+  const go=async(force,b,mode)=>{const er=el.querySelector('#qf-err'),x=el.querySelector('#qf-s').value.trim();er.innerHTML='';mode=mode||(r.queue==='hema'?'tube':'ready');
+    if(mode==='tube'&&qData&&!qData.opdOpen)return er.innerHTML=errBox('เคาน์เตอร์ OPD ปิดแล้ว กด "ให้มารับที่แลป IPD แทน"');
     if(!/^\d{10}$/.test(x))return er.innerHTML=errBox('สแกนหรือพิมพ์ Sample No. 10 หลักจากสไลด์');
     if(!el.querySelector('#qf-ok').checked){el.querySelector('#qf-box').classList.add('need');return er.innerHTML=errBox('ตรวจ HN บนสไลด์ แล้วติ๊กยืนยันก่อน')}
     busy(b,true,'กำลังบันทึก…');
-    try{const res=await run('apiLabReady',labPin,r.row,{sample:x,by:labBy(),force:!!force});
+    try{const res=await run('apiLabReady',labPin,r.row,{sample:x,by:labBy(),force:!!force,mode});
       if(res.warn){busy(b,false);er.innerHTML=`<div class="alert warn">${esc(res.warn)}</div><button type="button" class="btn btn-ghost btn-block" id="qf-force">ตรวจแล้ว ถูกต้อง ยืนยันต่อ</button>`;
-        el.querySelector('#qf-force').onclick=e=>go(true,e.currentTarget);return}
-      sh.close();flushPush();toast(`HN ${r.hn} พร้อมรับแล้ว ✅ แจ้งวอร์ดแล้ว`);loadQueue()}
+        el.querySelector('#qf-force').onclick=e=>go(true,e.currentTarget,mode);return}
+      sh.close();flushPush();toast(mode==='tube'?`HN ${r.hn} ส่งกระสวยแล้ว 🚀 แจ้งวอร์ดเมื่อถึงเคาน์เตอร์ OPD`:`HN ${r.hn} พร้อมรับที่แลป IPD ✅ แจ้งวอร์ดแล้ว`);loadQueue()}
     catch(err){busy(b,false);er.innerHTML=errBox(err.message)}};
   el.querySelector('#qf').onsubmit=e=>{e.preventDefault();go(false,e.target.querySelector('button[type=submit]'))};
+  const qi=el.querySelector('#qf-ipd');if(qi)qi.onclick=e=>go(false,e.currentTarget,'ready');
 }
 function qNotFound(r){if(!r)return;
   const R=['ไม่พบสไลด์ในตะกร้า','ไม่ได้ทำสไลด์ไว้','เกินระยะเก็บสไลด์','ข้อมูลไม่ตรงกับสิ่งส่งตรวจ'];
@@ -2217,7 +2316,7 @@ async function wardDo(act,name,nw,btn){
   try{const d=await run('apiAdminWardSave',adminPin,act,name,nw||'');wdData=d.wards;setWardsFrom(wdData);statCache={};renderWards();return d}
   catch(err){if(btn)btn.disabled=false;toast(err.message);throw err}}
 function renderWards(){
-  const head=`${labTabs()}<div class="toolbar"><button class="btn btn-ghost" id="wd-re">รีเฟรช</button>
+  const head=`${labTabs()}<div class="toolbar"><button class="btn btn-ghost" id="wd-re">รีเฟรช</button><button class="btn btn-ghost" id="wd-opd">🕒 เวลาเคาน์เตอร์ OPD / วันหยุด</button>
     <span class="small muted">วอร์ดที่เปิดใช้จะแสดงให้เลือกตอนสั่งตาม Slide ตามลำดับนี้</span></div>`;
   if(!wdData){app.innerHTML=`<div class="wide" aria-busy="true">${head}<div class="sk sk-chart"></div></div>`;return bindWd()}
   if(wdData.__err){app.innerHTML=`<div class="wide">${head}${errBox(wdData.__err)}</div>`;return bindWd()}
@@ -2245,7 +2344,23 @@ function renderWards(){
     if(a==='off')return offWard(w);
     wardDo(a,n,'',b).then(()=>{if(a==='on')toast(`เปิดใช้ "${n}" แล้ว`);const nb=app.querySelector(`[data-wd="${a}"][data-n="${CSS.escape(n)}"]`);if(nb&&!nb.getAttribute('aria-disabled'))nb.focus()}).catch(()=>{})});
 }
-function bindWd(){bindTabs();const r=$('#wd-re');if(r)r.onclick=loadWards}
+function bindWd(){bindTabs();const r=$('#wd-re');if(r)r.onclick=loadWards;const o=$('#wd-opd');if(o)o.onclick=opdHoursSheet}
+async function opdHoursSheet(){let d;try{d=await run('apiAdminOpd',adminPin,null)}catch(err){return toast(err.message)}
+  const sh=openSheet(`<div class="eyebrow">ผู้ดูแล</div><h2>เวลาเปิดเคาน์เตอร์ OPD</h2><p class="small muted" style="margin:0">ในเวลาเปิด Slide OPD ไปห้อง Hemato → ส่งกระสวย → รับที่เคาน์เตอร์ OPD · นอกเวลาไปแลป IPD</p>
+    <div class="row2"><div class="field"><label>จันทร์–ศุกร์ เปิด</label><input class="input mono" id="oh-w0" type="time" value="${esc(d.hours.wd[0])}"></div><div class="field"><label>ปิด</label><input class="input mono" id="oh-w1" type="time" value="${esc(d.hours.wd[1])}"></div></div>
+    <div class="row2"><div class="field"><label>เสาร์–อาทิตย์ / วันหยุด เปิด</label><input class="input mono" id="oh-h0" type="time" value="${esc(d.hours.hd[0])}"></div><div class="field"><label>ปิด</label><input class="input mono" id="oh-h1" type="time" value="${esc(d.hours.hd[1])}"></div></div>
+    <button class="btn btn-teal btn-block" id="oh-save">บันทึกเวลา</button>
+    <h3 style="margin:8px 0 0">วันหยุดนักขัตฤกษ์ (ใช้เวลาวันหยุด)</h3><div id="oh-list"></div>
+    <div class="row2"><div class="field"><label>วันที่</label><input class="input" id="oh-d" type="date"></div><div class="field"><label>ชื่อวันหยุด</label><input class="input" id="oh-n" maxlength="80"></div></div>
+    <button class="btn btn-ghost btn-block" id="oh-add">เพิ่มวันหยุด</button><div id="oh-err"></div>
+    <button class="btn btn-soft btn-block" data-close>ปิด</button>`);
+  const el=sh.el,draw=x=>{d=x;el.querySelector('#oh-list').innerHTML=x.holidays.length?`<div class="mylist">${x.holidays.map(h=>`<div class="it"><div>${esc(thDate(h.d))} ${esc(h.note)}</div><button class="linkbtn" data-hd="${esc(h.d)}">ลบ</button></div>`).join('')}</div>`:'<div class="small muted">ยังไม่มี</div>';
+    el.querySelectorAll('[data-hd]').forEach(b=>b.onclick=()=>call({delHoliday:b.dataset.hd}))};
+  const call=async p=>{el.querySelector('#oh-err').innerHTML='';try{const x=await run('apiAdminOpd',adminPin,p);draw(x);OPD_HOURS=x.hours;OPD_OPEN=x.open;toast('บันทึกแล้ว')}catch(err){el.querySelector('#oh-err').innerHTML=errBox(err.message)}};
+  draw(d);
+  el.querySelector('#oh-save').onclick=()=>call({hours:{wd:[el.querySelector('#oh-w0').value,el.querySelector('#oh-w1').value],hd:[el.querySelector('#oh-h0').value,el.querySelector('#oh-h1').value]}});
+  el.querySelector('#oh-add').onclick=()=>{const v=el.querySelector('#oh-d').value;if(!v)return el.querySelector('#oh-err').innerHTML=errBox('เลือกวันที่');call({addHoliday:v,note:el.querySelector('#oh-n').value})};
+}
 function renameWard(w){
   const sh=openSheet(`<div class="eyebrow">แก้ชื่อวอร์ด</div><h2>${esc(w.name)}</h2>
     <div class="field"><label for="wd-rn">ชื่อใหม่</label><input class="input" id="wd-rn" maxlength="120" autocomplete="off" value="${esc(w.name)}"></div>
@@ -2500,6 +2615,7 @@ function openMenu(){
     </div>
     ${ME?`<button class="btn btn-block logout-btn" id="m-logout">${icOut}ออกจากระบบ (Log out)</button>`:''}
     ${isLabDev()?`<button class="btn btn-block logout-btn" id="m-lablogout">${icOut}ออกจากโปรไฟล์ Laboratory</button>`:''}
+    ${isOpdDev()?`<button class="btn btn-block logout-btn" id="m-opdlogout">${icOut}ออกจากโปรไฟล์เคาน์เตอร์ OPD</button>`:''}
     <button class="btn btn-soft btn-block" data-close>ปิด</button>`);
   const el=sh.el;
   el.querySelectorAll('[data-fs]').forEach(b=>b.onclick=()=>setFS(b.dataset.fs));
@@ -2512,6 +2628,7 @@ function openMenu(){
   el.querySelector('#m-help').onclick=()=>{sh.close();showHelp()};
   el.querySelector('#m-bot').onclick=()=>{sh.close();openAssistant()};
   const ll=el.querySelector('#m-lablogout');if(ll)ll.onclick=()=>{sh.close();labLogout()};
+  const ol=el.querySelector('#m-opdlogout');if(ol)ol.onclick=()=>{sh.close();opdLogout()};
   const lo=el.querySelector('#m-logout');if(lo)lo.onclick=()=>{sh.close();
     const s2=openSheet(`<h2>ออกจากระบบ?</h2><p style="margin:0">${esc(ME.first)} ${esc(ME.last)} (${esc(ROLE_TH[ME.role]||'')})</p>
       <div class="small muted">เครื่องนี้จะไม่จำชื่อคุณ และไม่รับแจ้งเตือนเด้งของคุณอีก เข้าใช้ใหม่ได้ด้วยรหัสพนักงาน + ชื่อจริง</div>
@@ -2585,7 +2702,9 @@ function renderHema(){
       <div class="hd-chips">${chips.map(([v,l])=>`<button type="button" class="daychip" data-hd="${v}" aria-pressed="${hemaDate===v}">${l}<small>${thDate(v)}</small></button>`).join('')}</div>
       <input class="input" id="h-date" type="date" max="${today}" value="${esc(hemaDate)}" aria-label="หรือเลือกวันอื่น"></div>
     <div id="h-dmsg"></div>
-    <span class="lab" style="font-weight:700">2. สแกน Sample No.</span>
+    <div class="field" style="margin:0"><span class="lab">2. สไลด์ของ</span><div class="site-pick sm" role="group">
+      <button type="button" data-hs="ipd" aria-pressed="${hemaSite==='ipd'}"><b>IPD</b></button><button type="button" data-hs="opd" aria-pressed="${hemaSite==='opd'}"><b>OPD</b></button></div></div>
+    <span class="lab" style="font-weight:700">3. สแกน Sample No.</span>
     <button class="btn btn-teal btn-block hema-shot" id="h-rapid">${icCam}สแกนต่อเนื่องด้วยกล้อง</button>
     <div class="field" style="margin:0"><label for="h-usb">หรือใช้เครื่องสแกน / พิมพ์ แล้วกด Enter</label>
       <input class="input mono" id="h-usb" inputmode="numeric" autocomplete="off" maxlength="10" placeholder="คลิกที่ช่องนี้ แล้วยิงบาร์โค้ดได้เลย"></div>
@@ -2598,8 +2717,9 @@ function renderHema(){
   $('#h-by').oninput=e=>store.set('cbcHemaBy',e.target.value.trim());
   const setD=v=>{hemaDate=v;$('#h-date').value=v;app.querySelectorAll('[data-hd]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.hd===v));$('#h-dmsg').innerHTML=v?`<div class="flag ok">วันที่ส่งตรวจ: ${thDate(v)}</div>`:''};
   app.querySelectorAll('[data-hd]').forEach(b=>b.onclick=()=>setD(b.dataset.hd));
+  app.querySelectorAll('[data-hs]').forEach(b=>b.onclick=()=>{hemaSite=b.dataset.hs;store.set('cbcHemaSite',hemaSite);app.querySelectorAll('[data-hs]').forEach(x=>x.setAttribute('aria-pressed',x===b))});
   $('#h-date').onchange=e=>setD(e.target.value);if(hemaDate)setD(hemaDate);
-  const need=()=>{if(!hemaDate){$('#h-dmsg').innerHTML=errBox('เลือกวันที่ส่งตรวจก่อนสแกน');errBeep();return false}if(!$('#h-by').value.trim()){toast('กรอกชื่อผู้สแกนก่อนครับ');$('#h-by').focus();return false}return true};
+  const need=()=>{if(!hemaDate){$('#h-dmsg').innerHTML=errBox('เลือกวันที่ส่งตรวจก่อนสแกน');errBeep();return false}if(!hemaSite){toast('เลือกว่าเป็นสไลด์ IPD หรือ OPD ก่อน');errBeep();return false}if(!$('#h-by').value.trim()){toast('กรอกชื่อผู้สแกนก่อนครับ');$('#h-by').focus();return false}return true};
   $('#h-rapid').onclick=()=>{if(need())openScanner(hemaOne,'สแกนต่อเนื่อง · '+thDate(hemaDate),{keep:true})};
   const u=$('#h-usb');u.onkeydown=async e=>{if(e.key!=='Enter')return;e.preventDefault();const v=u.value.replace(/\D/g,'');u.value='';if(!v)return;if(!need())return;
     const r=await hemaOne(v);r.ok?beep():errBeep()};
@@ -2607,7 +2727,7 @@ function renderHema(){
   $('#h-ref').onclick=loadHema;if(hemaItems)drawHemaList();loadHema();
   if(innerWidth>=1024)setTimeout(()=>{if(hemaDate)u.focus()},50);
 }
-let hemaDate='',hemaSess=[];
+let hemaDate='',hemaSess=[],hemaSite=store.get('cbcHemaSite')||'';
 function hemaSessHtml(){return hemaSess.length?`<div class="mylist">${hemaSess.slice(0,40).map(x=>`<div class="it ${x.ok?'out':'in'}"><div style="min-width:0"><div class="mono" style="font-weight:600">${esc(x.sample)}</div><div class="small ${x.ok?'muted':'nf-why'}">${esc(x.msg)} · ${esc(x.time)}</div></div>${x.ok&&x.id?`<button class="linkbtn" data-hsu="${x.id}" style="font-size:.82rem">ยกเลิก</button>`:''}</div>`).join('')}</div>`:'<div class="small muted" style="text-align:center;padding:12px">ยังไม่ได้สแกน</div>'}
 function drawHemaSess(){const b=$('#h-sess');if(!b)return;b.innerHTML=hemaSessHtml();const n=$('#h-n');if(n)n.textContent=hemaSess.filter(x=>x.ok).length;
   b.querySelectorAll('[data-hsu]').forEach(x=>x.onclick=async()=>{x.disabled=true;try{await run('apiHematoUndo',labPin,+x.dataset.hsu);const it=hemaSess.find(y=>String(y.id)===x.dataset.hsu);if(it){it.ok=false;it.msg='ยกเลิกแล้ว';it.id=0}drawHemaSess();loadHema()}catch(err){x.disabled=false;toast(err.message)}})}
@@ -2616,8 +2736,8 @@ function hemaOne(code){ // บันทึกทีละแผ่น (เรี
   const job=hemaBusy.then(async()=>{const t=new Date(),time=p2(t.getHours())+':'+p2(t.getMinutes())+':'+p2(t.getSeconds());
     if(!/^\d{10}$/.test(code)){const it={sample:code,ok:false,msg:'ไม่ใช่ Sample No. 10 หลัก',time};hemaSess.unshift(it);drawHemaSess();return it}
     if(hemaSess.some(x=>x.ok&&x.sample===code)){return {ok:true,msg:'สแกนแผ่นนี้ไปแล้ว'}}
-    try{const r=await run('apiHematoReady',labPin,{sample:code,specDate:hemaDate,by:store.get('cbcHemaBy')||labBy()||''});
-      const msg=r.newly?`พร้อมรับ · ตรงกับออร์เดอร์ ${r.newly} ใบ (แจ้งวอร์ดแล้ว)`:r.again?'แจ้งพร้อมไว้แล้ว':'พร้อมรับ';
+    try{const r=await run('apiHematoReady',labPin,{sample:code,specDate:hemaDate,site:hemaSite,by:store.get('cbcHemaBy')||labBy()||''});
+      const msg=(hemaSite==='opd'?'OPD · ':'IPD · ')+(r.newly?`พร้อมรับ · ตรงกับออร์เดอร์ ${r.newly} ใบ (แจ้งวอร์ดแล้ว)`:r.again?'แจ้งพร้อมไว้แล้ว':'พร้อมรับ');
       if(r.newly)flushPush();const it={sample:code,ok:true,msg,time,id:r.ready.id};hemaSess.unshift(it);drawHemaSess();clearTimeout(hemaLT);hemaLT=setTimeout(loadHema,900);return it}
     catch(err){if(hemaErr(err))return {ok:false,msg:err.message};const it={sample:code,ok:false,msg:err.message,time};hemaSess.unshift(it);drawHemaSess();return it}});
   hemaBusy=job.catch(()=>{});return job;
@@ -2719,7 +2839,7 @@ async function navTo(t){adminPin='';
 document.querySelectorAll('[data-tab-nav]').forEach(b=>b.onclick=()=>navTo(b.dataset.tabNav));
 setInterval(()=>{if(mode==='lab'&&labPin&&labTab==='list'&&document.activeElement&&document.activeElement.id!=='lab-q')reloadLab()},60000);
 
-run('apiInit',store.get(TOKEN_KEY)).then(d=>{WARDS=d.wards;ME=d.me;LATE_MIN=d.lateMin;MAINT=d.maint==='on';if(d.fest){store.set('cbcFest',d.fest);applyFest(d.fest)}view=ME?'home':'register';
+run('apiInit',store.get(TOKEN_KEY)).then(d=>{WARDS=d.wards;ME=d.me;LATE_MIN=d.lateMin;MAINT=d.maint==='on';OPD_OPEN=!!d.opdOpen;OPD_HOURS=d.opdHours||null;if(d.fest){store.set('cbcFest',d.fest);applyFest(d.fest)}view=ME?'home':'register';
   try{if(new URLSearchParams(location.search).has('hemato')){mode='lab';labTab='hema'}}catch(e){}render();
   if(ME&&store.get(NOTIF_KEY)==='1')pushSubscribe('me',true).catch(()=>{});if(labPin&&store.get('cbcLabPush')==='1')pushSubscribe('lab',true).catch(()=>{})})
   .catch(err=>{app.innerHTML=`<div class="col"><div class="alert bad">โหลดไม่สำเร็จ: ${esc(err.message)}</div></div>`});
