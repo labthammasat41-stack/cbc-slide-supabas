@@ -1240,7 +1240,8 @@ function showHelp(){
       <li><b>Sample No.</b> ถ้ามี กดปุ่มกล้องสแกนบาร์โค้ด (ถ้าไม่มี เว้นว่างได้ แลปจะสแกนจากสไลด์ให้)</li>
       <li>เลือก<b>วอร์ด</b> ระบบจะบอกว่าตามได้ถึงเมื่อไหร่ แล้วกรอก<b>เหตุผล</b>ที่ตาม</li>
       <li>กด <b>ส่งออร์เดอร์ตามสไลด์</b> ออร์เดอร์จะขึ้นที่แลปทันที</li>
-      <li>เปิดสวิตช์ <b>แจ้งเตือนเด้ง</b> ที่หน้าแรกไว้ เมื่อแลปพบสไลด์จะเด้งบอก แล้วให้คนงานไปรับ</li></ol>
+      <li>เปิดสวิตช์ <b>แจ้งเตือนเด้ง</b> ที่หน้าแรกไว้ เมื่อแลปพบสไลด์จะเด้งบอก แล้วให้คนงานไปรับ</li>
+      <li><b>แพทย์/พยาบาลมารับเองที่แลป</b> (ไม่ได้สั่งไว้ก่อน): กด <b>สั่งตามสไลด์</b> ที่แลปได้เลย รอแลปกดพบ แล้วกด <b>สแกนรับสไลด์ที่แลป</b> สแกนบาร์โค้ดบนสไลด์ก่อนนำไป</li></ol>
       <div class="small muted">ถ้าแลปหาไม่เจอ จะขึ้น ❌ พร้อมเหตุผล สอบถามได้ที่ 8133 · iPhone ต้องติดตั้งแอปบนหน้าจอโฮมก่อนจึงจะได้แจ้งเตือนเด้ง</div></section>
     <section class="help-sec"><h3><span class="dot" style="background:var(--blue)"></span>2. คนงาน: สแกนรับสไลด์ที่แลป</h3>
       <ol><li>เริ่มงานแต่ละวัน เลือก<b>วอร์ดที่เดินส่งงานวันนี้</b> (เลือกได้หลายวอร์ด เปลี่ยนได้ที่ เมนู)</li>
@@ -1380,7 +1381,7 @@ function render(){
   if(mode==='hemato'){mode='lab';labTab='hema';return render()}
   if(!ME&&view!=='login')view='register';
   if(ME&&(!ME.role||(ME.role==='nurse'&&!ME.ward)))view='role';
-  if(ME&&(view==='checkout'||view==='include'))view=ME.role==='porter'?'pick':'home';
+  if(ME&&(view==='checkout'||view==='include'))view='pick';
   if(ME&&view==='checkin'&&ME.role!=='nurse')view='home';
   $('#fab').hidden=!ME||view!=='home';if(view==='home')sayAgain();
   ({register:vRegister,login:vLogin,home:vHome,checkin:vIn,checkout:vOut,include:vInc,search:vSearch,done:vDone,role:vRole,pick:vPick})[view]();
@@ -1495,9 +1496,9 @@ function vHome(){
      <button class="btn btn-teal" type="button" data-ins>ติดตั้งแอป</button></div>
    <div class="cam-card" id="cam-card" hidden><div class="cam-i">📷</div><div class="cam-b"><b>เปิดใช้กล้องสำหรับสแกน</b><span class="cam-t small"></span></div>
      <button class="btn btn-teal" type="button">อนุญาตกล้อง</button></div>
-   <div class="big-actions" style="grid-template-columns:1fr">
-     ${nurse?`<button class="big send" id="go-in">${icSend}<b>สั่งตามสไลด์</b><span>ส่งออร์เดอร์จากวอร์ดถึงแลปทันที ไม่ต้องใช้กระดาษ</span></button>`
-      :`<button class="big recv" id="go-pick">${icRecv}<b>สแกนรับสไลด์ที่แลป</b><span>สแกนบาร์โค้ดบนสไลด์ทุกแผ่น ระบบเทียบกับออร์เดอร์ให้</span></button>`}
+   <div class="big-actions" ${nurse?'':'style="grid-template-columns:1fr"'}>
+     ${nurse?`<button class="big send" id="go-in">${icSend}<b>สั่งตามสไลด์</b><span>ส่งออร์เดอร์จากวอร์ดถึงแลปทันที ไม่ต้องใช้กระดาษ</span></button>`:''}
+     <button class="big recv" id="go-pick">${icRecv}<b>สแกนรับสไลด์ที่แลป</b><span>${nurse?'มารับเองที่แลป สแกนสไลด์ก่อนนำไป':'สแกนบาร์โค้ดบนสไลด์ทุกแผ่น ระบบเทียบกับออร์เดอร์ให้'}</span></button>
    </div>
    ${nurse?'':`<section class="panel pw-card" id="pw-card">${pwCardHtml()}</section>
      <div class="section-h"><h3>งานของฉันวันนี้</h3><button class="linkbtn" id="pk-re">รีเฟรช</button></div><section class="panel" id="pk-list"><div class="sk sk-row"></div></section>`}
@@ -1836,9 +1837,9 @@ async function pickFind(code){
 }
 
 /* ---------- บทบาทผู้ใช้: พยาบาล (สั่งตามสไลด์) / คนงาน (รับสไลด์ที่แลป) ---------- */
-const ROLE_TH={nurse:'พยาบาล',porter:'คนงาน'};
+const ROLE_TH={nurse:'พยาบาล/แพทย์',porter:'คนงาน'};
 function rolePick(cur){return `<div class="role-pick">
-  <label class="rp"><input type="radio" name="role" value="nurse" ${cur==='nurse'?'checked':''}><span class="ri">👩‍⚕️</span><span><b>พยาบาล / วอร์ด</b><small>สั่งตามสไลด์จากวอร์ด รอแจ้งเตือนว่าพร้อมรับ</small></span></label>
+  <label class="rp"><input type="radio" name="role" value="nurse" ${cur==='nurse'?'checked':''}><span class="ri">👩‍⚕️</span><span><b>พยาบาล / แพทย์</b><small>สั่งตามสไลด์จากวอร์ด และมารับสไลด์ที่แลปเองได้</small></span></label>
   <label class="rp"><input type="radio" name="role" value="porter" ${cur==='porter'?'checked':''}><span class="ri">🚶</span><span><b>คนงาน / ผู้รับสไลด์</b><small>มารับสไลด์ที่แลป สแกนบาร์โค้ดบนสไลด์ทุกแผ่น</small></span></label></div>`}
 function bindRoleWard(box,id){bindCombo(id);const t=()=>{const r=(document.querySelector('input[name=role]:checked')||{}).value;document.getElementById(box).hidden=r!=='nurse'};
   document.querySelectorAll('input[name=role]').forEach(x=>x.addEventListener('change',t));t()}
@@ -1885,7 +1886,7 @@ function openSheet(html){
   return {el:ov,close,set(h){ov.querySelector('.sheet').innerHTML='<div class="grab"></div>'+h;ov.querySelectorAll('[data-close]').forEach(b=>b.onclick=close)}};
 }
 function quickScan(){
-  if(ME&&ME.role==='porter'&&mode!=='lab'&&mode!=='hemato')return openScanner(code=>{mode='ward';view='pick';render();setTimeout(()=>{const s=$('#p-sample');if(s){s.value=code;pickFind(code)}},0)},'สแกน Sample No. บนสไลด์');
+  if(ME&&ME.role&&mode!=='lab'&&mode!=='hemato')return openScanner(code=>{mode='ward';view='pick';render();setTimeout(()=>{const s=$('#p-sample');if(s){s.value=code;pickFind(code)}},0)},'สแกน Sample No. บนสไลด์');
   openScanner(async code=>{
     const sh=openSheet(`<div class="eyebrow">ผลการสแกน</div><h2 class="mono">${esc(code)}</h2><div class="sk sk-row"></div><div class="sk sk-row"></div>`);
     const goView=(v,set)=>{sh.close();mode='ward';set();view=v;render()};
