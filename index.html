@@ -591,6 +591,7 @@ details.tbl th,details.tbl td{padding:6px 10px}
 .pw-it{display:flex;gap:10px;align-items:center;text-align:left;border:0;background:none;padding:10px;border-radius:10px;font-size:.95rem;cursor:pointer;color:var(--ink)}
 .pw-it[aria-pressed="true"]{background:var(--blue-soft);font-weight:700}.pw-it .ck{width:22px;height:22px;border-radius:6px;border:2px solid var(--line);display:grid;place-items:center;flex:none;color:#fff;font-size:.8rem}
 .pw-it[aria-pressed="true"] .ck{background:var(--blue);border-color:var(--blue)}.pk-wh{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.maint{align-items:stretch;gap:14px;margin-top:4vh}.maint-bot{width:120px;margin:0 auto}.maint-bot svg{width:120px;height:140px}
 .hema-grid{display:grid;gap:16px}.hd-chips{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:6px}
 .hd-chips .daychip{background:var(--surface-3);display:flex;flex-direction:column;align-items:center;padding:8px 4px;min-height:54px}.hd-chips small{font-size:.72rem;font-weight:400;opacity:.8}
 .hd-chips .daychip[aria-pressed="true"]{background:var(--teal);color:#fff;border-color:var(--teal)}.hema-side{display:flex;flex-direction:column;gap:12px}
@@ -714,7 +715,7 @@ const RPC={apiInit:['api_init','p_token'],apiRegister:['api_register','d'],apiLo
   apiIncludeCheck:['api_include_check','p_token','d'],apiInclude:['api_include','p_token','d'],apiSearch:['api_search','p_token','q'],
   apiLabList:['api_lab_list','p_pin'],apiLabStats:['api_lab_stats','p_pin','p_days'],apiSetPhoto:['api_set_photo','p_token','p_id','p_path'],apiUndo:['api_undo','p_token','p_id','p_kind'],
   apiLabFix:['api_lab_fix','p_pin','p_id','p_action','p_reason'],apiLabStaff:['api_lab_staff','p_pin'],apiLabStaffSet:['api_lab_staff_set','p_pin','p_staff','p_state'],
-  apiLabBackups:['api_lab_backups','p_pin'],apiAdminWards:['api_admin_wards','p_pin'],apiLabFestSet:['api_lab_fest_set','p_pin','p_fest'],apiHematoReady:['api_hemato_ready','p_pin','d'],apiHematoList:['api_hemato_list','p_pin'],apiHematoUndo:['api_hemato_undo','p_pin','p_ready'],apiSetRole:['api_set_role','p_token','p_role'],apiSetWard:['api_set_ward','p_token','p_ward'],apiSetPwards:['api_set_pwards','p_token','p_wards'],apiPushSub:['api_push_sub','p_token','sub'],apiLabPushSub:['api_lab_push_sub','p_pin','sub','p_on'],apiPushUnsub:['api_push_unsub','p_endpoint'],apiLabQueue:['api_lab_queue','p_pin'],apiLabReady:['api_lab_ready','p_pin','p_row','d'],apiLabNf:['api_lab_nf','p_pin','p_row','d'],apiLabBack:['api_lab_back','p_pin','p_row','d'],apiPickFind:['api_pick_find','p_token','p_sample'],apiPickList:['api_pick_list','p_token'],apiLabAudit:['api_lab_audit','p_pin','q','p_days'],apiAdminWardSave:['api_admin_ward_save','p_pin','p_action','p_name','p_new'],apiLabPurge:['api_lab_purge','p_pin','p_month','p_confirm']};
+  apiLabBackups:['api_lab_backups','p_pin'],apiAdminWards:['api_admin_wards','p_pin'],apiLabFestSet:['api_lab_fest_set','p_pin','p_fest'],apiLabMaintSet:['api_lab_maint_set','p_pin','p_on'],apiHematoReady:['api_hemato_ready','p_pin','d'],apiHematoList:['api_hemato_list','p_pin'],apiHematoUndo:['api_hemato_undo','p_pin','p_ready'],apiSetRole:['api_set_role','p_token','p_role'],apiSetWard:['api_set_ward','p_token','p_ward'],apiSetPwards:['api_set_pwards','p_token','p_wards'],apiPushSub:['api_push_sub','p_token','sub'],apiLabPushSub:['api_lab_push_sub','p_pin','sub','p_on'],apiPushUnsub:['api_push_unsub','p_endpoint'],apiLabQueue:['api_lab_queue','p_pin'],apiLabReady:['api_lab_ready','p_pin','p_row','d'],apiLabNf:['api_lab_nf','p_pin','p_row','d'],apiLabBack:['api_lab_back','p_pin','p_row','d'],apiPickFind:['api_pick_find','p_token','p_sample'],apiPickList:['api_pick_list','p_token'],apiLabAudit:['api_lab_audit','p_pin','q','p_days'],apiAdminWardSave:['api_admin_ward_save','p_pin','p_action','p_name','p_new'],apiLabPurge:['api_lab_purge','p_pin','p_month','p_confirm']};
 /* คีย์แบบใหม่ (sb_publishable_…) ส่งใน apikey อย่างเดียว คีย์ anon แบบเดิม (eyJ…) ส่งใน Authorization ด้วย */
 const supaHead=extra=>Object.assign({apikey:SUPA_KEY},/^eyJ/.test(SUPA_KEY)?{Authorization:'Bearer '+SUPA_KEY}:{},extra||{});
 async function rpc(fn,args){
@@ -1373,6 +1374,8 @@ function render(){
   const cur=mode==='lab'?'lab':view==='search'?'search':'home';
   document.querySelectorAll('[data-tab-nav]').forEach(b=>{if(b.dataset.tabNav===cur)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
   if(mode==='lab'){$('#fab').hidden=true;window.scrollTo(0,0);return labPin?renderLab():vPin()}
+  if(MAINT&&!maintPass()){$('#fab').hidden=true;$('#tabbar').hidden=true;document.body.classList.add('noNav');window.scrollTo(0,0);return vMaint()}
+  document.body.classList.remove('noNav');
   if(mode==='hemato'){mode='lab';labTab='hema';return render()}
   if(!ME&&view!=='login')view='register';
   if(ME&&!ME.role)view='role';
@@ -1381,6 +1384,31 @@ function render(){
   $('#fab').hidden=!ME||view!=='home';if(view==='home')sayAgain();
   ({register:vRegister,login:vLogin,home:vHome,checkin:vIn,checkout:vOut,include:vInc,search:vSearch,done:vDone,role:vRole,pick:vPick})[view]();
   window.scrollTo(0,0);
+}
+/* ---------- แอปอยู่ระหว่างการพัฒนา (แลปเปิด/ปิดได้ที่หน้าแลป ปุ่ม 🚧) ---------- */
+let MAINT=false;
+const maintPass=()=>{try{if(new URLSearchParams(location.search).has('test'))sessionStorage.setItem('cbcTest','1');return sessionStorage.getItem('cbcTest')==='1'}catch(e){return false}};
+function vMaint(){
+  app.innerHTML=`<div class="col"><section class="panel maint">
+    <div class="maint-bot">${botSvg()}</div>
+    <div class="eyebrow" style="text-align:center">ตาม Slide CBC</div>
+    <h2 style="text-align:center;margin:0">แอปอยู่ระหว่างการพัฒนา 🚧</h2>
+    <p style="text-align:center;margin:0;line-height:1.7">ขณะนี้ยังไม่เปิดให้ใช้งานครับ<br>หากเปิดใช้งานแล้ว ห้องปฏิบัติการจะแจ้งให้ทราบอีกครั้ง</p>
+    <div class="alert info" style="text-align:center">ระหว่างนี้ ติดตามสไลด์ตามขั้นตอนเดิมได้เลยครับ<br>สอบถามได้ที่ห้องปฏิบัติการ <b>8133</b></div>
+    <button class="btn btn-soft btn-block" id="mt-re">ลองเปิดใหม่</button>
+    <button class="linkbtn" id="mt-lab" style="align-self:center;font-size:.82rem">สำหรับเจ้าหน้าที่ห้องปฏิบัติการ</button></section></div>`;
+  $('#mt-re').onclick=()=>location.reload();
+  $('#mt-lab').onclick=()=>{$('#tabbar').hidden=false;document.body.classList.remove('noNav');mode='lab';render()};
+}
+function maintSheet(){
+  const sh=openSheet(`<div class="eyebrow">สถานะแอป</div><h2>${MAINT?'🚧 ปิดชั่วคราว (ระหว่างพัฒนา)':'✅ เปิดให้ใช้งานอยู่'}</h2>
+    <p class="small muted" style="margin:0">${MAINT?'ผู้ใช้ทุกคนเห็นหน้าแจ้ง "แอปอยู่ระหว่างการพัฒนา" ส่วนหน้าแลปยังใช้ได้ · ทดสอบหน้าวอร์ดได้ด้วยลิงก์ที่ลงท้าย ?test':'ทุกคนใช้แอปได้ตามปกติ'}</p>
+    <div id="mt-err"></div>
+    <button class="btn btn-block" id="mt-go" style="${MAINT?'':'background:var(--warn);color:#fff'}">${MAINT?'เปิดให้ทุกคนใช้งาน':'ปิดแอปชั่วคราว แจ้งว่าระหว่างพัฒนา'}</button>
+    <button class="btn btn-soft btn-block" data-close>ยกเลิก</button>`);
+  sh.el.querySelector('#mt-go').onclick=async e=>{const b=e.currentTarget;busy(b,true,'กำลังบันทึก…');
+    try{const r=await run('apiLabMaintSet',labPin,!MAINT);MAINT=r.maint==='on';sh.close();toast(MAINT?'ปิดแอปชั่วคราวแล้ว ผู้ใช้จะเห็นหน้าแจ้งเมื่อเปิดแอป':'เปิดให้ใช้งานแล้ว');renderLab()}
+    catch(err){busy(b,false);sh.el.querySelector('#mt-err').innerHTML=errBox(err.message)}};
 }
 function vRegister(){
   app.innerHTML=`<div class="col"><section class="panel">
@@ -2269,9 +2297,10 @@ const labTabs=()=>`<div class="lab-top"><div class="ltabs" role="tablist" aria-l
   <button role="tab" data-tab="wards" aria-selected="${labTab==='wards'}">${icBed}วอร์ด</button>
   <button role="tab" data-tab="audit" aria-selected="${labTab==='audit'}">${icHist}ประวัติการใช้งาน</button>
   <button role="tab" data-tab="backup" aria-selected="${labTab==='backup'}">${icArchive}สำรองข้อมูล</button></div>
+  <button class="btn btn-soft lab-lock" id="lab-maint" type="button" aria-label="สถานะแอป">${MAINT?'🚧':'✅'}<span>${MAINT?'ปิดอยู่':'เปิดอยู่'}</span></button>
   <button class="btn btn-soft lab-lock" id="lab-fest" type="button" aria-label="เลือกธีมเทศกาล">🎨<span>ธีม</span></button>
   <button class="btn btn-soft lab-lock" id="lab-lock" type="button" aria-label="ล็อกหน้าแลป (ต้องใส่ PIN ใหม่)">${icLock}<span>ล็อก</span></button></div>`;
-function bindTabs(){const lk=$('#lab-lock');if(lk)lk.onclick=()=>lockLab();const lf=$('#lab-fest');if(lf)lf.onclick=festSheet;const sel=app.querySelector('.ltabs [aria-selected="true"]');if(sel)try{sel.scrollIntoView({inline:'center',block:'nearest'})}catch(e){}app.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{if(labTab===b.dataset.tab)return;labTab=b.dataset.tab;if(!ADMIN_TABS.includes(labTab))adminPin='';labTab==='stats'?loadStats():labTab==='staff'?loadStaff():labTab==='backup'?loadBackups():labTab==='wards'?loadWards():renderLab()})}
+function bindTabs(){const lk=$('#lab-lock');if(lk)lk.onclick=()=>lockLab();const lf=$('#lab-fest');if(lf)lf.onclick=festSheet;const lm=$('#lab-maint');if(lm)lm.onclick=maintSheet;const sel=app.querySelector('.ltabs [aria-selected="true"]');if(sel)try{sel.scrollIntoView({inline:'center',block:'nearest'})}catch(e){}app.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{if(labTab===b.dataset.tab)return;labTab=b.dataset.tab;if(!ADMIN_TABS.includes(labTab))adminPin='';labTab==='stats'?loadStats():labTab==='staff'?loadStaff():labTab==='backup'?loadBackups():labTab==='wards'?loadWards():renderLab()})}
 async function loadStats(force){
   if(!force&&statCache[statDays]){statData=statCache[statDays];return renderStats()}
   statData=null;renderStats();
@@ -2653,7 +2682,7 @@ async function navTo(t){adminPin='';
 document.querySelectorAll('[data-tab-nav]').forEach(b=>b.onclick=()=>navTo(b.dataset.tabNav));
 setInterval(()=>{if(mode==='lab'&&labPin&&labTab==='list'&&document.activeElement&&document.activeElement.id!=='lab-q')reloadLab()},60000);
 
-run('apiInit',store.get(TOKEN_KEY)).then(d=>{WARDS=d.wards;ME=d.me;LATE_MIN=d.lateMin;if(d.fest){store.set('cbcFest',d.fest);applyFest(d.fest)}view=ME?'home':'register';
+run('apiInit',store.get(TOKEN_KEY)).then(d=>{WARDS=d.wards;ME=d.me;LATE_MIN=d.lateMin;MAINT=d.maint==='on';if(d.fest){store.set('cbcFest',d.fest);applyFest(d.fest)}view=ME?'home':'register';
   try{if(new URLSearchParams(location.search).has('hemato')){mode='lab';labTab='hema'}}catch(e){}render();
   if(ME&&store.get(NOTIF_KEY)==='1')pushSubscribe('me',true).catch(()=>{});if(labPin&&store.get('cbcLabPush')==='1')pushSubscribe('lab',true).catch(()=>{})})
   .catch(err=>{app.innerHTML=`<div class="col"><div class="alert bad">โหลดไม่สำเร็จ: ${esc(err.message)}</div></div>`});
