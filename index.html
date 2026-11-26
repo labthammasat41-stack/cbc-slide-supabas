@@ -592,6 +592,7 @@ details.tbl th,details.tbl td{padding:6px 10px}
 .pw-it[aria-pressed="true"]{background:var(--blue-soft);font-weight:700}.pw-it .ck{width:22px;height:22px;border-radius:6px;border:2px solid var(--line);display:grid;place-items:center;flex:none;color:#fff;font-size:.8rem}
 .pw-it[aria-pressed="true"] .ck{background:var(--blue);border-color:var(--blue)}.pk-wh{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .maint{align-items:stretch;gap:14px;margin-top:4vh}.maint-bot{width:120px;margin:0 auto}.maint-bot svg{width:120px;height:140px}
+.logout-btn{background:var(--bad-soft);color:var(--bad);border:1.5px solid color-mix(in srgb,var(--bad) 40%,transparent);gap:8px}.logout-btn svg{width:20px;height:20px}
 .hema-grid{display:grid;gap:16px}.hd-chips{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:6px}
 .hd-chips .daychip{background:var(--surface-3);display:flex;flex-direction:column;align-items:center;padding:8px 4px;min-height:54px}.hd-chips small{font-size:.72rem;font-weight:400;opacity:.8}
 .hd-chips .daychip[aria-pressed="true"]{background:var(--teal);color:#fff;border-color:var(--teal)}.hema-side{display:flex;flex-direction:column;gap:12px}
@@ -1278,7 +1279,7 @@ const FAQ=[
  {g:'แจ้งเตือนและปัญหา',q:'ขึ้นว่า "ถูกสั่งตามแล้ว"',a:'แปลว่าสไลด์นี้มีผู้สั่งตามไว้แล้วครับ ไม่ต้องสั่งซ้ำ\nดูรายละเอียดในกล่องสีส้ม แล้วรอแจ้งเตือนว่าพร้อมรับได้เลยครับ\nหากแอปแจ้งว่า "อาจซ้ำ" และตรวจแล้วเป็นการส่งตรวจคนละครั้งจริง กด "เป็นคนละรายการ บันทึกต่อ" ได้ครับ',n:[3]},
  {g:'แจ้งเตือนและปัญหา',q:'สแกนรับแล้วขึ้น "ไม่พบออร์เดอร์"',a:'อย่าเพิ่งนำสไลด์ไปครับ ตรวจ Sample No. บนสไลด์อีกครั้ง\n• ถ้าขึ้นว่า "แลปยังไม่ได้ยืนยัน" ให้เจ้าหน้าที่แลปกด "พบสไลด์" ก่อน\n• ถ้าเป็นสไลด์ include ให้ห้อง Hemato สแกนก่อน\n• หากยังไม่แน่ใจ สอบถามได้ที่ '+CALL+' ครับ',n:[5,14]},
  {g:'แจ้งเตือนและปัญหา',q:'HN บนสไลด์ไม่ตรงกับในแอป',a:'กรุณาอย่าเพิ่งนำสไลด์ไปครับ อาจหยิบสไลด์ผิดใบ\nแจ้งเจ้าหน้าที่แลปตรวจอีกครั้ง หรือสอบถามได้ที่ '+CALL+' ครับ',n:[13]},
- {g:'แจ้งเตือนและปัญหา',q:'เปลี่ยนมือถือ หรือแอปจำชื่อไม่ได้',a:'ไม่ต้องลงทะเบียนใหม่ครับ กด "เคยลงทะเบียนแล้ว แต่เปลี่ยนเครื่อง" แล้วกรอกรหัสพนักงานกับชื่อจริงที่ลงทะเบียนไว้ได้เลยครับ\nถ้าเปลี่ยนหน้าที่ (พยาบาล / คนงาน) เปลี่ยนได้ที่ เมนู → บทบาทของฉัน',n:[1]},
+ {g:'แจ้งเตือนและปัญหา',q:'เปลี่ยนมือถือ หรือแอปจำชื่อไม่ได้',a:'ไม่ต้องลงทะเบียนใหม่ครับ กด "เคยลงทะเบียนแล้ว แต่เปลี่ยนเครื่อง" แล้วกรอกรหัสพนักงานกับชื่อจริงที่ลงทะเบียนไว้ได้เลยครับ\nถ้าเลือกบทบาท (พยาบาล / คนงาน) หรือวอร์ดผิด ติดต่อห้องปฏิบัติการ '+CALL+' ให้รีเซ็ตให้ครับ',n:[1]},
  {g:'แจ้งเตือนและปัญหา',q:'ไม่ทำตามขั้นตอน จะเป็นอย่างไร',a:'ระบบบันทึกทุกการกระทำไว้ว่าใครทำอะไร เมื่อไร หากนำสไลด์ไปโดยไม่ได้สแกนรับในแอป จะมีการเขียนรายงาน Incident Report ไปยังต้นสังกัดครับ\nรบกวนสแกนรับในแอปทุกครั้งนะครับ ขอบคุณครับ 🙏',n:[1]},
  {g:'ค้นหาสไลด์',q:'สไลด์ include ไม่ขึ้นในระบบ',a:'ไม่ต้องกังวลครับ ลองทำตามนี้นะครับ\n1. กด "ค้นหาสถานะสไลด์" แล้วใส่ HN หรือ Sample No. ระบบจะบอกว่ามีคนรับไปแล้วหรือยัง\n2. ถ้ายังไม่มีใครรับ และสแกนแล้วขึ้นว่า Hemato ยังไม่ได้สแกน แจ้งห้อง Hemato ก่อน\n3. หากยังไม่พบ สอบถามได้ที่ '+CALL+' ครับ',n:[18,5],go:'search'},
  {g:'ค้นหาสไลด์',q:'ตรวจสอบว่าใครรับสไลด์ไปแล้ว',a:'กดปุ่ม "ค้นหาสถานะสไลด์" ที่หน้าแรก แล้วพิมพ์หรือสแกน HN หรือ Sample No. ได้เลยครับ\nระบบจะแสดงรายการย้อนหลัง 7 วัน ว่ารับสไลด์ไปแล้วหรือยัง ใครเป็นผู้รับ และรับเมื่อไรครับ',n:[17],go:'search'},
@@ -1378,7 +1379,7 @@ function render(){
   document.body.classList.remove('noNav');
   if(mode==='hemato'){mode='lab';labTab='hema';return render()}
   if(!ME&&view!=='login')view='register';
-  if(ME&&!ME.role)view='role';
+  if(ME&&(!ME.role||(ME.role==='nurse'&&!ME.ward)))view='role';
   if(ME&&(view==='checkout'||view==='include'))view=ME.role==='porter'?'pick':'home';
   if(ME&&view==='checkin'&&ME.role!=='nurse')view='home';
   $('#fab').hidden=!ME||view!=='home';if(view==='home')sayAgain();
@@ -1418,7 +1419,7 @@ function vRegister(){
       <div class="row2"><div class="field"><label for="r-first">ชื่อ</label><input class="input" id="r-first"></div>
       <div class="field"><label for="r-last">นามสกุล</label><input class="input" id="r-last"></div></div>
       <div class="field"><label for="r-nick">ชื่อเล่น</label><input class="input" id="r-nick"></div>
-      <div class="field"><span class="lab">บทบาท</span>${rolePick('')}</div>
+      <div class="field"><span class="lab">บทบาท <span class="opt">(เลือกครั้งเดียว เปลี่ยนเองไม่ได้)</span></span>${rolePick('')}</div>
       <div id="r-wbox" hidden>${wardCombo('r-ward','','วอร์ดของคุณ')}</div>
       <div id="err"></div>
       <button class="btn btn-teal btn-block" type="submit">ลงทะเบียนและเริ่มใช้งาน</button>
@@ -1843,10 +1844,10 @@ function bindRoleWard(box,id){bindCombo(id);const t=()=>{const r=(document.query
   document.querySelectorAll('input[name=role]').forEach(x=>x.addEventListener('change',t));t()}
 function vRole(){
   app.innerHTML=`<div class="col"><section class="panel"><div class="eyebrow">${ME.role?'บทบาทของฉัน':'ระบบใหม่: ไม่ใช้กระดาษ'}</div><h2>เลือกบทบาทของคุณ</h2>
-    <p class="small muted" style="margin:4px 0 10px">แต่ละบทบาทจะเห็นปุ่มไม่เหมือนกัน เปลี่ยนได้ภายหลังที่ เมนู → บทบาทของฉัน</p>
+    <p class="small muted" style="margin:4px 0 10px">เลือกได้ครั้งเดียว แต่ละบทบาทจะเห็นปุ่มไม่เหมือนกัน หากเลือกผิด ติดต่อห้องปฏิบัติการ 8133</p>
     <form id="f" class="form" novalidate>${rolePick(ME.role||'')}<div id="v-wbox" ${ME.role==='nurse'?'':'hidden'}>${wardCombo('v-ward',ME.ward||'','วอร์ดของคุณ')}</div><div id="err"></div>
     <button class="btn btn-teal btn-block" type="submit">บันทึกบทบาท</button></form>
-    ${ME.role?'<button class="btn btn-soft btn-block" id="r-back" style="margin-top:8px">กลับหน้าแรก</button>':''}</section></div>`;
+    </section></div>`;
   const bk=$('#r-back');if(bk)bk.onclick=()=>{view='home';render()};bindRoleWard('v-wbox','v-ward');
   $('#f').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button[type=submit]');
     const rl=(document.querySelector('input[name=role]:checked')||{}).value||'';if(!rl)return $('#err').innerHTML=errBox('เลือกบทบาทก่อนครับ');
@@ -2090,13 +2091,19 @@ function renderStaff(){
   if(staffRows.__err){app.innerHTML=`<div class="wide">${head}${errBox(staffRows.__err)}</div>`;return bindStaff()}
   const q=staffQ.trim().toLowerCase();
   const rows=staffRows.filter(u=>!q||[u.id,u.first,u.last,u.nick].join(' ').toLowerCase().includes(q));
-  app.innerHTML=`<div class="wide">${head}<div class="tbl-wrap"><table style="min-width:720px"><thead><tr><th>รหัส</th><th>ชื่อ-นามสกุล</th><th>ลงทะเบียน</th><th>บันทึก</th><th>ใช้ล่าสุด</th><th>สถานะ</th><th></th></tr></thead><tbody>
+  app.innerHTML=`<div class="wide">${head}<div class="tbl-wrap"><table style="min-width:720px"><thead><tr><th>รหัส</th><th>ชื่อ-นามสกุล</th><th>บทบาท</th><th>ลงทะเบียน</th><th>บันทึก</th><th>ใช้ล่าสุด</th><th>สถานะ</th><th></th></tr></thead><tbody>
     ${rows.length?rows.map(u=>{const off=u.state==='ระงับ';return `<tr><td class="mono">${esc(u.id)}</td><td>${esc(u.first)} ${esc(u.last)} <span class="muted">(${esc(u.nick)})</span></td>
+      <td class="small">${esc(ROLE_TH[u.role]||'ยังไม่เลือก')}${u.ward?'<br><span class="muted">'+esc(u.ward)+'</span>':''}${u.role?`<br><button class="linkbtn" data-rr="${esc(u.id)}" style="font-size:.78rem">รีเซ็ตบทบาท</button>`:''}</td>
       <td class="small">${esc(u.regAt)}</td><td>${nf(u.n)}</td><td class="small">${esc(u.lastAt||'–')}</td>
       <td><span class="pill ${off?'st-in':'st-out'}">${off?'ระงับ':'ใช้งาน'}</span></td>
       <td><button class="btn btn-ghost" style="min-height:40px;padding:8px 12px;font-size:.88rem" data-u="${esc(u.id)}" data-s="${off?'ใช้งาน':'ระงับ'}">${off?'เปิดใช้':'ระงับ'}</button></td></tr>`}).join('')
-      :'<tr><td colspan="7" class="muted" style="text-align:center;padding:28px">ไม่พบผู้ใช้</td></tr>'}</tbody></table></div></div>`;
+      :'<tr><td colspan="8" class="muted" style="text-align:center;padding:28px">ไม่พบผู้ใช้</td></tr>'}</tbody></table></div></div>`;
   bindStaff();
+  app.querySelectorAll('[data-rr]').forEach(b=>b.onclick=()=>{const u=staffRows.find(x=>x.id===b.dataset.rr);
+    const sh=openSheet(`<h2>รีเซ็ตบทบาท?</h2><p style="margin:0">${esc(u.first)} ${esc(u.last)} (${esc(u.nick)}) · ปัจจุบัน: ${esc(ROLE_TH[u.role]||'')}${u.ward?' · '+esc(u.ward):''}</p>
+      <div class="alert info">ครั้งถัดไปที่ผู้ใช้เปิดแอป จะให้เลือกบทบาท (และวอร์ด) ใหม่ ประวัติเดิมยังอยู่ครบ</div>
+      <button class="btn btn-teal btn-block" id="rr-ok">รีเซ็ต</button><button class="btn btn-soft btn-block" data-close>ยกเลิก</button>`);
+    sh.el.querySelector('#rr-ok').onclick=async()=>{sh.close();try{await run('apiLabStaffSet',labPin,u.id,'รีเซ็ตบทบาท');u.role='';u.ward='';toast(`รีเซ็ตบทบาทของ ${u.nick} แล้ว`);renderStaff()}catch(err){toast(err.message)}}});
   app.querySelectorAll('[data-u]').forEach(b=>b.onclick=async()=>{const u=staffRows.find(x=>x.id===b.dataset.u),to=b.dataset.s;
     if(to==='ระงับ')return askStaff(u,to);
     await setStaff(u,to)});
@@ -2459,14 +2466,13 @@ function openMenu(){
     <div class="menu-list">
       <button class="menu-it" id="m-snd">${icSound}เสียงเมื่อสแกนติด<span class="r"><span class="switch" aria-hidden="true" aria-checked="${snd}"></span></span></button>
       ${isStandalone()?'':`<button class="menu-it" id="m-install">${icInstall}ติดตั้งแอปลงหน้าจอมือถือ</button>`}
-      ${ME?`<button class="menu-it" id="m-role">👤&nbsp; บทบาทของฉัน: ${esc(ROLE_TH[ME.role]||'ยังไม่เลือก')}${ME.role==='nurse'&&ME.ward?' · '+esc(ME.ward):''}</button>`:''}
       ${ME&&ME.role==='porter'?`<button class="menu-it" id="m-pw">🚶&nbsp; วอร์ดที่เดินวันนี้${myW().length?': '+esc(myW().join(', ')):''}</button>`:''}
       <button class="menu-it" id="m-cam">📷&nbsp; อนุญาตกล้อง / แก้กล้องไม่ทำงาน</button>
       <button class="menu-it" id="m-guide">${icBook}วิธีการตาม Slide</button>
       <button class="menu-it" id="m-help">${icHelp}วิธีใช้งานแอป</button>
       <button class="menu-it" id="m-bot">${icChat}ถามน้องสไลด์</button>
-      ${ME?`<button class="menu-it" id="m-logout">${icOut}ไม่ใช่ฉัน / ออกจากเครื่องนี้</button>`:''}
     </div>
+    ${ME?`<button class="btn btn-block logout-btn" id="m-logout">${icOut}ออกจากระบบ (Log out)</button>`:''}
     <button class="btn btn-soft btn-block" data-close>ปิด</button>`);
   const el=sh.el;
   el.querySelectorAll('[data-fs]').forEach(b=>b.onclick=()=>setFS(b.dataset.fs));
@@ -2474,12 +2480,15 @@ function openMenu(){
   el.querySelector('#m-snd').onclick=()=>{const on=store.get(SND_KEY)==='0';store.set(SND_KEY,on?'1':'0');el.querySelector('#m-snd .switch').setAttribute('aria-checked',on);if(on)beep()};
   const mi=el.querySelector('#m-install');if(mi)mi.onclick=()=>{sh.close();doInstall()};
   el.querySelector('#m-guide').onclick=()=>{sh.close();showGuide()};
-  const mr=el.querySelector('#m-role');if(mr)mr.onclick=()=>{sh.close();mode='ward';view='role';render()};
   const mp=el.querySelector('#m-pw');if(mp)mp.onclick=()=>{sh.close();pwSheet()};
   el.querySelector('#m-cam').onclick=async()=>{sh.close();const st=await camState();st==='denied'?camHelp('denied'):askCamera()};
   el.querySelector('#m-help').onclick=()=>{sh.close();showHelp()};
   el.querySelector('#m-bot').onclick=()=>{sh.close();openAssistant()};
-  const lo=el.querySelector('#m-logout');if(lo)lo.onclick=()=>{sh.close();store.del(TOKEN_KEY);ME=null;mode='ward';view='login';render()};
+  const lo=el.querySelector('#m-logout');if(lo)lo.onclick=()=>{sh.close();
+    const s2=openSheet(`<h2>ออกจากระบบ?</h2><p style="margin:0">${esc(ME.first)} ${esc(ME.last)} (${esc(ROLE_TH[ME.role]||'')})</p>
+      <div class="small muted">เครื่องนี้จะไม่จำชื่อคุณ และไม่รับแจ้งเตือนเด้งของคุณอีก เข้าใช้ใหม่ได้ด้วยรหัสพนักงาน + ชื่อจริง</div>
+      <button class="btn btn-block logout-btn" id="lo-ok">ออกจากระบบ</button><button class="btn btn-soft btn-block" data-close>ยกเลิก</button>`);
+    s2.el.querySelector('#lo-ok').onclick=()=>{s2.close();pushOff('me');store.del(TOKEN_KEY);store.set(NOTIF_KEY,'0');ME=null;mode='ward';view='login';render();toast('ออกจากระบบแล้ว')}};
 }
 
 /* ---------- ขออนุญาตใช้กล้อง (ให้ผู้ใช้กดยืนยันในแอป ไม่ต้องไปหาเมนูตั้งค่าเอง) ---------- */
