@@ -91,7 +91,7 @@ a{color:var(--blue)}
 /* ---------- bottom tab bar ---------- */
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:26;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:saturate(1.4) blur(16px);-webkit-backdrop-filter:saturate(1.4) blur(16px);
   border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
-.tabbar-in{max-width:560px;margin:0 auto;height:var(--nav-h);display:grid;grid-template-columns:repeat(5,1fr);align-items:center}
+.tabbar-in{max-width:560px;margin:0 auto;height:var(--nav-h);display:grid;grid-template-columns:repeat(var(--tabs,5),1fr);align-items:center}.tab[hidden]{display:none}
 .tab{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--faint);font-size:.74rem;font-weight:600;cursor:pointer;padding:8px 0;height:100%;justify-content:center;position:relative}
 .tab svg{width:24px;height:24px}
 .tab[aria-current="page"]{color:var(--teal)}
@@ -593,6 +593,8 @@ details.tbl th,details.tbl td{padding:6px 10px}
 .pw-it[aria-pressed="true"] .ck{background:var(--blue);border-color:var(--blue)}.pk-wh{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .maint{align-items:stretch;gap:14px;margin-top:4vh}.maint-bot{width:120px;margin:0 auto}.maint-bot svg{width:120px;height:140px}
 .logout-btn{background:var(--bad-soft);color:var(--bad);border:1.5px solid color-mix(in srgb,var(--bad) 40%,transparent);gap:8px}.logout-btn svg{width:20px;height:20px}
+@media (max-width:760px){.lab-prof{display:none}}
+.lab-prof{align-self:center;font-weight:700;font-size:.85rem;color:var(--teal);background:var(--teal-soft);border-radius:999px;padding:6px 12px;white-space:nowrap}
 .hema-grid{display:grid;gap:16px}.hd-chips{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:6px}
 .hd-chips .daychip{background:var(--surface-3);display:flex;flex-direction:column;align-items:center;padding:8px 4px;min-height:54px}.hd-chips small{font-size:.72rem;font-weight:400;opacity:.8}
 .hd-chips .daychip[aria-pressed="true"]{background:var(--teal);color:#fff;border-color:var(--teal)}.hema-side{display:flex;flex-direction:column;gap:12px}
@@ -1371,7 +1373,8 @@ function bindPhoto(id,onChange){
 
 /* ---------- staff views ---------- */
 function render(){
-  stopTimers();
+  stopTimers();navFor();
+  if(isLabDev()){mode='lab';if(!labPin)labPin=hematoPin=store.get(LABDEV_KEY)}
   $('#tabbar').hidden=false;
   const cur=mode==='lab'?'lab':view==='search'?'search':'home';
   document.querySelectorAll('[data-tab-nav]').forEach(b=>{if(b.dataset.tabNav===cur)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
@@ -1387,6 +1390,23 @@ function render(){
   ({register:vRegister,login:vLogin,home:vHome,checkin:vIn,checkout:vOut,include:vInc,search:vSearch,done:vDone,role:vRole,pick:vPick})[view]();
   window.scrollTo(0,0);
 }
+/* ---------- โปรไฟล์กลาง "Laboratory": ใส่ PIN แลปในช่องรหัสพนักงาน (เว้นช่องอื่นว่าง) แล้วเข้าได้เลย
+   เครื่องจะจำไว้จนกว่าจะกดออกจากระบบ · พยาบาล/คนงานจะไม่เห็นเมนูแลป */
+const LABDEV_KEY='cbcLabDev';
+const isLabDev=()=>!!store.get(LABDEV_KEY);
+async function tryLabLogin(code,errEl,btn){
+  code=String(code||'').trim();if(!/^\d{4,8}$/.test(code))return false;
+  busy(btn,true,'กำลังตรวจสอบ…');
+  try{labRows=await run('apiLabList',code)}catch(err){busy(btn,false);return false}
+  labPin=code;hematoPin=code;store.set(LABDEV_KEY,code);try{sessionStorage.setItem('cbcLabPin',code)}catch(e){}
+  ME=null;mode='lab';labTab='queue';render();toast('เข้าใช้ในชื่อ Laboratory');return true}
+function labLogout(){store.del(LABDEV_KEY);try{sessionStorage.removeItem('cbcLabPin');sessionStorage.removeItem('cbcHemaPin')}catch(e){}
+  labPin='';hematoPin='';hemaItems=null;adminPin='';labRows=[];qData=null;qKnown=null;audData=null;statData=null;statCache={};
+  mode='ward';view=store.get(TOKEN_KEY)?'home':'register';render();toast('ออกจากโปรไฟล์ Laboratory แล้ว')}
+function navFor(){ // แถบเมนู: เครื่องแลปเห็นแค่ แลป + เมนู, พยาบาล/คนงานไม่เห็นแลป
+  const lab=isLabDev();document.querySelectorAll('[data-tab-nav]').forEach(b=>{const t=b.dataset.tabNav;b.hidden=lab?!(t==='lab'||t==='menu'):t==='lab'});
+  document.querySelector('.tabbar-in').style.setProperty('--tabs',lab?2:4)}
+
 /* ---------- แอปอยู่ระหว่างการพัฒนา (แลปเปิด/ปิดได้ที่หน้าแลป ปุ่ม 🚧) ---------- */
 let MAINT=false;
 const maintPass=()=>{try{if(new URLSearchParams(location.search).has('test'))sessionStorage.setItem('cbcTest','1');return sessionStorage.getItem('cbcTest')==='1'}catch(e){return false}};
@@ -1429,6 +1449,7 @@ function vRegister(){
   $('#to-login').onclick=()=>{view='login';render()};bindRoleWard('r-wbox','r-ward');
   $('#f').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button[type=submit]');
     const v=k=>document.getElementById('r-'+k).value.trim();
+    if(v('id')&&!v('first')&&!v('last')&&!v('nick')&&await tryLabLogin(v('id'),$('#err'),b))return;
     busy(b,true);
     const rl=(document.querySelector('input[name=role]:checked')||{}).value||'';
     if(!rl){$('#err').innerHTML=errBox('เลือกบทบาท: พยาบาล หรือ คนงาน');busy(b,false);return}
@@ -1445,7 +1466,9 @@ function vLogin(){
    <div id="err"></div><button class="btn btn-teal btn-block" type="submit">เข้าใช้งาน</button></form>
    <button class="linkbtn" id="back">กลับไปลงทะเบียนใหม่</button></section></div>`;
   $('#back').onclick=()=>{view='register';render()};
-  $('#f').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button[type=submit]');busy(b,true,'กำลังตรวจสอบ…');
+  $('#f').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button[type=submit]');
+    if($('#l-id').value.trim()&&!$('#l-first').value.trim()&&await tryLabLogin($('#l-id').value,$('#err'),b))return;
+    busy(b,true,'กำลังตรวจสอบ…');
     try{const r=await run('apiLogin',$('#l-id').value,$('#l-first').value);store.set(TOKEN_KEY,r.token);ME=r.me;view='home';render();toast('สวัสดี '+ME.nick)}
     catch(err){$('#err').innerHTML=errBox(err.message);busy(b,false)}};
 }
@@ -1909,13 +1932,13 @@ function quickScan(){
 
 /* ---------- lab overview ---------- */
 function vPin(){
-  app.innerHTML=`<div class="col"><section class="panel"><div class="art sm">${artScope}</div><h2>ภาพรวมห้องปฏิบัติการ</h2>
+  app.innerHTML=`<div class="col"><section class="panel"><div class="art sm">${artScope}</div><h2>Laboratory</h2><p class="small muted" style="margin:0">โปรไฟล์กลางของห้องปฏิบัติการ</p>
     <form id="f" class="form" novalidate><div class="field"><label for="pin">PIN ของห้องปฏิบัติการ</label>
     <input class="input mono" id="pin" type="password" inputmode="numeric" autocomplete="off"></div>
     <div id="err"></div><button class="btn btn-blue btn-block" type="submit">เข้าดูภาพรวม</button></form></section></div>`;
   $('#pin').focus();
   $('#f').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button[type=submit]');busy(b,true,'กำลังตรวจสอบ…');
-    try{labRows=await run('apiLabList',$('#pin').value);labPin=$('#pin').value;hematoPin=labPin;try{sessionStorage.setItem('cbcLabPin',labPin);sessionStorage.setItem('cbcHemaPin',labPin)}catch(x){}renderLab()}
+    try{labRows=await run('apiLabList',$('#pin').value);labPin=$('#pin').value;hematoPin=labPin;store.set(LABDEV_KEY,labPin);try{sessionStorage.setItem('cbcLabPin',labPin);sessionStorage.setItem('cbcHemaPin',labPin)}catch(x){}renderLab()}
     catch(err){$('#err').innerHTML=`<div class="alert bad">${esc(err.message)}</div>`;busy(b,false)}};
 }
 async function reloadLab(){try{labRows=await run('apiLabList',labPin);if(mode==='lab')renderLab()}catch(err){toast(err.message)}}
@@ -2246,7 +2269,7 @@ function offWard(w){
     catch(err){ok.disabled=false;sh.el.querySelector('#wd-off-err').innerHTML=errBox(err.message)}};
 }
 
-function lockLab(msg){labPin='';hematoPin='';hemaItems=null;try{sessionStorage.removeItem('cbcHemaPin')}catch(e){}adminPin='';labRows=[];qData=null;qKnown=null;audData=null;statData=null;statCache={};try{sessionStorage.removeItem('cbcLabPin')}catch(e){}
+function lockLab(msg){if(isLabDev()){labLogout();if(msg&&!/ล็อก/.test(msg))toast(msg);return}labPin='';hematoPin='';hemaItems=null;try{sessionStorage.removeItem('cbcHemaPin')}catch(e){}adminPin='';labRows=[];qData=null;qKnown=null;audData=null;statData=null;statCache={};try{sessionStorage.removeItem('cbcLabPin')}catch(e){}
   labTab='queue';if(mode==='lab')render();toast(msg||'ล็อกหน้าแลปแล้ว')}
 /* ---------- เลือกธีมเทศกาล (PIN แลป) — มีผลกับทุกเครื่อง ---------- */
 function festSheet(){
@@ -2305,9 +2328,10 @@ const labTabs=()=>`<div class="lab-top"><div class="ltabs" role="tablist" aria-l
   <button role="tab" data-tab="wards" aria-selected="${labTab==='wards'}">${icBed}วอร์ด</button>
   <button role="tab" data-tab="audit" aria-selected="${labTab==='audit'}">${icHist}ประวัติการใช้งาน</button>
   <button role="tab" data-tab="backup" aria-selected="${labTab==='backup'}">${icArchive}สำรองข้อมูล</button></div>
+  <span class="lab-prof" title="โปรไฟล์กลางของห้องปฏิบัติการ">🧪 Laboratory</span>
   <button class="btn btn-soft lab-lock" id="lab-maint" type="button" aria-label="สถานะแอป">${MAINT?'🚧':'✅'}<span>${MAINT?'ปิดอยู่':'เปิดอยู่'}</span></button>
   <button class="btn btn-soft lab-lock" id="lab-fest" type="button" aria-label="เลือกธีมเทศกาล">🎨<span>ธีม</span></button>
-  <button class="btn btn-soft lab-lock" id="lab-lock" type="button" aria-label="ล็อกหน้าแลป (ต้องใส่ PIN ใหม่)">${icLock}<span>ล็อก</span></button></div>`;
+  <button class="btn btn-soft lab-lock" id="lab-lock" type="button" aria-label="ออกจากระบบ Laboratory">${icLock}<span>${isLabDev()?'ออกจากระบบ':'ล็อก'}</span></button></div>`;
 function bindTabs(){const lk=$('#lab-lock');if(lk)lk.onclick=()=>lockLab();const lf=$('#lab-fest');if(lf)lf.onclick=festSheet;const lm=$('#lab-maint');if(lm)lm.onclick=maintSheet;const sel=app.querySelector('.ltabs [aria-selected="true"]');if(sel)try{sel.scrollIntoView({inline:'center',block:'nearest'})}catch(e){}app.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{if(labTab===b.dataset.tab)return;labTab=b.dataset.tab;if(!ADMIN_TABS.includes(labTab))adminPin='';labTab==='stats'?loadStats():labTab==='staff'?loadStaff():labTab==='backup'?loadBackups():labTab==='wards'?loadWards():renderLab()})}
 async function loadStats(force){
   if(!force&&statCache[statDays]){statData=statCache[statDays];return renderStats()}
@@ -2474,6 +2498,7 @@ function openMenu(){
       <button class="menu-it" id="m-bot">${icChat}ถามน้องสไลด์</button>
     </div>
     ${ME?`<button class="btn btn-block logout-btn" id="m-logout">${icOut}ออกจากระบบ (Log out)</button>`:''}
+    ${isLabDev()?`<button class="btn btn-block logout-btn" id="m-lablogout">${icOut}ออกจากโปรไฟล์ Laboratory</button>`:''}
     <button class="btn btn-soft btn-block" data-close>ปิด</button>`);
   const el=sh.el;
   el.querySelectorAll('[data-fs]').forEach(b=>b.onclick=()=>setFS(b.dataset.fs));
@@ -2485,6 +2510,7 @@ function openMenu(){
   el.querySelector('#m-cam').onclick=async()=>{sh.close();const st=await camState();st==='denied'?camHelp('denied'):askCamera()};
   el.querySelector('#m-help').onclick=()=>{sh.close();showHelp()};
   el.querySelector('#m-bot').onclick=()=>{sh.close();openAssistant()};
+  const ll=el.querySelector('#m-lablogout');if(ll)ll.onclick=()=>{sh.close();labLogout()};
   const lo=el.querySelector('#m-logout');if(lo)lo.onclick=()=>{sh.close();
     const s2=openSheet(`<h2>ออกจากระบบ?</h2><p style="margin:0">${esc(ME.first)} ${esc(ME.last)} (${esc(ROLE_TH[ME.role]||'')})</p>
       <div class="small muted">เครื่องนี้จะไม่จำชื่อคุณ และไม่รับแจ้งเตือนเด้งของคุณอีก เข้าใช้ใหม่ได้ด้วยรหัสพนักงาน + ชื่อจริง</div>
