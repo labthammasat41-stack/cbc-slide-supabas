@@ -602,6 +602,15 @@ details.tbl th,details.tbl td{padding:6px 10px}
 .site-ipd{background:var(--teal-soft);color:var(--teal)}.site-opd{background:var(--violet-soft);color:var(--violet)}
 .qc.hema{background:color-mix(in srgb,var(--violet) 5%,var(--surface))}.qgrid.one{grid-template-columns:1fr}
 .opd-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px}
+.wp{display:grid;gap:6px}.wp-h{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.wp-l{display:flex;flex-wrap:wrap;gap:6px}
+.wp-p{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:var(--surface-2);font-size:.88rem}.wp-p i{width:9px;height:9px;border-radius:50%;background:var(--muted);opacity:.5}
+.wp-p.on i{background:var(--ok);opacity:1;box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 25%,transparent)}.wp-p small{font-size:.72rem;color:var(--muted)}
+.wp.none{background:var(--warn-soft);border-radius:var(--r-m);padding:10px 12px;color:var(--warn)}.wp.none .small{color:inherit;opacity:.9}#q-wp .wp{margin-top:-2px;background:var(--surface-2);border-radius:var(--r-m);padding:8px 10px}
+.pk-items{display:grid;gap:6px;margin-top:6px}.pk-it{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;background:var(--surface-2)}
+.pk-claim{min-height:38px;padding:6px 12px;font-size:.88rem;flex:none}.pk-cl{white-space:nowrap;font-size:.8rem;font-weight:700;color:var(--muted);text-align:right;display:flex;flex-direction:column;align-items:flex-end}.pk-cl.mine{color:var(--blue)}
+.pk-claim-all{margin-top:6px;min-height:40px}.lr[data-tl]{cursor:pointer}
+.tl{list-style:none;margin:6px 0;padding:0 0 0 6px;display:grid;gap:10px;border-left:2px solid var(--line)}.tl li{display:flex;gap:10px;position:relative;padding-left:10px}
+.tl li::before{content:"";position:absolute;left:-13px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--teal)}.tl-t{font-family:var(--mono, monospace);font-size:.82rem;color:var(--muted);min-width:42px;padding-top:2px}
 .hema-grid{display:grid;gap:16px}.hd-chips{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:6px}
 .hd-chips .daychip{background:var(--surface-3);display:flex;flex-direction:column;align-items:center;padding:8px 4px;min-height:54px}.hd-chips small{font-size:.72rem;font-weight:400;opacity:.8}
 .hd-chips .daychip[aria-pressed="true"]{background:var(--teal);color:#fff;border-color:var(--teal)}.hema-side{display:flex;flex-direction:column;gap:12px}
@@ -725,7 +734,7 @@ const RPC={apiInit:['api_init','p_token'],apiRegister:['api_register','d'],apiLo
   apiIncludeCheck:['api_include_check','p_token','d'],apiInclude:['api_include','p_token','d'],apiSearch:['api_search','p_token','q'],
   apiLabList:['api_lab_list','p_pin'],apiLabStats:['api_lab_stats','p_pin','p_days'],apiSetPhoto:['api_set_photo','p_token','p_id','p_path'],apiUndo:['api_undo','p_token','p_id','p_kind'],
   apiLabFix:['api_lab_fix','p_pin','p_id','p_action','p_reason'],apiLabStaff:['api_lab_staff','p_pin'],apiLabStaffSet:['api_lab_staff_set','p_pin','p_staff','p_state'],
-  apiLabBackups:['api_lab_backups','p_pin'],apiAdminWards:['api_admin_wards','p_pin'],apiLabFestSet:['api_lab_fest_set','p_pin','p_fest'],apiLabMaintSet:['api_lab_maint_set','p_pin','p_on'],apiHematoReady:['api_hemato_ready','p_pin','d'],apiHematoList:['api_hemato_list','p_pin'],apiHematoUndo:['api_hemato_undo','p_pin','p_ready'],apiSetRole:['api_set_role','p_token','p_role'],apiSetWard:['api_set_ward','p_token','p_ward'],apiSetPwards:['api_set_pwards','p_token','p_wards'],apiPushSub:['api_push_sub','p_token','sub'],apiLabPushSub:['api_lab_push_sub','p_pin','sub','p_on'],apiPushUnsub:['api_push_unsub','p_endpoint'],apiLabQueue:['api_lab_queue','p_pin'],apiLabReady:['api_lab_ready','p_pin','p_row','d'],apiLabNf:['api_lab_nf','p_pin','p_row','d'],apiLabBack:['api_lab_back','p_pin','p_row','d'],apiPickFind:['api_pick_find','p_token','p_sample','p_at'],apiOpdList:['api_opd_list','p_pin'],apiOpdArrive:['api_opd_arrive','p_pin','d'],apiAdminOpd:['api_admin_opd','p_pin','p_data'],apiPickList:['api_pick_list','p_token'],apiLabAudit:['api_lab_audit','p_pin','q','p_days'],apiAdminWardSave:['api_admin_ward_save','p_pin','p_action','p_name','p_new'],apiLabPurge:['api_lab_purge','p_pin','p_month','p_confirm']};
+  apiLabBackups:['api_lab_backups','p_pin'],apiAdminWards:['api_admin_wards','p_pin'],apiLabFestSet:['api_lab_fest_set','p_pin','p_fest'],apiLabMaintSet:['api_lab_maint_set','p_pin','p_on'],apiHematoReady:['api_hemato_ready','p_pin','d'],apiHematoList:['api_hemato_list','p_pin'],apiHematoUndo:['api_hemato_undo','p_pin','p_ready'],apiSetRole:['api_set_role','p_token','p_role'],apiClaim:['api_claim','p_token','p_rows','p_on'],apiWardPorters:['api_ward_porters','p_token','p_ward'],apiTimeline:['api_rec_timeline','p_token','p_row'],apiSetWard:['api_set_ward','p_token','p_ward'],apiSetPwards:['api_set_pwards','p_token','p_wards'],apiPushSub:['api_push_sub','p_token','sub'],apiLabPushSub:['api_lab_push_sub','p_pin','sub','p_on'],apiPushUnsub:['api_push_unsub','p_endpoint'],apiLabQueue:['api_lab_queue','p_pin'],apiLabReady:['api_lab_ready','p_pin','p_row','d'],apiLabNf:['api_lab_nf','p_pin','p_row','d'],apiLabBack:['api_lab_back','p_pin','p_row','d'],apiPickFind:['api_pick_find','p_token','p_sample','p_at'],apiOpdList:['api_opd_list','p_pin'],apiOpdArrive:['api_opd_arrive','p_pin','d'],apiAdminOpd:['api_admin_opd','p_pin','p_data'],apiPickList:['api_pick_list','p_token'],apiLabAudit:['api_lab_audit','p_pin','q','p_days'],apiAdminWardSave:['api_admin_ward_save','p_pin','p_action','p_name','p_new'],apiLabPurge:['api_lab_purge','p_pin','p_month','p_confirm']};
 /* คีย์แบบใหม่ (sb_publishable_…) ส่งใน apikey อย่างเดียว คีย์ anon แบบเดิม (eyJ…) ส่งใน Authorization ด้วย */
 const supaHead=extra=>Object.assign({apikey:SUPA_KEY},/^eyJ/.test(SUPA_KEY)?{Authorization:'Bearer '+SUPA_KEY}:{},extra||{});
 async function rpc(fn,args){
@@ -1256,6 +1265,7 @@ function showHelp(){
     <section class="help-sec"><h3><span class="dot" style="background:var(--blue)"></span>2. เจ้าหน้าที่รับสไลด์: สแกนรับที่แลป</h3>
       <ol><li>เริ่มงานแต่ละวัน เลือก<b>วอร์ดที่เดินส่งงานวันนี้</b> (เลือกได้หลายวอร์ด เปลี่ยนได้ที่ เมนู)</li>
       <li>เมื่อแลปพบสไลด์ของวอร์ดนั้น แอปจะ<b>ดังและเด้งแจ้งเตือน</b> หน้าแรกบอกว่าพร้อมรับกี่ใบ</li>
+      <li>กด <b>รับงานนี้</b> (หรือ "รับทั้งหมดของวอร์ด") คนอื่นจะเห็นว่าคุณกำลังไป และพยาบาลเห็นชื่อคุณ · ไปไม่ได้กด <b>ปล่อยงาน</b> · ถ้าเกิน 1 ชม. ระบบปล่อยงานคืนให้เอง</li>
       <li>กดปุ่มสีน้ำเงิน <b>สแกนรับสไลด์ที่แลป</b> แล้ว<b>สแกนบาร์โค้ดบนสไลด์ทุกแผ่น</b></li>
       <li>ดูว่า <b>HN บนสไลด์ตรงกับ HN ในแอป</b> แล้วกด <b>รับสไลด์ใบนี้</b></li>
       <li>สแกนแผ่นถัดไปต่อได้เลย รายการที่รับแล้วจะขึ้นด้านล่าง</li></ol>
@@ -1419,6 +1429,27 @@ function navFor(){ // แถบเมนู: เครื่องแลปเ�
   const lab=isLabDev(),opd=isOpdDev();document.querySelectorAll('[data-tab-nav]').forEach(b=>{const t=b.dataset.tabNav;b.hidden=opd?t!=='menu':lab?!(t==='lab'||t==='menu'):t==='lab'});
   document.querySelector('.tabbar-in').style.setProperty('--tabs',opd?1:lab?2:4)}
 
+/* ---------- เจ้าหน้าที่รับสไลด์ของวอร์ดนี้วันนี้ (ให้พยาบาลเห็นว่ามีใครออนไลน์) ---------- */
+function wardPortersHtml(d,compact){const L=d.list,on=L.filter(x=>x.online).length;
+  if(!L.length)return `<div class="wp none"><b>⚠️ วันนี้ยังไม่มีเจ้าหน้าที่รับสไลด์เลือกวอร์ด ${esc(d.ward)}</b><span class="small">ออร์เดอร์จะไม่มีใครได้แจ้งเตือน ให้เจ้าหน้าที่เวรเดินเลือกวอร์ด ${esc(d.ward)} ในแอป (เมนู → วอร์ดที่เดินวันนี้) หรือโทรตามตามปกติ</span></div>`;
+  return `<div class="wp"><div class="wp-h"><b>🚶 เจ้าหน้าที่รับสไลด์ · ${esc(d.ward)}</b><span class="small muted">วันนี้ ${L.length} คน · ออนไลน์ ${on}</span></div>
+    ${compact?'':`<div class="wp-l">${L.map(x=>`<span class="wp-p ${x.online?'on':''}" title="เปิดแอปล่าสุด ${esc(x.seen||'–')}"><i></i>${esc(x.nick)}${x.online?'':x.notif?' <small>🔔 รับแจ้งเตือนได้</small>':' <small>ไม่ออนไลน์</small>'}</span>`).join('')}</div>`}
+    ${!on&&!L.some(x=>x.notif)?`<div class="small nf-why">ไม่มีใครออนไลน์ และไม่มีใครเปิดแจ้งเตือน อาจไม่เห็นออร์เดอร์ ควรโทรแจ้ง</div>`:''}</div>`}
+async function loadWardPorters(ward,boxId,compact){const b=document.getElementById(boxId);if(!b)return;if(!ward||!WARDS.includes(ward)){b.innerHTML='';return}
+  try{const d=await run('apiWardPorters',store.get(TOKEN_KEY),ward);const x=document.getElementById(boxId);if(x)x.innerHTML=wardPortersHtml(d,compact)}catch(e){}}
+
+/* ---------- ไทม์ไลน์ของออร์เดอร์: ใครทำอะไร เมื่อไร ---------- */
+async function showTimeline(row){
+  const sh=openSheet(`<div class="eyebrow">ติดตามสถานะ</div><h2>กำลังโหลด…</h2><div class="sk sk-row"></div><div class="sk sk-row"></div>`);
+  let d;try{d=await run('apiTimeline',store.get(TOKEN_KEY),row)}catch(err){sh.set(`${errBox(err.message)}<button class="btn btn-soft btn-block" data-close>ปิด</button>`);return}
+  const r=d.rec;
+  sh.set(`<div class="eyebrow">ติดตามสถานะ · Slide ${esc(SITE_TH[r.site]||'')}</div><h2 class="mono" style="margin:0">HN ${esc(r.hn)}</h2>
+    <div class="small muted">${esc(r.ward)}${r.sample?' · Sample '+esc(r.sample):''}</div><div>${pill(r.status,r)}</div>
+    <ol class="tl">${d.steps.map(x=>`<li><span class="tl-t">${esc(String(x.at).slice(-5))}</span><div><b>${esc(x.action)}</b><div class="small muted">${esc(x.actor)}${x.info?' · '+esc(x.info):''}</div></div></li>`).join('')}</ol>
+    ${r.state==='ready'&&!r.claimName?`<div class="small muted">ยังไม่มีเจ้าหน้าที่รับงานนี้</div>`:''}
+    <button class="btn btn-soft btn-block" data-close>ปิด</button>`);
+}
+
 /* ---------- Slide IPD / OPD ---------- */
 let OPD_OPEN=false,OPD_HOURS=null;
 const SITE_TH={ipd:'IPD',opd:'OPD'},PICK_TH={ipd:'แลป IPD',opd:'เคาน์เตอร์ OPD'};
@@ -1552,18 +1583,21 @@ const NOTIF_KEY='cbcNotif',SEEN_KEY='cbcSeenState';
 const notifOn=()=>store.get(NOTIF_KEY)==='1'&&'Notification' in window&&Notification.permission==='granted';
 const mins=ts=>Math.max(0,Math.round((Date.now()-ts)/60000));
 function liveHtml(rows){
-  const open=rows.filter(r=>!r.include&&(r.state==='wait'||r.state==='sent'||r.state==='ready'||(r.state==='nf'&&r.reqTs>Date.now()-86400000)));if(!open.length)return '';
-  const ord={ready:0,nf:1,sent:2,wait:3};
+  const open=rows.filter(r=>!r.include&&r.reqTs&&(r.state==='wait'||r.state==='sent'||r.state==='ready'||(r.state==='nf'&&r.reqTs>Date.now()-86400000)||(r.state==='out'&&r.recvTs>Date.now()-7200000)));if(!open.length)return '';
+  const ord={ready:0,nf:1,sent:2,wait:3,out:4};
   return `<div class="live-h"><div class="ttl"><span class="pulse"></span><h3>ออร์เดอร์ตามสไลด์ของฉัน · ${open.length} รายการ</h3></div></div>
-  ${open.sort((a,b)=>ord[a.state]-ord[b.state]||b.reqTs-a.reqTs).map(r=>`<div class="lr ${r.state==='ready'?'ready':r.state==='nf'?'nf':''}">
-      <span class="ring2 st-${r.state}" style="--p:100"><span>${r.state==='ready'?'✓':r.state==='nf'?'✕':r.state==='sent'?'🚀':mins(r.reqTs)+'<small>นาที</small>'}</span></span>
+  ${open.sort((a,b)=>ord[a.state]-ord[b.state]||b.reqTs-a.reqTs).map(r=>`<div class="lr ${r.state==='ready'?'ready':r.state==='nf'?'nf':''}" data-tl="${r.row}" role="button" tabindex="0">
+      <span class="ring2 st-${r.state}" style="--p:100"><span>${r.state==='out'?'📦':r.state==='ready'?'✓':r.state==='nf'?'✕':r.state==='sent'?'🚀':mins(r.reqTs)+'<small>นาที</small>'}</span></span>
       <span class="meta"><b>HN ${esc(r.hn)} ${siteTag(r.site)}</b><span class="small muted">${esc(r.ward)} · สั่ง ${esc(String(r.reqAt).slice(-5))} น.${r.reason?' · '+esc(r.reason):''}</span>
       ${r.state==='nf'?`<span class="small nf-why">เหตุผล: ${esc(r.nfReason)}</span>`:''}</span>
-      <span class="state">${r.state==='ready'?`<b class="hema-ok">✅ พร้อมรับ</b><small class="muted">รับที่${PICK_TH[r.pickup]||'แลป IPD'}</small>`:r.state==='sent'?'<b>🚀 อยู่ในกระสวย</b><small class="muted">กำลังส่งไป OPD</small>':r.state==='nf'?'<b class="nf-t">❌ หาไม่เจอ</b><small class="muted">โทร 8133</small>':'แลปกำลังหา'}</span></div>`).join('')}
+      <span class="state">${r.state==='out'?`<b>📦 รับไปแล้ว</b><small class="muted">โดย ${esc(r.recvName.split(' ')[0])} · ${esc(String(r.recvAt).slice(-5))} น.</small>`
+        :r.state==='ready'&&r.claimName?`<b class="hema-ok">🚶 ${esc(r.claimName)} กำลังไปรับ</b><small class="muted">ที่${PICK_TH[r.pickup]||'แลป IPD'}</small>`
+        :r.state==='ready'?`<b class="hema-ok">✅ พร้อมรับ</b><small class="muted">รับที่${PICK_TH[r.pickup]||'แลป IPD'}</small>`:r.state==='sent'?'<b>🚀 อยู่ในกระสวย</b><small class="muted">กำลังส่งไป OPD</small>':r.state==='nf'?'<b class="nf-t">❌ หาไม่เจอ</b><small class="muted">โทร 8133</small>':'แลปกำลังหา'}</span></div>`).join('')}
   <div class="notif"><button class="switch" id="nt-sw" role="switch" aria-checked="${notifOn()}" aria-label="แจ้งเตือนเด้งบนมือถือ"></button>แจ้งเตือนเด้งเมื่อแลปพบสไลด์ (แม้ปิดแอปอยู่)</div>`;
 }
 function drawLive(){
   const box=$('#live');if(!box)return;const h=liveHtml(homeRows);box.hidden=!h;box.innerHTML=h;
+  box.querySelectorAll('[data-tl]').forEach(b=>b.onclick=()=>showTimeline(+b.dataset.tl));
   const sw=$('#nt-sw');if(sw)sw.onclick=async()=>{
     if(notifOn()){store.set(NOTIF_KEY,'0');pushOff('me');toast('ปิดแจ้งเตือนเด้งแล้ว');return drawLive()}
     sw.setAttribute('aria-busy','true');
@@ -1571,10 +1605,11 @@ function drawLive(){
     catch(err){if('Notification' in window&&Notification.permission==='granted')store.set(NOTIF_KEY,'1');toast(err.message)}drawLive()};
   // สถานะเปลี่ยน (พร้อมรับ / หาไม่เจอ) ขณะเปิดแอป: สั่น มีเสียง (ครั้งเดียวต่อสถานะ)
   let seen={};try{seen=JSON.parse(store.get(SEEN_KEY)||'{}')}catch(e){}
-  const first=!store.get(SEEN_KEY),ch=homeRows.filter(r=>(r.state==='ready'||r.state==='nf')&&seen[r.row]!==r.state&&!r.include);
+  const first=!store.get(SEEN_KEY),ch=homeRows.filter(r=>(r.state==='ready'||r.state==='nf'||(r.state==='out'&&r.reqTs&&r.recvTs>Date.now()-7200000))&&seen[r.row]!==r.state&&!r.include&&seen[r.row]!==undefined||(!first&&seen[r.row]===undefined&&(r.state==='ready'||r.state==='nf')&&!r.include));
   homeRows.forEach(r=>{if(r.state)seen[r.row]=r.state});const keys=Object.keys(seen);if(keys.length>80)keys.slice(0,keys.length-80).forEach(k=>delete seen[k]);
   store.set(SEEN_KEY,JSON.stringify(seen));
-  if(ch.length&&!first){const rd=ch.filter(r=>r.state==='ready'),nf=ch.filter(r=>r.state==='nf');
+  const gone=ch.filter(r=>r.state==='out');if(gone.length&&!first){beep();toast(`สไลด์ HN ${gone[0].hn} รับไปแล้วโดย ${gone[0].recvName.split(' ')[0]} 📦`)}
+  if(ch.filter(r=>r.state!=='out').length&&!first){const rd=ch.filter(r=>r.state==='ready'),nf=ch.filter(r=>r.state==='nf');
     const m=rd.length?(rd.length===1?`สไลด์ HN ${rd[0].hn} พร้อมรับที่${PICK_TH[rd[0].pickup]||'แลป'} แล้วครับ ✅`:`สไลด์พร้อมรับ ${rd.length} รายการครับ ✅`):`แลปหาสไลด์ HN ${nf[0].hn} ไม่เจอ ❌`;
     alarm();toast(m)}
 }
@@ -1584,6 +1619,7 @@ function vHome(){
    <section class="panel hero">${festScene()}<div class="hero-t"><span class="hi">${FEST?FEST.greet:greet()}</span><span class="nm">คุณ${esc(ME.nick)}</span>
      <span class="small muted">${thToday()} · ${ROLE_TH[ME.role]||''}${nurse&&ME.ward?' · '+esc(ME.ward):''}</span>${FEST&&FEST.chip?`<span class="fest-chip">${FEST.chip}</span>`:''}</div></section>
    <section class="panel live" id="live" hidden></section>
+   ${nurse&&ME.ward?'<section class="panel" id="wp-card" style="padding:12px 16px"></section>':''}
    <div class="cam-card ins-card" id="ins-card" hidden><div class="cam-i">📲</div><div class="cam-b"><b>ติดตั้งแอปไว้บนหน้าจอ</b><span class="small">ครั้งต่อไปกดไอคอนเปิดได้เลย${IOS?' และ iPhone จะรับแจ้งเตือนเด้งได้':''}</span>
      <button type="button" class="linkbtn" data-ins-skip style="align-self:flex-start;font-size:.82rem;margin-top:2px">ไว้ทีหลัง</button></div>
      <button class="btn btn-teal" type="button" data-ins>ติดตั้งแอป</button></div>
@@ -1604,11 +1640,12 @@ function vHome(){
   $('#go-help').onclick=showHelp;
   $('#go-search').onclick=()=>{view='search';render()};
   if(!guideShown){guideShown=true;showGuide()}
-  const load=async()=>{try{const rows=await run('apiMine',store.get(TOKEN_KEY));if(!$('#mylist'))return;homeRows=rows;if(nurse)drawLive();
-    $('#mylist').innerHTML=rows.length?rows.map(r=>`<div class="it ${r.status}"><div style="min-width:0"><div class="mono" style="font-weight:600">HN ${esc(r.hn)}${r.include?'<span class="tag-inc">Include</span>':''}</div>
+  const load=async()=>{if(nurse&&ME.ward)loadWardPorters(ME.ward,'wp-card');try{const rows=await run('apiMine',store.get(TOKEN_KEY));if(!$('#mylist'))return;homeRows=rows;if(nurse)drawLive();
+    $('#mylist').innerHTML=rows.length?rows.map(r=>`<div class="it ${r.status}" data-tl="${r.row}" role="button" tabindex="0" style="cursor:pointer"><div style="min-width:0"><div class="mono" style="font-weight:600">HN ${esc(r.hn)}${r.include?'<span class="tag-inc">Include</span>':''}</div>
       <div class="small muted">${r.sample?'Sample '+esc(r.sample)+' · ':''}${esc(r.ward)}</div>
-      <div class="small muted">${r.status==='out'?'รับสไลด์ '+esc(r.recvAt):'สั่งตาม '+esc(r.reqAt)}</div>${photoBtn(r,'user')}</div>${pill(r.status,r)}</div>`).join(''):'<div class="empty"><div class="art sm">'+artSearch+'</div><div class="muted small">ยังไม่มีรายการ</div></div>'}
-    catch(err){if($('#mylist'))$('#mylist').innerHTML=errBox(err.message)}};
+      <div class="small muted">${r.status==='out'?'รับโดย '+esc(r.recvName)+' · '+esc(r.recvAt):'สั่งตาม '+esc(r.reqAt)}</div>${photoBtn(r,'user')}</div>${pill(r.status,r)}</div>`).join(''):'<div class="empty"><div class="art sm">'+artSearch+'</div><div class="muted small">ยังไม่มีรายการ</div></div>';
+    $('#mylist').querySelectorAll('[data-tl]').forEach(b=>b.onclick=e=>{if(e.target.closest('[data-photo-row]'))return;showTimeline(+b.dataset.tl)});
+    }catch(err){if($('#mylist'))$('#mylist').innerHTML=errBox(err.message)}};
   const loadPick=async()=>{const box=$('#pk-list');if(!box)return;try{const d=await run('apiPickList',store.get(TOKEN_KEY));if(!$('#pk-list'))return;pickData=d;drawPick();porterAlert(d)}catch(err){box.innerHTML=errBox(err.message)}};
   if(!nurse){bindPwCard();if(!(ME.pwards||[]).length&&!pwAsked){pwAsked=true;setTimeout(()=>{if(view==='home'&&!document.querySelector('.sheet-ov'))pwSheet()},400)}}
   $('#refresh').onclick=load;load();const pr=$('#pk-re');if(pr)pr.onclick=loadPick;loadPick();camCard().then(installCard);
@@ -1645,14 +1682,24 @@ function drawPick(){const box=$('#pk-list');if(!box||!pickData)return;const d=pi
   d.ready.forEach(r=>{if(!sel||sel.has(r.ward))(g[r.ward]=g[r.ward]||[]).push(r)});const loc=a=>{const o=a.filter(r=>r.pickup==='opd').length,i=a.length-o;return [i?`แลป IPD ${i}`:'',o?`OPD ${o}`:''].filter(Boolean).join(' · ')};d.wait.forEach(r=>{if(!sel||sel.has(r.ward))wt[r.ward]=(wt[r.ward]||0)+1});
   const all=[...new Set([...(sel?[...sel]:[]),...Object.keys(g),...Object.keys(wt)])],ws=all.filter(k=>g[k]||wt[k]),idle=all.filter(k=>!g[k]&&!wt[k]);
   box.innerHTML=(ws.length?ws.map(k=>`<div class="pk-w"><div class="pk-wh"><b>${esc(k)}</b>${g[k]?`<span class="pill st-ready">พร้อมรับ ${g[k].length} ใบ · ${loc(g[k])}</span>`:''}${wt[k]?`<span class="pill st-in">รอแลปหา ${wt[k]}</span>`:''}${!g[k]&&!wt[k]?'<span class="small muted">ไม่มีงาน</span>':''}</div>
-      ${g[k]?`<div class="small muted mono">${g[k].map(r=>'HN '+esc(r.hn)+(r.sample?' · '+esc(r.sample):'')+' → '+esc(PICK_TH[r.pickup]||'')).join('<br>')}</div>`:''}</div>`).join('')
+      ${g[k]?`<div class="pk-items">${g[k].map(r=>`<div class="pk-it"><div class="small mono" style="min-width:0">HN ${esc(r.hn)}${r.sample?' · '+esc(r.sample):''}<br><span class="muted">→ ${esc(PICK_TH[r.pickup]||'')}</span></div>
+        ${r.claimId===ME.id?`<span class="pk-cl mine">🚶 งานของฉัน<button class="linkbtn" data-unclaim="${r.row}">ปล่อยงาน</button></span>`
+          :r.claimName?`<span class="pk-cl">🚶 ${esc(r.claimName)} รับงานแล้ว</span>`:`<button class="btn btn-blue pk-claim" data-claim="${r.row}">รับงานนี้</button>`}</div>`).join('')}
+        ${g[k].filter(r=>!r.claimName).length>1?`<button class="btn btn-ghost btn-block pk-claim-all" data-claimall="${esc(k)}">รับทั้งหมดของ ${esc(k)} (${g[k].filter(r=>!r.claimName).length} ใบ)</button>`:''}</div>`:''}</div>`).join('')
     :'<div class="small muted" style="padding:6px 0">ยังไม่มีงาน ✨</div>')
    +(idle.length&&ws.length?`<div class="small muted" style="padding-top:6px">ไม่มีงาน: ${idle.map(esc).join(', ')}</div>`:'')
    +(mine.size?`<button class="linkbtn" id="pk-all" style="margin-top:6px">${pickAll?'ดูเฉพาะวอร์ดของฉัน':'ดูทุกวอร์ด'}</button>`:'');
   const a=$('#pk-all');if(a)a.onclick=()=>{pickAll=!pickAll;drawPick()};
+  const claim=async(rows,on,b)=>{if(b)busy(b,true,'…');try{const r=await run('apiClaim',store.get(TOKEN_KEY),rows,on);
+      if(on){toast(r.taken.length?`${r.taken.map(x=>x.by).join(', ')} รับงานบางรายการไปก่อนแล้ว`:`รับงานแล้ว ${r.ok} ใบ 🚶 ไปรับที่แลปได้เลย (ภายใน 1 ชม.)`)}else toast('ปล่อยงานคืนแล้ว แจ้งคนอื่นให้แล้ว');flushPush()}
+    catch(err){toast(err.message)}
+    try{pickData=await run('apiPickList',store.get(TOKEN_KEY));drawPick()}catch(e){}};
+  box.querySelectorAll('[data-claim]').forEach(b=>b.onclick=()=>claim([+b.dataset.claim],true,b));
+  box.querySelectorAll('[data-unclaim]').forEach(b=>b.onclick=()=>claim([+b.dataset.unclaim],false,b));
+  box.querySelectorAll('[data-claimall]').forEach(b=>b.onclick=()=>claim(d.ready.filter(r=>r.ward===b.dataset.claimall&&!r.claimName).map(r=>r.row),true,b));
 }
 function porterAlert(d){const mine=new Set(myW());if(!mine.size)return;let seen=[];try{seen=JSON.parse(store.get('cbcPorterSeen')||'[]')}catch(e){}
-  const first=!store.get('cbcPorterSeen'),nw=d.ready.filter(r=>mine.has(r.ward)&&!seen.includes(r.row));
+  const first=!store.get('cbcPorterSeen'),nw=d.ready.filter(r=>mine.has(r.ward)&&!seen.includes(r.row)&&!r.claimName);
   store.set('cbcPorterSeen',JSON.stringify(seen.concat(nw.map(r=>r.row)).slice(-100)));
   if(nw.length&&!first){alarm();toast(nw.length===1?`มีสไลด์ให้ไปรับที่${PICK_TH[nw[0].pickup]||'แลป'}: ${nw[0].ward} · HN ${nw[0].hn}`:`มีสไลด์ให้ไปรับ ${nw.length} ใบ`)}}
 
@@ -1685,7 +1732,7 @@ function vIn(){
       ${scanField('q-sample','3. Sample No. <span class="opt">(ถ้ามี)</span>')}
       <div id="dup"></div>
       ${wardCombo('q-ward',ME.ward||store.get(WARD_KEY)||'','4. วอร์ด')}
-      <div id="q-rule"></div>
+      <div id="q-rule"></div><div id="q-wp"></div>
       <div class="field"><label for="q-reason">5. เหตุผลที่ตามสไลด์</label><textarea class="input" id="q-reason" rows="2" maxlength="200" placeholder="เช่น แพทย์ขอดูสไลด์"></textarea></div>
       ${meBox('ผู้สั่งตาม')}
       <div class="hint">เวลาสั่งตามจะบันทึกให้อัตโนมัติเมื่อกดยืนยัน</div>
@@ -1710,9 +1757,10 @@ function vIn(){
     box.innerHTML=r.hard?hardCard(r.hard):r.soft.length?softCard(r.soft,false):'';
     if((r.hard||r.soft.length)&&navigator.vibrate)navigator.vibrate([120,80,120]);};
   const later=()=>{clearTimeout(timer);timer=setTimeout(check,600)};
-  const showRule=()=>{$('#q-rule').innerHTML=ruleHint(getSpec('q'),$('#q-ward').value.trim())};
+  let wpLast='';const showRule=()=>{const w=$('#q-ward').value.trim();$('#q-rule').innerHTML=ruleHint(getSpec('q'),w);if(w!==wpLast){wpLast=w;loadWardPorters(w,'q-wp',true)}};
   ['q-hn','q-sample','q-date','q-time'].forEach(id=>{const el=document.getElementById(id);el.addEventListener('input',later);el.addEventListener('change',later)});
   ['q-date','q-time','q-ward','q-sample'].forEach(id=>{const el=document.getElementById(id);el.addEventListener('input',showRule);el.addEventListener('change',showRule)});
+  showRule();
   sIn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#q-ward').focus()}});
   const submit=async(force,b)=>{$('#err').innerHTML='';
     if(!site){$('#err').innerHTML=errBox('เลือกว่าเป็น Slide IPD หรือ Slide OPD');app.querySelector('.site-pick').scrollIntoView({behavior:'smooth',block:'center'});return}
