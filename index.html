@@ -1754,8 +1754,8 @@ function vIn(){
     if(!d.hn||(!d.sample&&!d.specAt)){box.innerHTML='';return}
     const my=++seq;let r;try{r=await run('apiPrecheck',store.get(TOKEN_KEY),{site:d.site,hn:d.hn,sample:d.sample,specAt:d.specAt})}catch(e){return}
     if(my!==seq)return;
-    box.innerHTML=r.hard?hardCard(r.hard):r.soft.length?softCard(r.soft,false):'';
-    if((r.hard||r.soft.length)&&navigator.vibrate)navigator.vibrate([120,80,120]);};
+    box.innerHTML=r.block?errBox(r.block):r.hard?hardCard(r.hard):r.soft.length?softCard(r.soft,false):'';
+    if((r.block||r.hard||r.soft.length)&&navigator.vibrate)navigator.vibrate([120,80,120]);};
   const later=()=>{clearTimeout(timer);timer=setTimeout(check,600)};
   let wpLast='';const showRule=()=>{const w=$('#q-ward').value.trim();$('#q-rule').innerHTML=ruleHint(getSpec('q'),w);if(w!==wpLast){wpLast=w;loadWardPorters(w,'q-wp',true)}};
   ['q-hn','q-sample','q-date','q-time'].forEach(id=>{const el=document.getElementById(id);el.addEventListener('input',later);el.addEventListener('change',later)});
